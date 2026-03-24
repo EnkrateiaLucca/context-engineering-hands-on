@@ -5,6 +5,7 @@
 #     "scikit-learn",
 #     "pyyaml",
 #     "prompt-toolkit",
+#     "python-dotenv",
 # ]
 # ///
 """
@@ -20,9 +21,13 @@ context, and understand the token cost of each decision.
 import sys
 from pathlib import Path
 
+from dotenv import load_dotenv
 from prompt_toolkit import PromptSession
 from prompt_toolkit.history import FileHistory
 from prompt_toolkit.patch_stdout import patch_stdout
+
+# Load .env file if present (does not override existing env vars)
+load_dotenv()
 
 # Ensure local imports work when run via `uv run`
 sys.path.insert(0, str(Path(__file__).parent))

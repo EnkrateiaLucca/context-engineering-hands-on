@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["anthropic", "fastapi", "uvicorn"]
+# dependencies = ["anthropic", "fastapi", "uvicorn", "python-dotenv"]
 # ///
 """
 Chat with Artifacts — FastAPI backend.
@@ -20,6 +20,10 @@ from __future__ import annotations
 import os
 import sys
 from dataclasses import dataclass, field
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 import anthropic
 import uvicorn

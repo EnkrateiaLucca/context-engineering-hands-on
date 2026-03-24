@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["anthropic"]
+# dependencies = ["anthropic", "python-dotenv"]
 # ///
 """
 Act 1: Same Prompt, Three Schemas, Three Outputs.
@@ -19,6 +19,10 @@ from __future__ import annotations
 
 import json
 import sys
+
+from dotenv import load_dotenv
+
+load_dotenv()
 
 import anthropic
 
