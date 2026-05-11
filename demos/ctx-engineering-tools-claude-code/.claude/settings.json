@@ -1,0 +1,16 @@
+{
+  "_comment": "PostToolUse hook schema: https://docs.claude.com/en/docs/claude-code/hooks — logs Bash and Read tool results to .claude/tool-outputs/ so students can see the 'offload tool output from the live context window' pattern.",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Bash|Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mkdir -p \"$CLAUDE_PROJECT_DIR/.claude/tool-outputs\" && cat > \"$CLAUDE_PROJECT_DIR/.claude/tool-outputs/$(date +%Y%m%dT%H%M%S)-${CLAUDE_TOOL_NAME:-tool}.json\""
+          }
+        ]
+      }
+    ]
+  }
+}

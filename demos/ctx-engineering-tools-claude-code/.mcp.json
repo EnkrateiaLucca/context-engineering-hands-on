@@ -1,0 +1,11 @@
+{
+  "_comment": "MCP config schema: https://docs.claude.com/en/docs/claude-code/mcp — fetch chosen over filesystem because Claude Code can already read local files via Read; demonstrating fetch shows something genuinely new (HTTP retrieval through an MCP-mediated tool).",
+  "mcpServers": {
+    "fetch": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": ["mcp-server-fetch"],
+      "env": {}
+    }
+  }
+}
