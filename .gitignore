@@ -25,3 +25,6 @@ venv/
 .idea/
 .vscode/
 walkthrough.md
+
+# MCP server artifacts
+.playwright-mcp/

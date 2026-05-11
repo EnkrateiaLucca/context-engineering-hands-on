@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Context Window Field Guide — Automata Learning Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  /* === BRAND TOKENS === */
+  :root {
+    --ink: #000000;
+    --cream: #F5F3EB;
+    --white: #FFFFFF;
+    --coral: #E86B5A;
+    --golden: #F5C542;
+    --sage: #7CB56B;
+    --sky: #5B9BD5;
+    --coral-light: #FBEAE7;
+    --golden-light: #FEF8E6;
+    --sage-light: #EEF5EC;
+    --sky-light: #E8F1F9;
+    --gray-100: #F5F4F1;
+    --gray-300: #DDD9D2;
+    --gray-500: #8A847A;
+    --gray-600: #5C5750;
+    --gray-800: #2A2825;
+    --font-primary: 'IBM Plex Sans', Arial, sans-serif;
+    --font-mono: 'JetBrains Mono', Courier, monospace;
+    --border-primary: 2px solid var(--ink);
+    --border-secondary: 1px solid var(--gray-300);
+    --nav-h: 52px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-primary);
+    background: var(--cream);
+    color: var(--gray-800);
+    font-size: 16px;
+    line-height: 1.6;
+  }
+
+  /* === STICKY NAV === */
+  .sticky-nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: var(--ink);
+    border-bottom: 3px solid var(--coral);
+    height: var(--nav-h);
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .sticky-nav::-webkit-scrollbar { display: none; }
+  .sticky-nav ul {
+    display: flex;
+    list-style: none;
+    padding: 0 16px;
+    gap: 4px;
+    white-space: nowrap;
+  }
+  .sticky-nav a {
+    color: var(--gray-500);
+    text-decoration: none;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 6px 10px;
+    transition: color 0.15s, background 0.15s;
+    border-radius: 2px;
+  }
+  .sticky-nav a:hover, .sticky-nav a.active {
+    color: var(--white);
+    background: rgba(255,255,255,0.08);
+  }
+  .sticky-nav a.active { color: var(--golden); }
+
+  /* === HEADER === */
+  .header {
+    background: var(--ink);
+    color: var(--white);
+    padding: 56px 0 60px;
+    text-align: center;
+  }
+  .header-brand {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gray-500);
+    margin-bottom: 20px;
+  }
+  .header h1 {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 14px;
+    letter-spacing: -1px;
+  }
+  .header .subtitle {
+    font-size: 16px;
+    color: #aaa;
+    max-width: 580px;
+    margin: 0 auto 36px;
+    font-style: italic;
+    line-height: 1.6;
+  }
+  .header-stats {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+    padding: 0 24px;
+  }
+  .stat-pill {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    padding: 10px 20px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--gray-300);
+    line-height: 1.4;
+    text-align: center;
+  }
+  .stat-pill strong {
+    display: block;
+    font-size: 20px;
+    color: var(--golden);
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+  .color-bar {
+    display: flex;
+    height: 5px;
+  }
+  .color-bar span { flex: 1; }
+  .color-bar .cb-coral { background: var(--coral); }
+  .color-bar .cb-golden { background: var(--golden); }
+  .color-bar .cb-sage { background: var(--sage); }
+  .color-bar .cb-sky { background: var(--sky); }
+
+  /* === LAYOUT === */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 24px;
+  }
+
+  /* === QUICK REFERENCE === */
+  .quick-ref {
+    margin: 44px auto;
+    max-width: 900px;
+    padding: 0 24px;
+  }
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gray-500);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--gray-300);
+  }
+  .quick-ref-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+  }
+  .qr-card {
+    background: var(--white);
+    border: var(--border-primary);
+    padding: 16px 18px;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .qr-card:hover { transform: translateY(-3px); box-shadow: 4px 4px 0 var(--ink); }
+  .qr-card .qr-problem {
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .qr-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .qr-card .qr-what { font-size: 12px; color: var(--gray-600); margin-bottom: 4px; }
+  .qr-card .qr-impact { font-size: 12px; font-family: var(--font-mono); color: var(--coral); font-weight: 500; }
+
+  /* === SECTIONS === */
+  .section {
+    margin: 56px auto;
+    max-width: 900px;
+    padding: 0 24px;
+    scroll-margin-top: calc(var(--nav-h) + 16px);
+  }
+  .section-number {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gray-500);
+    margin-bottom: 4px;
+  }
+  .section h2 {
+    font-size: 30px;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 8px;
+    color: var(--ink);
+  }
+  .source-link {
+    font-size: 12px;
+    font-family: var(--font-mono);
+    color: var(--sky);
+    text-decoration: none;
+    display: inline-block;
+    margin-bottom: 20px;
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.15s;
+  }
+  .source-link:hover { border-bottom-color: var(--sky); }
+  .section p { margin-bottom: 16px; line-height: 1.65; }
+
+  /* === CARDS === */
+  .card {
+    background: var(--white);
+    border: var(--border-primary);
+    padding: 20px 24px;
+    margin: 20px 0;
+  }
+  .card h3 { font-size: 16px; font-weight: 700; margin-bottom: 10px; }
+
+  /* === CALLOUTS === */
+  .callout {
+    padding: 16px 20px;
+    margin: 20px 0;
+    border-left: 4px solid;
+    font-size: 14px;
+  }
+  .callout-coral { background: var(--coral-light); border-color: var(--coral); }
+  .callout-golden { background: var(--golden-light); border-color: var(--golden); }
+  .callout-sage { background: var(--sage-light); border-color: var(--sage); }
+  .callout-sky { background: var(--sky-light); border-color: var(--sky); }
+  .callout-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .callout-coral .callout-label { color: var(--coral); }
+  .callout-golden .callout-label { color: #b8922e; }
+  .callout-sage .callout-label { color: #548a45; }
+  .callout-sky .callout-label { color: var(--sky); }
+
+  /* === CHART CONTAINERS === */
+  .chart-container {
+    background: var(--white);
+    border: var(--border-primary);
+    padding: 24px;
+    margin: 24px 0;
+  }
+  .chart-title {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gray-500);
+    margin-bottom: 6px;
+  }
+  .chart-subtitle {
+    font-size: 13px;
+    color: var(--gray-600);
+    margin-bottom: 20px;
+    line-height: 1.4;
+  }
+  .chart-wrapper {
+    position: relative;
+    height: 280px;
+  }
+  .chart-controls {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: var(--border-secondary);
+  }
+  .chart-btn {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 4px 10px;
+    border: 1px solid var(--gray-300);
+    background: var(--white);
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.5px;
+  }
+  .chart-btn:hover { border-color: var(--ink); background: var(--gray-100); }
+  .chart-btn.active { background: var(--ink); color: var(--white); border-color: var(--ink); }
+
+  /* === TOKEN CALCULATOR === */
+  .token-calc {
+    background: var(--white);
+    border: var(--border-primary);
+    padding: 24px;
+    margin: 24px 0;
+  }
+  .token-calc h3 {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 14px;
+  }
+  .token-calc textarea {
+    width: 100%;
+    min-height: 100px;
+    font-family: var(--font-primary);
+    font-size: 14px;
+    padding: 12px;
+    border: var(--border-secondary);
+    resize: vertical;
+    background: var(--gray-100);
+    outline: none;
+    line-height: 1.5;
+    transition: border-color 0.15s;
+  }
+  .token-calc textarea:focus { border-color: var(--ink); }
+  .token-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+  }
+  .token-stat {
+    background: var(--gray-100);
+    padding: 12px;
+    text-align: center;
+  }
+  .token-stat .ts-value {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .token-stat .ts-label {
+    font-size: 11px;
+    color: var(--gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-family: var(--font-mono);
+  }
+  .token-context-bar {
+    margin-top: 16px;
+    height: 20px;
+    background: var(--gray-300);
+    position: relative;
+    overflow: hidden;
+  }
+  .token-context-fill {
+    height: 100%;
+    background: var(--sage);
+    transition: width 0.3s;
+    position: relative;
+  }
+  .token-context-fill.warning { background: var(--golden); }
+  .token-context-fill.danger { background: var(--coral); }
+  .token-bar-label {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--gray-500);
+  }
+
+  /* === MECHANISM CARDS === */
+  .mechanism-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 12px;
+    margin: 20px 0;
+  }
+  .mechanism {
+    background: var(--white);
+    border: var(--border-primary);
+    padding: 20px;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .mechanism:hover { transform: translateY(-3px); }
+  .mechanism .m-number { font-family: var(--font-mono); font-size: 11px; color: var(--gray-500); margin-bottom: 4px; }
+  .mechanism h4 { font-size: 15px; font-weight: 700; margin-bottom: 8px; }
+  .mechanism p { font-size: 13px; color: var(--gray-600); line-height: 1.5; }
+
+  /* === POSITION SIMULATOR === */
+  .position-sim {
+    background: var(--white);
+    border: var(--border-primary);
+    padding: 24px;
+    margin: 24px 0;
+  }
+  .position-sim h3 { font-size: 16px; font-weight: 700; margin-bottom: 16px; }
+  .context-strip {
+    display: flex;
+    gap: 4px;
+    margin: 12px 0;
+    flex-wrap: wrap;
+  }
+  .context-chunk {
+    height: 28px;
+    flex: 1;
+    min-width: 24px;
+    background: var(--gray-300);
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-family: var(--font-mono);
+    color: transparent;
+    border: 2px solid transparent;
+  }
+  .context-chunk:hover { border-color: var(--ink); }
+  .context-chunk.active {
+    background: var(--coral);
+    color: var(--white);
+    font-weight: 700;
+  }
+  .context-chunk.high-attention { background: var(--sky-light); border-color: var(--sky); }
+  .context-chunk.low-attention { background: var(--gray-100); }
+  .sim-result {
+    margin-top: 16px;
+    padding: 16px;
+    background: var(--gray-100);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 60px;
+    transition: all 0.2s;
+  }
+  .sim-label { display: flex; justify-content: space-between; font-size: 12px; font-family: var(--font-mono); color: var(--gray-500); margin-bottom: 6px; }
+
+  /* === HALLUCINATION TYPES === */
+  .type-card {
+    background: var(--white);
+    border: var(--border-primary);
+    padding: 0;
+    margin: 10px 0;
+    overflow: hidden;
+  }
+  .type-header {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    padding: 16px 20px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .type-header:hover { background: var(--gray-100); }
+  .type-badge {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 4px 10px;
+    border: 2px solid;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .type-header h4 { font-size: 15px; font-weight: 700; flex: 1; }
+  .type-toggle {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: var(--gray-500);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .type-toggle.open { transform: rotate(45deg); }
+  .type-body {
+    display: none;
+    padding: 16px 20px;
+    padding-top: 0;
+    border-top: var(--border-secondary);
+  }
+  .type-body.open { display: block; }
+  .type-body p { font-size: 14px; color: var(--gray-600); line-height: 1.6; margin-bottom: 10px; }
+  .type-example {
+    background: var(--gray-100);
+    padding: 12px;
+    font-size: 13px;
+    margin-top: 8px;
+    border-left: 3px solid var(--gray-300);
+  }
+  .type-example .ex-label { font-family: var(--font-mono); font-size: 10px; color: var(--gray-500); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+
+  /* === PLAYBOOK RULES === */
+  .rule {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    background: var(--white);
+    border: var(--border-primary);
+    padding: 18px 20px;
+    margin: 8px 0;
+    cursor: pointer;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .rule:hover { box-shadow: 4px 4px 0 var(--ink); transform: translate(-2px, -2px); }
+  .rule.checked { border-color: var(--sage); background: var(--sage-light); }
+  .rule-number {
+    font-family: var(--font-mono);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gray-300);
+    flex-shrink: 0;
+    line-height: 1;
+    min-width: 32px;
+    transition: color 0.15s;
+  }
+  .rule.checked .rule-number { color: var(--sage); }
+  .rule h4 { font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+  .rule p { font-size: 13px; color: var(--gray-600); line-height: 1.5; margin: 0; }
+  .rule-check {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--gray-300);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    transition: all 0.15s;
+  }
+  .rule.checked .rule-check { background: var(--sage); border-color: var(--sage); color: var(--white); }
+  .playbook-progress { margin: 16px 0; }
+  .progress-bar-wrap { height: 8px; background: var(--gray-300); margin-top: 6px; }
+  .progress-bar-fill { height: 100%; background: var(--sage); transition: width 0.3s; }
+  .progress-label { font-size: 12px; font-family: var(--font-mono); color: var(--gray-500); display: flex; justify-content: space-between; }
+
+  /* === TRUST TABLE === */
+  .trust-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 13px;
+  }
+  .trust-table thead th {
+    background: var(--ink);
+    color: var(--white);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 700;
+  }
+  .trust-table tbody td { padding: 11px 12px; border-bottom: var(--border-secondary); vertical-align: top; }
+  .trust-table tbody tr:nth-child(even) { background: var(--gray-100); }
+  .trust-table tbody tr:hover { background: var(--golden-light); cursor: default; }
+  .trust-table tbody tr { transition: background 0.1s; }
+  .risk-badge {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    letter-spacing: 0.5px;
+    display: inline-block;
+    white-space: nowrap;
+  }
+  .risk-low { background: var(--sage-light); color: #3d6b32; border: 1px solid var(--sage); }
+  .risk-medium { background: var(--golden-light); color: #8a6d1b; border: 1px solid var(--golden); }
+  .risk-high { background: var(--coral-light); color: #a3402f; border: 1px solid var(--coral); }
+  .trust-filter { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .filter-btn {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 5px 12px;
+    border: 1px solid var(--gray-300);
+    background: var(--white);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .filter-btn.active { background: var(--ink); color: var(--white); border-color: var(--ink); }
+
+  /* === BASELINE CHECKLIST === */
+  .baseline-items {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+  }
+  .baseline-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    background: var(--white);
+    border: var(--border-secondary);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .baseline-item:hover { border-color: var(--ink); }
+  .baseline-item.met { border-color: var(--sage); background: var(--sage-light); }
+  .baseline-item.unmet { border-color: var(--coral); background: var(--coral-light); }
+  .baseline-num {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--gray-300);
+    flex-shrink: 0;
+    transition: color 0.15s;
+  }
+  .baseline-item.met .baseline-num { color: var(--sage); }
+  .baseline-item.unmet .baseline-num { color: var(--coral); }
+  .trust-score {
+    text-align: center;
+    padding: 24px;
+    background: var(--white);
+    border: var(--border-primary);
+    margin-top: 20px;
+  }
+  .trust-score-value {
+    font-family: var(--font-mono);
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .trust-score-label { font-size: 13px; color: var(--gray-600); }
+  .trust-score-desc { font-size: 14px; margin-top: 12px; line-height: 1.5; }
+
+  /* === BLOCKQUOTE === */
+  blockquote {
+    border-left: 3px solid var(--ink);
+    padding: 12px 20px;
+    margin: 20px 0;
+    background: var(--gray-100);
+    font-style: italic;
+    color: var(--gray-600);
+    font-size: 15px;
+  }
+  blockquote strong { color: var(--ink); }
+
+  /* === DIVIDER === */
+  .divider { height: 1px; background: var(--gray-300); margin: 0; }
+
+  /* === FOOTER === */
+  .footer {
+    text-align: center;
+    padding: 40px 24px;
+    margin-top: 48px;
+    border-top: var(--border-secondary);
+  }
+  .footer-brand {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gray-500);
+    margin-bottom: 8px;
+  }
+  .footer .sources { max-width: 700px; margin: 24px auto 0; text-align: left; }
+  .footer .sources h3 { font-size: 12px; font-family: var(--font-mono); text-transform: uppercase; letter-spacing: 1.5px; color: var(--gray-600); margin-bottom: 12px; }
+  .footer .sources ol { padding-left: 20px; font-size: 13px; color: var(--gray-600); line-height: 1.8; }
+  .footer .sources a { color: var(--sky); text-decoration: none; border-bottom: 1px solid transparent; }
+  .footer .sources a:hover { border-bottom-color: var(--sky); }
+
+  /* === RESPONSIVE === */
+  @media (max-width: 640px) {
+    .header h1 { font-size: 30px; }
+    .section h2 { font-size: 22px; }
+    .quick-ref-grid { grid-template-columns: repeat(2, 1fr); }
+    .mechanism-grid { grid-template-columns: 1fr; }
+    .type-header { flex-wrap: wrap; }
+    .rule { flex-direction: column; gap: 8px; }
+    .header-stats { gap: 12px; }
+    .stat-pill strong { font-size: 16px; }
+    .trust-table { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- STICKY NAV -->
+<nav class="sticky-nav">
+  <ul>
+    <li><a href="#s1" data-section="s1">§1 Context Window</a></li>
+    <li><a href="#s2" data-section="s2">§2 Context Rot</a></li>
+    <li><a href="#s3" data-section="s3">§3 Lost in the Middle</a></li>
+    <li><a href="#s4" data-section="s4">§4 Hallucination Types</a></li>
+    <li><a href="#s5" data-section="s5">§5 Why It's Inevitable</a></li>
+    <li><a href="#s6" data-section="s6">§6 Playbook</a></li>
+    <li><a href="#s7" data-section="s7">§7 Trust Calibration</a></li>
+    <li><a href="#s8" data-section="s8">§8 Honest Baseline</a></li>
+  </ul>
+</nav>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-brand">Automata Learning Lab · Context Engineering Hands-On</div>
+  <h1>The Context Window<br>Field Guide</h1>
+  <p class="subtitle">What every LLM user needs to know about how models actually read — research-backed, with interactive visualizations.</p>
+  <div class="header-stats">
+    <div class="stat-pill">
+      <strong>18</strong>
+      models tested<br>by Chroma Research
+    </div>
+    <div class="stat-pill">
+      <strong>30%+</strong>
+      performance drop<br>middle vs. start
+    </div>
+    <div class="stat-pill">
+      <strong>50K</strong>
+      tokens where rot<br>starts (1M window)
+    </div>
+    <div class="stat-pill">
+      <strong>60–80%</strong>
+      hallucination reduction<br>with RAG grounding
+    </div>
+    <div class="stat-pill">
+      <strong>58pp</strong>
+      drop for Claude 3.5<br>at 32K tokens
+    </div>
+  </div>
+</header>
+<div class="color-bar">
+  <span class="cb-coral"></span>
+  <span class="cb-golden"></span>
+  <span class="cb-sage"></span>
+  <span class="cb-sky"></span>
+</div>
+
+<!-- QUICK REFERENCE -->
+<div class="quick-ref">
+  <div class="section-label">Quick Reference — Five Core Failure Modes</div>
+  <div class="quick-ref-grid">
+    <a href="#s2" class="qr-card">
+      <div class="qr-problem"><span class="qr-dot" style="background:var(--coral)"></span> Context Rot</div>
+      <div class="qr-what">Performance degrades as input grows longer</div>
+      <div class="qr-impact">Longer chats → worse answers</div>
+    </a>
+    <a href="#s3" class="qr-card">
+      <div class="qr-problem"><span class="qr-dot" style="background:var(--golden)"></span> Lost in the Middle</div>
+      <div class="qr-what">Model ignores information in the center</div>
+      <div class="qr-impact">Key content buried mid-doc gets missed</div>
+    </a>
+    <a href="#s2" class="qr-card">
+      <div class="qr-problem"><span class="qr-dot" style="background:var(--sky)"></span> Information Overload</div>
+      <div class="qr-what">Irrelevant content confuses the model</div>
+      <div class="qr-impact">Noise = hallucinations</div>
+    </a>
+    <a href="#s1" class="qr-card">
+      <div class="qr-problem"><span class="qr-dot" style="background:var(--sage)"></span> Truncation Blindspot</div>
+      <div class="qr-what">Oldest tokens get silently dropped</div>
+      <div class="qr-impact">Early instructions forgotten</div>
+    </a>
+    <a href="#s4" class="qr-card">
+      <div class="qr-problem"><span class="qr-dot" style="background:var(--coral)"></span> Sycophancy Loop</div>
+      <div class="qr-what">Model trained to sound confident, not accurate</div>
+      <div class="qr-impact">Hallucinations delivered with certainty</div>
+    </a>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- §1 CONTEXT WINDOW -->
+<div class="section" id="s1">
+  <div class="section-number">§ 01</div>
+  <h2>What Is a Context Window?</h2>
+  <a class="source-link" href="https://softwareguru.substack.com/p/lost-in-context-how-to-keep-llms" target="_blank">Source: Softwareguru, July 2025 ↗</a>
+
+  <p>A context window is the maximum amount of context — measured in <strong>tokens</strong> — an LLM can process and remember at any given time. It's the model's <strong>working memory</strong>: everything in it at once includes your system prompt, conversation history, uploaded documents, tool outputs, and the model's own prior replies.</p>
+
+  <div class="callout callout-sky">
+    <div class="callout-label">Token Math</div>
+    Roughly <strong>75 words = 100 tokens</strong>. A dense research paper is ~10,000–30,000 tokens. A long working session can easily cross 50,000–100,000 tokens. Modern models: Claude at 200K, Gemini at 1M.
+  </div>
+
+  <!-- TOKEN CALCULATOR -->
+  <div class="token-calc">
+    <h3>Interactive Token Calculator</h3>
+    <textarea id="tokenInput" placeholder="Paste your text here to estimate token count..."></textarea>
+    <div class="token-stats">
+      <div class="token-stat">
+        <div class="ts-value" id="tokenCount">0</div>
+        <div class="ts-label">Tokens</div>
+      </div>
+      <div class="token-stat">
+        <div class="ts-value" id="wordCount">0</div>
+        <div class="ts-label">Words</div>
+      </div>
+      <div class="token-stat">
+        <div class="ts-value" id="charCount">0</div>
+        <div class="ts-label">Chars</div>
+      </div>
+      <div class="token-stat">
+        <div class="ts-value" id="pagesEst">0</div>
+        <div class="ts-label">~Pages</div>
+      </div>
+    </div>
+    <div style="margin-top: 16px;">
+      <div class="token-bar-label">
+        <span id="barLabel">0 / 200,000 tokens (Claude's context window)</span>
+        <span id="barPct">0%</span>
+      </div>
+      <div class="token-context-bar">
+        <div class="token-context-fill" id="tokenFill" style="width: 0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <blockquote><strong>The core tension:</strong> More context = more information available. But also more noise, more for the model to manage, and more ways for it to fail.</blockquote>
+</div>
+
+<div class="divider"></div>
+
+<!-- §2 CONTEXT ROT -->
+<div class="section" id="s2">
+  <div class="section-number">§ 02</div>
+  <h2>Context Rot — The Core Problem</h2>
+  <a class="source-link" href="https://research.trychroma.com/context-rot" target="_blank">Source: Chroma Research, July 2025 · 18 models · 194,480 LLM calls ↗</a>
+
+  <p>Chroma Research tested <strong>18 state-of-the-art models</strong> — Claude Opus 4, GPT-4.1, Gemini 2.5, Qwen3, and others — on controlled tasks across increasing input lengths. Their finding: <strong>model performance degrades as input length increases</strong>, often in surprising and non-uniform ways, even on tasks as simple as copying text.</p>
+
+  <p>Three mechanisms drive context rot, and they compound each other:</p>
+
+  <div class="mechanism-grid">
+    <div class="mechanism">
+      <div class="m-number">Mechanism 01</div>
+      <h4>Lost-in-the-Middle Effect</h4>
+      <p>Models attend most strongly to tokens at the very beginning and very end, and poorly to everything in between. The U-shaped performance curve.</p>
+    </div>
+    <div class="mechanism">
+      <div class="m-number">Mechanism 02</div>
+      <h4>Attention Dilution</h4>
+      <p>Transformer self-attention tracks every token-to-token relationship. More tokens = exponentially more relationships = diluted attention per token.</p>
+    </div>
+    <div class="mechanism">
+      <div class="m-number">Mechanism 03</div>
+      <h4>Distractor Interference</h4>
+      <p>Semantically similar but irrelevant content causes degradation beyond what context length alone explains. This is the worst kind of noise.</p>
+    </div>
+  </div>
+
+  <!-- ATTENTION DILUTION CHART -->
+  <div class="chart-container">
+    <div class="chart-title">Attention Dilution — Pairwise Relationships</div>
+    <div class="chart-subtitle">As context grows, attention must track exponentially more token-to-token relationships. Per-token attention weight shrinks toward zero.</div>
+    <div class="chart-wrapper">
+      <canvas id="attentionChart"></canvas>
+    </div>
+  </div>
+
+  <!-- PERFORMANCE DROP CHART -->
+  <div class="chart-container">
+    <div class="chart-title">Performance Drop at 32K Tokens (Adobe Study, Feb 2025)</div>
+    <div class="chart-subtitle">Single-hop reasoning accuracy on short context vs. 32K-token context. Models that score near 100% on short prompts degrade dramatically.</div>
+    <div class="chart-wrapper">
+      <canvas id="dropChart"></canvas>
+    </div>
+    <div class="chart-controls">
+      <span style="font-family: var(--font-mono); font-size: 11px; color: var(--gray-500); align-self: center;">Hover bars for details</span>
+    </div>
+  </div>
+
+  <div class="callout callout-coral">
+    <div class="callout-label">Critical Finding</div>
+    A model with a <strong>1M token context window still exhibits context rot at 50K tokens</strong>. The problem starts the moment you add more content than needed — not when you approach the limit.
+  </div>
+
+  <div class="callout callout-golden">
+    <div class="callout-label">Cross-Lab Confirmation</div>
+    Google DeepMind found that <strong>trimming irrelevant content is always beneficial</strong> for model accuracy. Microsoft and Salesforce reported accuracy dropping from <strong>90% to 51%</strong> in multi-turn dialogues as conversations grew longer.
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- §3 LOST IN THE MIDDLE -->
+<div class="section" id="s3">
+  <div class="section-number">§ 03</div>
+  <h2>Lost in the Middle</h2>
+  <a class="source-link" href="https://arxiv.org/abs/2307.03172" target="_blank">Source: Liu et al., Stanford / TACL 2024 ↗</a>
+
+  <p>The landmark "Lost in the Middle" paper showed that performance is highest when relevant information occurs at the <strong>beginning or end</strong> of the input context, and significantly degrades when models must access relevant information <strong>in the middle</strong> — even for models designed for long contexts.</p>
+
+  <div class="callout callout-coral">
+    <div class="callout-label">The Drop</div>
+    LLMs degrade by <strong>more than 30%</strong> when relevant information sits in the middle rather than at the start or end. For GPT-3.5, performance drops from <strong>75.8% (position 0) to 53.8% (position 9 of 20)</strong> — falling below the closed-book baseline.
+  </div>
+
+  <!-- U-CURVE CHART -->
+  <div class="chart-container">
+    <div class="chart-title">U-Shaped Performance Curve — Multi-Document QA (20 Documents)</div>
+    <div class="chart-subtitle">Accuracy (%) by position of relevant document. Positions 0 and 19 perform best; middle positions drop significantly. Dashed line = closed-book baseline for GPT-3.5.</div>
+    <div class="chart-wrapper" style="height: 320px;">
+      <canvas id="uCurveChart"></canvas>
+    </div>
+    <div class="chart-controls">
+      <button class="chart-btn active" data-docs="20" onclick="setDocs(20, this)">20 documents</button>
+      <button class="chart-btn" data-docs="30" onclick="setDocs(30, this)">30 documents</button>
+      <button class="chart-btn" data-docs="10" onclick="setDocs(10, this)">10 documents</button>
+    </div>
+  </div>
+
+  <!-- POSITION SIMULATOR -->
+  <div class="position-sim">
+    <h3>Position Simulator</h3>
+    <p style="font-size:13px; color:var(--gray-600); margin-bottom: 16px;">Click a document position below to see the estimated impact on retrieval accuracy (based on Liu et al. data for 20 documents).</p>
+    <div class="sim-label">
+      <span>Position 0 (Start)</span>
+      <span>Position 19 (End)</span>
+    </div>
+    <div class="context-strip" id="contextStrip"></div>
+    <div class="sim-result" id="simResult">
+      <em style="color: var(--gray-500);">Click any position above to see expected performance...</em>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Needle in a Haystack Test (Kamradt, 2023)</h3>
+    <p style="font-size:13px; color:var(--gray-600);">A single fact was embedded in Paul Graham essays (750 to 96,000 words) at varying positions. Results: <strong>100% retrieval accuracy under 64K tokens</strong>, with performance degrading beyond that — especially when the fact appeared in the middle. When inserted as the first sentence, accuracy held regardless of document length.</p>
+  </div>
+
+  <div class="callout callout-sage">
+    <div class="callout-label">Actionable Rule</div>
+    Put your most important content and instructions <strong>first</strong>, not last and definitely not in the middle. If providing a document, place your <em>question before the document</em>.
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- §4 HALLUCINATION TYPES -->
+<div class="section" id="s4">
+  <div class="section-number">§ 04</div>
+  <h2>Types of Hallucination</h2>
+  <a class="source-link" href="https://arxiv.org/abs/2510.06265" target="_blank">Source: Alansari & Luqman, Comprehensive Survey, arXiv Oct 2025 ↗</a>
+
+  <p>Hallucination is the generation of content that is fluent and syntactically correct, but <strong>factually inaccurate or unsupported</strong> by evidence. Understanding the <em>type</em> helps you know which risks apply to your use case. Click each type to expand.</p>
+
+  <div class="type-card">
+    <div class="type-header" onclick="toggleType(this)">
+      <span class="type-badge" style="border-color:var(--coral); color:var(--coral);">Type 1</span>
+      <h4>Intrinsic Hallucination</h4>
+      <span class="type-toggle">+</span>
+    </div>
+    <div class="type-body">
+      <p>The model generates content that directly <strong>contradicts</strong> information in the source material. This is the most dangerous type — the model actively overwrites ground truth with fabricated content.</p>
+      <div class="type-example">
+        <div class="ex-label">Example</div>
+        Source says: "The study was conducted by Dr. Sarah Chen." Model outputs: "The study was conducted by Dr. James Liu." — the model replaced a correct fact with a fabricated one.
+      </div>
+      <div class="type-example">
+        <div class="ex-label">Detection Strategy</div>
+        Explicitly compare every named entity and key fact in the output against your source material. Contradictions are easy to miss without systematic checking.
+      </div>
+    </div>
+  </div>
+
+  <div class="type-card">
+    <div class="type-header" onclick="toggleType(this)">
+      <span class="type-badge" style="border-color:var(--golden); color:#8a6d1b;">Type 2</span>
+      <h4>Extrinsic Hallucination</h4>
+      <span class="type-toggle">+</span>
+    </div>
+    <div class="type-body">
+      <p>The model <strong>adds information</strong> not in the source, but doesn't contradict it either. This is harder to detect because the additions <em>sound plausible</em> and are consistent with the document's tone.</p>
+      <div class="type-example">
+        <div class="ex-label">Example</div>
+        Source: a research abstract about a protein discovery. Model adds: "The research was funded by the NIH and published in Nature Medicine" — neither claim is in the abstract, both sound credible.
+      </div>
+      <div class="type-example">
+        <div class="ex-label">Detection Strategy</div>
+        After receiving a summary, ask: "List every claim you made. For each, cite the exact sentence from the source that supports it." Unsupported claims surface quickly.
+      </div>
+    </div>
+  </div>
+
+  <div class="type-card">
+    <div class="type-header" onclick="toggleType(this)">
+      <span class="type-badge" style="border-color:var(--sky); color:var(--sky);">Type 3</span>
+      <h4>Factuality Hallucination</h4>
+      <span class="type-toggle">+</span>
+    </div>
+    <div class="type-body">
+      <p>Divergence between the model's output and <strong>known real-world facts</strong>. Most common on niche topics, recent events, and specific statistics that appear rarely or inconsistently in training data.</p>
+      <div class="type-example">
+        <div class="ex-label">Example</div>
+        "The Eiffel Tower was built in 1892" (it was 1889). Or inventing a paper citation: "Smith et al., 2019, showed that..." — the paper doesn't exist, but the citation format is perfect.
+      </div>
+      <div class="type-example">
+        <div class="ex-label">Detection Strategy</div>
+        Treat all specific dates, statistics, citations, and niche facts as unverified until confirmed against a primary source. Never use model-generated citations without checking they exist.
+      </div>
+    </div>
+  </div>
+
+  <div class="type-card">
+    <div class="type-header" onclick="toggleType(this)">
+      <span class="type-badge" style="border-color:var(--sage); color:#3d6b32;">Type 4</span>
+      <h4>Faithfulness Hallucination</h4>
+      <span class="type-toggle">+</span>
+    </div>
+    <div class="type-body">
+      <p>The model <strong>fails to follow your instructions</strong> or stay consistent with context you provided. This is a failure of instruction-following, not factual recall — and it increases significantly as context length grows.</p>
+      <div class="type-example">
+        <div class="ex-label">Example</div>
+        You said "respond only in French." Mid-way through a long conversation, it starts responding in English. Or: "Do not mention competitors" — but after 40 messages, it forgets and names them.
+      </div>
+      <div class="type-example">
+        <div class="ex-label">Detection Strategy</div>
+        For long tasks, repeat critical constraints at the start of each new message. If a session exceeds ~20 exchanges, start fresh and re-state your key instructions.
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-golden">
+    <div class="callout-label">The Sycophancy Amplifier</div>
+    All four types are worsened by RLHF training dynamics. Models are trained to <em>sound confident</em> and to match what users seem to want — leading to <strong>hallucinated responses delivered with certainty</strong>. The model has been optimized to be convincing, not just correct.
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- §5 WHY HALLUCINATION IS INEVITABLE -->
+<div class="section" id="s5">
+  <div class="section-number">§ 05</div>
+  <h2>Why Hallucination Cannot Be Fully Eliminated</h2>
+  <a class="source-link" href="https://arxiv.org/abs/2401.11817" target="_blank">Source: Xu et al., arXiv 2024/2025 — A Formal Proof ↗</a>
+
+  <p>Xu et al. formally proved using learning theory that LLMs <strong>cannot learn all computable functions</strong> and will therefore inevitably hallucinate if used as general problem solvers. This is not an engineering flaw that better training will eventually fix — it is a <strong>mathematical property</strong> of the learning framework.</p>
+
+  <div class="callout callout-coral">
+    <div class="callout-label">Key Takeaway</div>
+    Hallucination cannot be <em>eliminated</em>. It can only be <strong>managed and reduced</strong>. The goal of any trust framework is to minimize probability and severity — not to achieve certainty. Build for graceful degradation, not for perfect reliability.
+  </div>
+
+  <div class="callout callout-sky">
+    <div class="callout-label">OpenAI's Framing (December 2025)</div>
+    Standard training and evaluation reward guessing over acknowledging uncertainty. Models are scored on accuracy, so guessing has positive expected value while saying "I don't know" scores zero. This creates <strong>systematic overconfidence baked into the training process itself</strong> — independent of model capability.
+  </div>
+
+  <div class="card">
+    <h3>The Asymmetry You Need to Understand</h3>
+    <ul style="padding-left: 20px; color: var(--gray-600); line-height: 2.0; font-size: 14px;">
+      <li>A confident answer that's wrong <strong>looks identical to a confident answer that's right</strong></li>
+      <li>Models are penalized for saying "I don't know" during training — so they rarely do</li>
+      <li>More capable models may produce <em>more convincing</em> hallucinations, not fewer</li>
+      <li>The solution is always verification systems, not model trust</li>
+    </ul>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- §6 PLAYBOOK -->
+<div class="section" id="s6">
+  <div class="section-number">§ 06</div>
+  <h2>The Context Management Playbook</h2>
+  <p style="margin-bottom: 8px;">A practical framework grounded in the research above. Click each rule to mark it as a habit. Track your progress.</p>
+
+  <div class="playbook-progress">
+    <div class="progress-label">
+      <span>Rules adopted</span>
+      <span id="ruleProgress">0 / 7</span>
+    </div>
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="ruleProgressBar" style="width: 0%"></div>
+    </div>
+  </div>
+
+  <div class="rule" id="rule1" onclick="toggleRule('rule1')">
+    <div class="rule-number">01</div>
+    <div>
+      <h4>Keep Context Lean and Intentional</h4>
+      <p>The optimal context window in practice is often much smaller than the technical maximum. Before uploading a document, ask: is this <em>entire</em> document needed, or just the relevant sections? Test: read your prompt as if you're the model — remove anything not needed.</p>
+    </div>
+    <div class="rule-check">✓</div>
+  </div>
+  <div class="rule" id="rule2" onclick="toggleRule('rule2')">
+    <div class="rule-number">02</div>
+    <div>
+      <h4>Front-Load What Matters</h4>
+      <p>Place your most critical instructions, constraints, and context at the <strong>beginning</strong> of your prompt. Based on Lost-in-the-Middle findings: place your question <em>before</em> the document, not after. Structure: Question → Key constraints → Supporting material.</p>
+    </div>
+    <div class="rule-check">✓</div>
+  </div>
+  <div class="rule" id="rule3" onclick="toggleRule('rule3')">
+    <div class="rule-number">03</div>
+    <div>
+      <h4>Start a New Chat for a New Task</h4>
+      <p>Long chat histories are noise the model processes on every message. An unrelated old conversation is pure distractor interference. Heuristic: if your chat has crossed <strong>~20 messages or ~30–40 minutes</strong> of active work, open a fresh session.</p>
+    </div>
+    <div class="rule-check">✓</div>
+  </div>
+  <div class="rule" id="rule4" onclick="toggleRule('rule4')">
+    <div class="rule-number">04</div>
+    <div>
+      <h4>Ground the Model in Source Material</h4>
+      <p>Hallucination risk drops when the model does extraction from provided text rather than relying on parametric memory. RAG systems can <strong>reduce hallucination rates by 60–80%</strong> by grounding responses in verified documents. Paste the source; then ask.</p>
+    </div>
+    <div class="rule-check">✓</div>
+  </div>
+  <div class="rule" id="rule5" onclick="toggleRule('rule5')">
+    <div class="rule-number">05</div>
+    <div>
+      <h4>Watch for Extrinsic Additions</h4>
+      <p>The most common failure when working from documents is not <em>contradicting</em> the source — it's <em>adding to it</em> (Type 2 hallucination). Always ask: "Is every claim in this response actually supported by what I provided?"</p>
+    </div>
+    <div class="rule-check">✓</div>
+  </div>
+  <div class="rule" id="rule6" onclick="toggleRule('rule6')">
+    <div class="rule-number">06</div>
+    <div>
+      <h4>Use Structure to Reduce Ambiguity</h4>
+      <p>Chain-of-thought prompting, asking the model to cite where each claim came from, and requesting it flag uncertainty all <strong>measurably improve output reliability</strong> in research on prompt sensitivity.</p>
+    </div>
+    <div class="rule-check">✓</div>
+  </div>
+  <div class="rule" id="rule7" onclick="toggleRule('rule7')">
+    <div class="rule-number">07</div>
+    <div>
+      <h4>Push Back on Confident Answers</h4>
+      <p>After a confident answer, ask: "What would be a reason this answer could be wrong?" or "What assumptions did you make?" A model that hallucinates confidently will often <strong>reveal uncertainty under gentle challenge</strong>.</p>
+    </div>
+    <div class="rule-check">✓</div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- §7 TRUST CALIBRATION -->
+<div class="section" id="s7">
+  <div class="section-number">§ 07</div>
+  <h2>Trust Calibration by Task Type</h2>
+  <p style="margin-bottom: 16px;">Not all LLM tasks carry the same hallucination risk. Filter by risk level to focus on what matters for your context.</p>
+
+  <div class="trust-filter">
+    <button class="filter-btn active" onclick="filterTrust('all', this)">All Tasks</button>
+    <button class="filter-btn" onclick="filterTrust('low', this)">Low Risk</button>
+    <button class="filter-btn" onclick="filterTrust('medium', this)">Medium Risk</button>
+    <button class="filter-btn" onclick="filterTrust('high', this)">High Risk</button>
+  </div>
+
+  <div style="overflow-x: auto;">
+    <table class="trust-table" id="trustTable">
+      <thead>
+        <tr>
+          <th>Task Type</th>
+          <th>Risk</th>
+          <th>Why</th>
+          <th>Trust Strategy</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-risk="low">
+          <td><strong>Summarizing a provided document</strong></td>
+          <td><span class="risk-badge risk-low">Low</span></td>
+          <td>Grounded in source, extractive</td>
+          <td>Check for extrinsic additions</td>
+        </tr>
+        <tr data-risk="low">
+          <td><strong>Q&A from a provided document</strong></td>
+          <td><span class="risk-badge risk-low">Low</span></td>
+          <td>Grounded, verifiable</td>
+          <td>Spot-check key claims against source</td>
+        </tr>
+        <tr data-risk="medium">
+          <td><strong>Research synthesis across sources</strong></td>
+          <td><span class="risk-badge risk-medium">Medium</span></td>
+          <td>Multiple sources = conflict risk</td>
+          <td>Ask model to cite which source supports each claim</td>
+        </tr>
+        <tr data-risk="high">
+          <td><strong>Generating from memory (no source)</strong></td>
+          <td><span class="risk-badge risk-high">High</span></td>
+          <td>Purely parametric recall</td>
+          <td>Treat as starting point; verify independently</td>
+        </tr>
+        <tr data-risk="high">
+          <td><strong>Specific facts: dates, citations, stats</strong></td>
+          <td><span class="risk-badge risk-high">High</span></td>
+          <td>Sparse training data = high fabrication rate</td>
+          <td>Always verify against primary sources</td>
+        </tr>
+        <tr data-risk="medium">
+          <td><strong>Long conversations (50+ messages)</strong></td>
+          <td><span class="risk-badge risk-medium">Med–High</span></td>
+          <td>Context rot degrades instruction-following</td>
+          <td>Refresh context or start new chat</td>
+        </tr>
+        <tr data-risk="low">
+          <td><strong>Creative / brainstorming tasks</strong></td>
+          <td><span class="risk-badge risk-low">Low–Med</span></td>
+          <td>Factual accuracy less critical</td>
+          <td>Define scope of what needs to be factual</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- §8 HONEST BASELINE -->
+<div class="section" id="s8">
+  <div class="section-number">§ 08</div>
+  <h2>The Honest Baseline</h2>
+  <p>When someone asks "can I trust this output?" — the research suggests a more precise question: <strong>"Is this model operating under conditions where its failure modes are minimized?"</strong></p>
+
+  <p style="margin-top: 16px; font-size: 14px; color: var(--gray-600);">Use this self-assessment to evaluate any LLM session. Click each condition to mark it as met or unmet. Your trust score updates in real time.</p>
+
+  <div class="baseline-items">
+    <div class="baseline-item" id="cond1" onclick="toggleCond('cond1')">
+      <div class="baseline-num">01</div>
+      <div>
+        <strong>Context is lean and relevant</strong>
+        <div style="font-size: 13px; color: var(--gray-600); margin-top: 3px;">No unnecessary content — no old chat history, no full documents when only sections are needed</div>
+      </div>
+    </div>
+    <div class="baseline-item" id="cond2" onclick="toggleCond('cond2')">
+      <div class="baseline-num">02</div>
+      <div>
+        <strong>Key information and instructions are near the beginning</strong>
+        <div style="font-size: 13px; color: var(--gray-600); margin-top: 3px;">Task description, constraints, and critical context front-loaded, not buried in the middle</div>
+      </div>
+    </div>
+    <div class="baseline-item" id="cond3" onclick="toggleCond('cond3')">
+      <div class="baseline-num">03</div>
+      <div>
+        <strong>Model is working from provided sources, not memory alone</strong>
+        <div style="font-size: 13px; color: var(--gray-600); margin-top: 3px;">Documents, transcripts, data — pasted in, not recalled from training</div>
+      </div>
+    </div>
+    <div class="baseline-item" id="cond4" onclick="toggleCond('cond4')">
+      <div class="baseline-num">04</div>
+      <div>
+        <strong>Task doesn't require tracking many competing facts across a long context</strong>
+        <div style="font-size: 13px; color: var(--gray-600); margin-top: 3px;">Not a 50-page synthesis with dozens of conflicting data points in a single prompt</div>
+      </div>
+    </div>
+    <div class="baseline-item" id="cond5" onclick="toggleCond('cond5')">
+      <div class="baseline-num">05</div>
+      <div>
+        <strong>Output is being verified, not blindly accepted</strong>
+        <div style="font-size: 13px; color: var(--gray-600); margin-top: 3px;">Key claims will be checked against sources; citations will be verified to exist</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="trust-score">
+    <div class="trust-score-value" id="trustScoreVal" style="color: var(--gray-300);">0/5</div>
+    <div class="trust-score-label">conditions met</div>
+    <div class="trust-score-desc" id="trustScoreDesc" style="color: var(--gray-500);">Mark conditions above to assess this session's reliability.</div>
+  </div>
+
+  <blockquote style="margin-top: 24px;">When those conditions are met, LLMs are substantially more reliable tools. When they are not, even the best models degrade in measurable, documented ways.</blockquote>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="color-bar" style="margin-bottom: 32px;">
+    <span class="cb-coral"></span>
+    <span class="cb-golden"></span>
+    <span class="cb-sage"></span>
+    <span class="cb-sky"></span>
+  </div>
+
+  <div class="sources">
+    <h3>Sources</h3>
+    <ol>
+      <li><strong>Lost in the Middle: How Language Models Use Long Contexts</strong> — Liu et al., Stanford (TACL 2024) — <a href="https://arxiv.org/abs/2307.03172" target="_blank">arxiv.org/abs/2307.03172</a></li>
+      <li><strong>Context Rot: How Increasing Input Tokens Impacts LLM Performance</strong> — Hong, Troynikov & Huber, Chroma Research (July 2025) — <a href="https://research.trychroma.com/context-rot" target="_blank">research.trychroma.com</a></li>
+      <li><strong>Large Language Models Hallucination: A Comprehensive Survey</strong> — Alansari & Luqman (arXiv Oct 2025) — <a href="https://arxiv.org/abs/2510.06265" target="_blank">arxiv.org/abs/2510.06265</a></li>
+      <li><strong>A Survey on Hallucination in Large Language Models</strong> — Huang et al. (ACM TOIS 2024) — <a href="https://arxiv.org/abs/2311.05232" target="_blank">arxiv.org/abs/2311.05232</a></li>
+      <li><strong>Hallucination is Inevitable: An Innate Limitation of Large Language Models</strong> — Xu, Jain & Kankanhalli (arXiv 2024) — <a href="https://arxiv.org/abs/2401.11817" target="_blank">arxiv.org/abs/2401.11817</a></li>
+      <li><strong>Why Language Models Hallucinate</strong> — Kalai, Nachum et al. / OpenAI (December 2025) — <a href="https://openai.com/index/why-language-models-hallucinate/" target="_blank">openai.com</a></li>
+      <li><strong>Hallucination Attribution to Prompting Strategies or Model Behavior</strong> — Anh-Hoang et al. (Frontiers in AI, 2025) — <a href="https://www.frontiersin.org/journals/artificial-intelligence/articles/10.3389/frai.2025.1622292/full" target="_blank">frontiersin.org</a></li>
+      <li><strong>Lost in Context: How to Keep LLMs Focused</strong> — Softwareguru (July 2025) — <a href="https://softwareguru.substack.com/p/lost-in-context-how-to-keep-llms" target="_blank">softwareguru.substack.com</a></li>
+    </ol>
+  </div>
+
+  <div class="footer-brand" style="margin-top: 32px;">Automata Learning Lab</div>
+  <div style="font-size: 12px; color: var(--gray-500);">Context Engineering Hands-On — O'Reilly Live Training</div>
+</div>
+
+<script>
+/* === TOKEN CALCULATOR === */
+const tokenInput = document.getElementById('tokenInput');
+const tokenCount = document.getElementById('tokenCount');
+const wordCount   = document.getElementById('wordCount');
+const charCount   = document.getElementById('charCount');
+const pagesEst    = document.getElementById('pagesEst');
+const tokenFill   = document.getElementById('tokenFill');
+const barLabel    = document.getElementById('barLabel');
+const barPct      = document.getElementById('barPct');
+
+function estimateTokens(text) {
+  const words = text.trim().split(/\s+/).filter(w => w.length > 0);
+  return Math.round(words.length * (100 / 75));
+}
+function formatNum(n) {
+  if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+  return n.toString();
+}
+
+tokenInput.addEventListener('input', () => {
+  const text = tokenInput.value;
+  const words = text.trim() === '' ? [] : text.trim().split(/\s+/);
+  const tokens = estimateTokens(text);
+  const chars = text.length;
+  const pages = Math.round(words.length / 250);
+  const maxCtx = 200000;
+  const pct = Math.min((tokens / maxCtx) * 100, 100);
+
+  tokenCount.textContent = formatNum(tokens);
+  wordCount.textContent  = formatNum(words.length);
+  charCount.textContent  = formatNum(chars);
+  pagesEst.textContent   = pages;
+  tokenFill.style.width  = pct + '%';
+  barLabel.textContent   = `${tokens.toLocaleString()} / 200,000 tokens (Claude's context window)`;
+  barPct.textContent     = pct.toFixed(2) + '%';
+
+  tokenFill.className = 'token-context-fill';
+  if (pct > 75) tokenFill.classList.add('danger');
+  else if (pct > 40) tokenFill.classList.add('warning');
+});
+
+/* === ATTENTION DILUTION CHART === */
+const attCtx = document.getElementById('attentionChart').getContext('2d');
+const attChart = new Chart(attCtx, {
+  type: 'bar',
+  data: {
+    labels: ['10K tokens', '100K tokens', '1M tokens'],
+    datasets: [{
+      label: 'Pairwise attention relationships',
+      data: [100, 10000, 1000000],
+      backgroundColor: ['#7CB56B', '#F5C542', '#E86B5A'],
+      borderColor: ['#000', '#000', '#000'],
+      borderWidth: 2,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: {
+          label: (ctx) => {
+            const vals = ['100 million', '10 billion', '1 trillion'];
+            const perToken = ['~0.0001', '~0.00001', '~0.000001'];
+            return [
+              ` Pairwise relationships: ${vals[ctx.dataIndex]}`,
+              ` Avg attention weight per token: ${perToken[ctx.dataIndex]}`
+            ];
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        type: 'logarithmic',
+        title: { display: true, text: 'Pairwise relationships (log scale)', font: { family: 'JetBrains Mono', size: 11 } },
+        ticks: {
+          font: { family: 'JetBrains Mono', size: 10 },
+          callback: (v) => {
+            const map = { 100: '100M', 10000: '10B', 1000000: '1T' };
+            return map[v] || '';
+          }
+        }
+      },
+      x: { ticks: { font: { family: 'JetBrains Mono', size: 11 } } }
+    }
+  }
+});
+
+/* === PERFORMANCE DROP CHART === */
+const dropCtx = document.getElementById('dropChart').getContext('2d');
+const dropChart = new Chart(dropCtx, {
+  type: 'bar',
+  data: {
+    labels: ['GPT-4o', 'Claude 3.5\nSonnet', 'Gemini 2.5\nFlash', 'Llama 4\nScout'],
+    datasets: [
+      {
+        label: 'Short context (baseline)',
+        data: [99, 88, 94, 82],
+        backgroundColor: 'rgba(91,155,213,0.8)',
+        borderColor: '#000',
+        borderWidth: 2,
+      },
+      {
+        label: 'At 32K tokens',
+        data: [70, 30, 48, 22],
+        backgroundColor: 'rgba(232,107,90,0.85)',
+        borderColor: '#000',
+        borderWidth: 2,
+      }
+    ]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: {
+        labels: { font: { family: 'JetBrains Mono', size: 11 }, boxWidth: 12 }
+      },
+      tooltip: {
+        callbacks: {
+          afterBody: (items) => {
+            if (items.length === 2) {
+              const drop = items[0].raw - items[1].raw;
+              return [`Drop: -${drop} percentage points`];
+            }
+            const drops = [29, 58, 46, 60];
+            if (items[0].datasetIndex === 1) return [`Drop from baseline: -${drops[items[0].dataIndex]}pp`];
+            return [];
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        min: 0, max: 100,
+        title: { display: true, text: 'Accuracy (%)', font: { family: 'JetBrains Mono', size: 11 } },
+        ticks: { font: { family: 'JetBrains Mono', size: 11 } }
+      },
+      x: { ticks: { font: { family: 'JetBrains Mono', size: 11 } } }
+    }
+  }
+});
+
+/* === U-CURVE CHART === */
+const uCtx = document.getElementById('uCurveChart').getContext('2d');
+
+const docsData = {
+  10: {
+    labels: ['0', '4', '9'],
+    gpt35:  [76.8, 61.2, 62.4],
+    claude: [62.9, 58.3, 59.7],
+    longchat: [72.1, 58.9, 58.5],
+    baseline: 56.1,
+  },
+  20: {
+    labels: ['0', '4', '9', '14', '19'],
+    gpt35:   [75.8, 57.2, 53.8, 55.4, 63.2],
+    claude:  [59.9, 55.9, 56.8, 57.2, 60.1],
+    longchat: [68.6, 57.4, 55.3, 52.5, 55.0],
+    baseline: 56.1,
+  },
+  30: {
+    labels: ['0', '4', '9', '14', '19', '24', '29'],
+    gpt35:   [73.4, 55.1, 50.5, 50.9, 51.8, 54.9, 63.7],
+    claude:  [59.1, 55.1, 54.8, 55.7, 56.4, 56.2, 59.9],
+    longchat: [66.9, 54.8, 52.5, 52.9, 52.2, 51.3, 55.1],
+    baseline: 56.1,
+  }
+};
+
+let currentDocs = 20;
+let uCurveChart;
+
+function buildUCurve(docsCount) {
+  const d = docsData[docsCount];
+  if (uCurveChart) uCurveChart.destroy();
+  uCurveChart = new Chart(uCtx, {
+    type: 'line',
+    data: {
+      labels: d.labels.map(l => `Position ${l}`),
+      datasets: [
+        {
+          label: 'GPT-3.5-Turbo',
+          data: d.gpt35,
+          borderColor: '#5B9BD5',
+          backgroundColor: 'rgba(91,155,213,0.08)',
+          borderWidth: 2.5,
+          pointRadius: 5,
+          pointBackgroundColor: '#5B9BD5',
+          tension: 0.3,
+          fill: false,
+        },
+        {
+          label: 'Claude-1.3',
+          data: d.claude,
+          borderColor: '#E86B5A',
+          backgroundColor: 'rgba(232,107,90,0.08)',
+          borderWidth: 2.5,
+          pointRadius: 5,
+          pointBackgroundColor: '#E86B5A',
+          tension: 0.3,
+          fill: false,
+        },
+        {
+          label: 'LongChat-13B',
+          data: d.longchat,
+          borderColor: '#7CB56B',
+          backgroundColor: 'rgba(124,181,107,0.08)',
+          borderWidth: 2,
+          pointRadius: 4,
+          pointBackgroundColor: '#7CB56B',
+          tension: 0.3,
+          fill: false,
+          borderDash: [4, 3],
+        },
+        {
+          label: 'Closed-book baseline (GPT-3.5)',
+          data: d.labels.map(() => d.baseline),
+          borderColor: '#F5C542',
+          borderWidth: 1.5,
+          pointRadius: 0,
+          borderDash: [6, 4],
+          fill: false,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: { font: { family: 'JetBrains Mono', size: 11 }, boxWidth: 14 },
+          position: 'bottom',
+        },
+        tooltip: {
+          callbacks: {
+            footer: (items) => {
+              const gptVal = items.find(i => i.dataset.label === 'GPT-3.5-Turbo');
+              if (gptVal && gptVal.raw < d.baseline) {
+                return ['⚠ Below closed-book baseline — context is hurting'];
+              }
+              return [];
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          min: 40, max: 85,
+          title: { display: true, text: 'Accuracy (%)', font: { family: 'JetBrains Mono', size: 11 } },
+          ticks: { font: { family: 'JetBrains Mono', size: 11 } }
+        },
+        x: { ticks: { font: { family: 'JetBrains Mono', size: 11 } } }
+      }
+    }
+  });
+}
+
+function setDocs(n, btn) {
+  document.querySelectorAll('[data-docs]').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentDocs = n;
+  buildUCurve(n);
+}
+
+buildUCurve(20);
+
+/* === POSITION SIMULATOR === */
+const positionData20 = {
+  0:  { acc: 75.8, label: 'Start of context', attention: 'high' },
+  1:  { acc: 72.1, label: 'Near start', attention: 'high' },
+  2:  { acc: 67.3, label: 'Early context', attention: 'medium' },
+  3:  { acc: 62.4, label: 'Early-middle', attention: 'medium' },
+  4:  { acc: 57.2, label: 'Upper-middle', attention: 'low' },
+  5:  { acc: 55.0, label: 'Middle', attention: 'low' },
+  6:  { acc: 54.1, label: 'Middle', attention: 'low' },
+  7:  { acc: 53.9, label: 'Middle — danger zone', attention: 'low' },
+  8:  { acc: 53.8, label: 'Dead middle — lowest accuracy', attention: 'low' },
+  9:  { acc: 53.8, label: 'Dead middle — lowest accuracy', attention: 'low' },
+  10: { acc: 54.1, label: 'Lower-middle', attention: 'low' },
+  11: { acc: 54.5, label: 'Lower-middle', attention: 'low' },
+  12: { acc: 55.0, label: 'Exiting middle', attention: 'medium' },
+  13: { acc: 55.2, label: 'Late-middle', attention: 'medium' },
+  14: { acc: 55.4, label: 'Late context', attention: 'medium' },
+  15: { acc: 57.1, label: 'Approaching end', attention: 'medium' },
+  16: { acc: 58.9, label: 'Near end', attention: 'high' },
+  17: { acc: 60.5, label: 'Near end', attention: 'high' },
+  18: { acc: 61.8, label: 'Near end', attention: 'high' },
+  19: { acc: 63.2, label: 'End of context', attention: 'high' },
+};
+
+const strip = document.getElementById('contextStrip');
+for (let i = 0; i < 20; i++) {
+  const chunk = document.createElement('div');
+  const d = positionData20[i];
+  chunk.className = 'context-chunk ' + (d.attention === 'high' ? 'high-attention' : d.attention === 'low' ? 'low-attention' : '');
+  chunk.textContent = i;
+  chunk.setAttribute('data-pos', i);
+  chunk.addEventListener('click', () => {
+    document.querySelectorAll('.context-chunk').forEach(c => c.classList.remove('active'));
+    chunk.classList.add('active');
+    const pos = positionData20[i];
+    const delta = pos.acc - 75.8;
+    const icon = pos.attention === 'high' ? '🟢' : pos.attention === 'low' ? '🔴' : '🟡';
+    document.getElementById('simResult').innerHTML = `
+      <strong>${icon} Position ${i}: ${pos.label}</strong><br>
+      Expected accuracy: <strong style="color: ${pos.acc < 56.1 ? 'var(--coral)' : 'var(--sage)'};">${pos.acc}%</strong>
+      ${pos.acc < 56.1 ? ' <span style="font-family:var(--font-mono); font-size:11px; color:var(--coral); border: 1px solid var(--coral); padding: 1px 6px;">BELOW CLOSED-BOOK BASELINE</span>' : ''}
+      <br><span style="font-size: 13px; color: var(--gray-600); margin-top: 6px; display: block;">
+        ${delta.toFixed(1) >= 0 ? '+' : ''}${delta.toFixed(1)}pp vs. start position.
+        ${pos.acc < 56.1 ? 'Adding more context is <strong>actively hurting</strong> performance — the model does better with no context at all.' :
+          pos.attention === 'high' ? 'Content here receives strong attention — reliable retrieval zone.' :
+          'Content here is in the attention shadow — likely to be underweighted or missed.'}
+      </span>
+    `;
+  });
+  strip.appendChild(chunk);
+}
+
+/* === HALLUCINATION TYPE TOGGLE === */
+function toggleType(header) {
+  const body = header.nextElementSibling;
+  const toggle = header.querySelector('.type-toggle');
+  body.classList.toggle('open');
+  toggle.classList.toggle('open');
+  toggle.textContent = body.classList.contains('open') ? '+' : '+';
+  toggle.style.transform = body.classList.contains('open') ? 'rotate(45deg)' : '';
+}
+
+/* === PLAYBOOK RULE TOGGLE === */
+let ruleStates = {};
+function toggleRule(id) {
+  ruleStates[id] = !ruleStates[id];
+  const el = document.getElementById(id);
+  el.classList.toggle('checked', ruleStates[id]);
+  updateProgress();
+}
+function updateProgress() {
+  const count = Object.values(ruleStates).filter(Boolean).length;
+  document.getElementById('ruleProgress').textContent = count + ' / 7';
+  document.getElementById('ruleProgressBar').style.width = (count / 7 * 100) + '%';
+}
+
+/* === TRUST TABLE FILTER === */
+function filterTrust(level, btn) {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const rows = document.querySelectorAll('#trustTable tbody tr');
+  rows.forEach(row => {
+    if (level === 'all') {
+      row.style.display = '';
+    } else {
+      row.style.display = row.dataset.risk === level ? '' : 'none';
+    }
+  });
+}
+
+/* === BASELINE TRUST SCORE === */
+let condStates = {};
+function toggleCond(id) {
+  if (condStates[id] === 'met') {
+    condStates[id] = 'unmet';
+  } else if (condStates[id] === 'unmet') {
+    condStates[id] = null;
+  } else {
+    condStates[id] = 'met';
+  }
+  const el = document.getElementById(id);
+  el.classList.remove('met', 'unmet');
+  if (condStates[id]) el.classList.add(condStates[id]);
+  updateTrustScore();
+}
+function updateTrustScore() {
+  const met = Object.values(condStates).filter(v => v === 'met').length;
+  const unmet = Object.values(condStates).filter(v => v === 'unmet').length;
+  const val = document.getElementById('trustScoreVal');
+  const desc = document.getElementById('trustScoreDesc');
+  val.textContent = met + '/5';
+
+  const descs = [
+    [0, '', '#ccc', 'Mark conditions above to assess this session\'s reliability.'],
+    [1, 'Very Low', 'var(--coral)', 'Most failure conditions are present. Output should be treated as a rough draft requiring careful verification.'],
+    [2, 'Low', '#c07a30', 'Significant risk factors remain. Verify all specific facts and watch for instruction drift.'],
+    [3, 'Moderate', '#8a7a10', 'Some good practices in place, but gaps remain. Spot-check outputs before trusting.'],
+    [4, 'Good', '#5a8a45', 'Most failure modes are mitigated. Reasonable reliability — stay alert to extrinsic additions.'],
+    [5, 'High', 'var(--sage)', 'All conditions met. Operating under optimal conditions for LLM reliability. Still verify high-stakes outputs.'],
+  ];
+  const entry = descs[met] || descs[0];
+  val.style.color = entry[2];
+  desc.innerHTML = met > 0 ? `<strong style="color: ${entry[2]};">${entry[1]} reliability.</strong> ${entry[3]}` : entry[3];
+  desc.style.color = 'var(--gray-600)';
+}
+
+/* === STICKY NAV ACTIVE STATE === */
+const sections = document.querySelectorAll('.section[id]');
+const navLinks = document.querySelectorAll('.sticky-nav a[data-section]');
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      navLinks.forEach(a => {
+        a.classList.remove('active');
+        if (a.dataset.section === entry.target.id) a.classList.add('active');
+      });
+    }
+  });
+}, { threshold: 0.3, rootMargin: '-50px 0px -50% 0px' });
+
+sections.forEach(s => observer.observe(s));
+</script>
+</body>
+</html>

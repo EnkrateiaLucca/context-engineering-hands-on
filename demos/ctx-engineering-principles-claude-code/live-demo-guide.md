@@ -1,6 +1,7 @@
 # Live Demo Guide — Context Engineering Principles with Claude Code
 
 ### Session 1: Introduction to Context Engineering | O'Reilly Live Training
+
 **Total demo time:** ~30 minutes across 5 demos
 **Dual purpose:** Instructor live-demo script + student post-session cheatsheet
 
@@ -12,16 +13,16 @@
 
 Complete these steps **before** the session starts:
 
-- [ ] Claude Code installed and working (`claude --version`)
-- [ ] API key configured (`ANTHROPIC_API_KEY` set)
-- [ ] This repository cloned and available locally
-- [ ] Terminal font size set to **18pt+** (audience readability)
-- [ ] Dark terminal theme (reduces eye strain on projector)
-- [ ] Supporting files verified:
+- Claude Code installed and working (`claude --version`)
+- API key configured (`ANTHROPIC_API_KEY` set)
+- This repository cloned and available locally
+- Terminal font size set to **18pt+** (audience readability)
+- Dark terminal theme (reduces eye strain on projector)
+- Supporting files verified:
   - `demos/ctx-engineering-principles-claude-code/long-doc-middle.txt`
   - `demos/ctx-engineering-principles-claude-code/long-doc-top.txt`
   - `assets/attention-paper.pdf`
-- [ ] Quick verification — run this and confirm a response:
+- Quick verification — run this and confirm a response:
 
 ```bash
 claude -p "hello"
@@ -384,7 +385,7 @@ What assumptions did you make in creating that summary? What might you have gott
 
 ---
 
-**Bonus — CLAUDE.md as Persistent Context Engineering**
+**Bonus —** CLAUDE.md **as** Persistent **Context Engineering**
 
 ```
 /clear
@@ -404,26 +405,30 @@ What instructions from CLAUDE.md are currently in your context?
 
 ### Playbook Rule → Claude Code Implementation
 
-| # | Playbook Rule | Claude Code Action | Demo |
-|---|---|---|---|
-| 1 | Keep Context Lean | `Read <specific-file>` — not "read everything" | Demo 1, 5 |
-| 2 | Front-Load What Matters | Question first, then context; key info at top of prompt | Demo 3, 5 |
-| 3 | New Chat for New Task | `/clear` between unrelated tasks | Demo 2, 5 |
-| 4 | Ground in Source Material | `Read <file>` then ask — don't rely on memory | Demo 4, 5 |
-| 5 | Watch for Extrinsic Additions | "Only include claims explicitly stated in the text" | Demo 5 |
-| 6 | Use Structure to Reduce Ambiguity | Request numbered lists, quotes, citations | Demo 5 |
-| 7 | Push Back on Confidence | "What assumptions did you make?" | Demo 4, 5 |
+
+| #   | Playbook Rule                     | Claude Code Action                                      | Demo      |
+| --- | --------------------------------- | ------------------------------------------------------- | --------- |
+| 1   | Keep Context Lean                 | `Read <specific-file>` — not "read everything"          | Demo 1, 5 |
+| 2   | Front-Load What Matters           | Question first, then context; key info at top of prompt | Demo 3, 5 |
+| 3   | New Chat for New Task             | `/clear` between unrelated tasks                        | Demo 2, 5 |
+| 4   | Ground in Source Material         | `Read <file>` then ask — don't rely on memory           | Demo 4, 5 |
+| 5   | Watch for Extrinsic Additions     | "Only include claims explicitly stated in the text"     | Demo 5    |
+| 6   | Use Structure to Reduce Ambiguity | Request numbered lists, quotes, citations               | Demo 5    |
+| 7   | Push Back on Confidence           | "What assumptions did you make?"                        | Demo 4, 5 |
+
 
 ### Key Claude Code Commands for Context Management
 
-| Command | What It Does | When to Use |
-|---|---|---|
-| `/context` | Shows what's currently loaded in the context window | Understand context composition, diagnose bloat |
-| `/cost` | Shows token usage for current session | Monitor context accumulation |
-| `/clear` | Resets conversation context | Between unrelated tasks, when context is polluted |
-| `Read <path>` | Loads a file into context | Grounding the model in source material |
-| `CLAUDE.md` | Auto-loaded instructions at session start | Persistent rules, project conventions, front-loaded context |
-| Sub-agents | Isolated context for sub-tasks | Complex tasks where context isolation prevents cross-contamination |
+
+| Command       | What It Does                                        | When to Use                                                        |
+| ------------- | --------------------------------------------------- | ------------------------------------------------------------------ |
+| `/context`    | Shows what's currently loaded in the context window | Understand context composition, diagnose bloat                     |
+| `/cost`       | Shows token usage for current session               | Monitor context accumulation                                       |
+| `/clear`      | Resets conversation context                         | Between unrelated tasks, when context is polluted                  |
+| `Read <path>` | Loads a file into context                           | Grounding the model in source material                             |
+| `CLAUDE.md`   | Auto-loaded instructions at session start           | Persistent rules, project conventions, front-loaded context        |
+| Sub-agents    | Isolated context for sub-tasks                      | Complex tasks where context isolation prevents cross-contamination |
+
 
 ---
 

@@ -65,6 +65,7 @@ Rules:
   - Wants process/flow → flowchart
   - Wants big picture → concept_explorer
   - Wants a task list → checklist
+  - Wants chronology/history/order of events → timeline
 - If the user asks to be quizzed, reference content from earlier in the conversation
 """
 

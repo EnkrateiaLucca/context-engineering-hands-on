@@ -128,7 +128,6 @@ class Agent:
         final_text = ""
         for round_num in range(MAX_TOOL_ROUNDS):
             response = self._call_api()
-
             # Check if the model wants to use tools
             tool_use_blocks = [
                 block for block in response.content if block.type == "tool_use"

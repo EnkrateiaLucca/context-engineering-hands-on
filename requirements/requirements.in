@@ -1,0 +1,9 @@
+ipykernel
+anthropic
+fastapi
+uvicorn
+prompt-toolkit
+pyyaml
+python-dotenv
+scikit-learn
+ipython

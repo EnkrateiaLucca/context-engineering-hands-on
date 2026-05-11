@@ -1,7 +1,7 @@
 """
 Artifact schema registry — the foundation of structured output routing.
 
-This module defines all 7 artifact types, their JSON schemas, and the
+This module defines all 8 artifact types, their JSON schemas, and the
 registry that tracks which artifacts have been created in a session.
 The registry feeds dynamic context back into the system prompt.
 """
@@ -248,6 +248,44 @@ ARTIFACT_REGISTRY: dict[str, dict] = {
                 },
             },
             "required": ["artifact_type", "title", "questions"],
+        },
+    },
+    "timeline": {
+        "description": "An interactive horizontal timeline showing events in chronological order",
+        "when_to_use": "When the question involves chronological order, history, evolution of ideas, sequences of events, or any 'when did X happen' style query",
+        "schema": {
+            "type": "object",
+            "properties": {
+                "artifact_type": {
+                    "type": "string",
+                    "enum": ["timeline"],
+                },
+                "title": {"type": "string", "description": "Timeline title"},
+                "events": {
+                    "type": "array",
+                    "items": {
+                        "type": "object",
+                        "properties": {
+                            "date": {
+                                "type": "string",
+                                "description": "Date or time label (e.g. '1969', 'March 2020', '500 BC')",
+                            },
+                            "title": {
+                                "type": "string",
+                                "description": "Short event title",
+                            },
+                            "description": {
+                                "type": "string",
+                                "description": "1-2 sentence description of what happened",
+                            },
+                        },
+                        "required": ["date", "title", "description"],
+                    },
+                    "minItems": 3,
+                    "maxItems": 12,
+                },
+            },
+            "required": ["artifact_type", "title", "events"],
         },
     },
     "concept_explorer": {
