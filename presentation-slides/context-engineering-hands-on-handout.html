@@ -1,0 +1,1212 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Context Engineering Hands-On — Handout</title>
+  <!--
+    Handout variant of the live deck. Adds:
+      - Citation footers under every content slide
+      - Methodology footnotes on hero-stat slides
+      - Per-session "References & Sources" slides (S1, S2, S3, S4, S5)
+      - Expanded category lists trimmed from the live deck (e.g. Agent Skills categories)
+    Structural slides match context-engineering-hands-on.html — edit live first, mirror here.
+  -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+
+    body { font-family: 'Inter', -apple-system, sans-serif; }
+
+    .remark-slide-content {
+      background: #f5f0e6;
+      color: #1a1a1a;
+      padding: 1.2em 2em;
+      font-size: 24px;
+      line-height: 1.4;
+    }
+    .remark-slide-content h1 { font-size: 1.6em; font-weight: 800; margin: 0.2em 0 0.4em; }
+    .remark-slide-content h2 { font-size: 1.2em; font-weight: 600; margin: 0.2em 0; color: #444; }
+    .remark-slide-content strong { font-weight: 700; }
+    .remark-slide-content em { color: #555; }
+    .remark-slide-content code, .remark-slide-content tt {
+      font-family: 'JetBrains Mono', monospace;
+      background: #ebe4d4;
+      padding: 0.05em 0.3em;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+    .remark-slide-content blockquote {
+      border-left: 4px solid #d9a441;
+      padding: 0.4em 1em;
+      margin: 0.6em 0;
+      background: #fbf6e8;
+      font-style: italic;
+      color: #2a2a2a;
+    }
+
+    /* Handout-only citation footer */
+    .cite {
+      position: absolute;
+      bottom: 0.6em; left: 2em; right: 2em;
+      font-size: 0.55em;
+      color: #888;
+      border-top: 1px solid #d4cdb8;
+      padding-top: 0.4em;
+    }
+
+    /* TITLE slides */
+    .title {
+      background: #1c1c1c;
+      color: #f5f0e6;
+      padding: 4em 2.5em 2em;
+      border-top: 12px solid;
+      border-image: linear-gradient(to right, #e26b5a 0%, #e26b5a 25%, #e7c548 25%, #e7c548 50%, #7eb069 50%, #7eb069 75%, #66a3d2 75%, #66a3d2 100%) 1;
+    }
+    .title h1 { font-size: 2.3em; line-height: 1.05; margin-bottom: 0.2em; color: #f5f0e6; }
+    .title h2 { color: #c9c4b5; font-weight: 400; font-size: 1.05em; }
+    .title .session-label {
+      color: #e7c548; font-size: 0.75em; letter-spacing: 0.2em;
+      font-weight: 700; margin-bottom: 1em;
+    }
+    .title .footer {
+      position: absolute; bottom: 1.5em; left: 2.5em;
+      color: #e7c548; font-size: 0.6em; font-weight: 600;
+    }
+    .title .footer span { color: #888; font-weight: 400; display: block; margin-top: 0.2em; }
+
+    .eyebrow-label {
+      color: #b85c1f; font-size: 0.6em; letter-spacing: 0.15em;
+      font-weight: 700; text-transform: uppercase; margin-bottom: 0.2em;
+    }
+
+    .stat { text-align: center; padding-top: 1.5em; }
+    .stat .hero { font-size: 5.5em; font-weight: 800; color: #b85c1f; line-height: 1; margin: 0.2em 0; }
+    .stat .hero.green { color: #4d8a3a; }
+    .stat .hero.blue  { color: #4078a8; }
+    .stat .caption { font-size: 0.95em; color: #444; margin-top: 0.4em; }
+
+    .quote-slide { padding-top: 2em; text-align: center; }
+    .quote-slide .quote-body { font-size: 1.4em; font-style: italic; color: #1a1a1a; max-width: 22em; margin: 0.5em auto; line-height: 1.35; }
+    .quote-slide .attrib { font-size: 0.75em; color: #777; margin-top: 1em; font-style: normal; letter-spacing: 0.05em; }
+
+    .two-col { display: flex; gap: 1.5em; margin-top: 0.6em; }
+    .two-col > div { flex: 1; padding: 1em; border: 2px solid #1a1a1a; background: #fff; }
+    .two-col .col-head { font-weight: 700; color: #b85c1f; margin-bottom: 0.4em; letter-spacing: 0.05em; }
+    .two-col .col-head.green { color: #4d8a3a; }
+    .two-col .col-head.blue  { color: #4078a8; }
+
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0.8em; margin-top: 0.5em; }
+    .grid-4 .card { background: #fff; border: 2px solid #1a1a1a; padding: 0.8em; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8em; margin-top: 0.5em; }
+    .grid-3 .card { background: #fff; border: 2px solid #1a1a1a; padding: 0.8em; }
+    .grid-3 .tag, .grid-4 .tag { font-weight: 700; font-size: 0.8em; letter-spacing: 0.08em; }
+    .grid-3 .w-tag, .grid-4 .w-tag { color: #b85c1f; }
+    .grid-3 .s-tag, .grid-4 .s-tag { color: #c89020; }
+    .grid-3 .c-tag, .grid-4 .c-tag { color: #4d8a3a; }
+    .grid-3 .i-tag, .grid-4 .i-tag { color: #4078a8; }
+
+    .takeaways ol { list-style: none; padding-left: 0; margin-top: 0.5em; }
+    .takeaways li { display: flex; align-items: flex-start; margin-bottom: 0.7em; }
+    .takeaways li .num { display: inline-block; width: 1.7em; height: 1.7em; line-height: 1.7em; background: #1a1a1a; color: #f5f0e6; text-align: center; font-weight: 700; margin-right: 0.8em; flex-shrink: 0; }
+    .takeaways li .body strong { display: block; font-size: 1em; }
+    .takeaways li .body span { color: #555; font-size: 0.8em; display: block; margin-top: 0.1em; }
+
+    .stat-attrib { text-align: center; color: #777; font-size: 0.65em; margin-top: 0.8em; font-style: italic; }
+
+    .refs ol { list-style: none; padding-left: 0; }
+    .refs li { margin-bottom: 0.5em; font-size: 0.75em; }
+    .refs li .ref-num { display: inline-block; width: 1.5em; height: 1.5em; line-height: 1.5em; background: #1a1a1a; color: #f5f0e6; text-align: center; font-weight: 700; margin-right: 0.6em; font-size: 0.85em; }
+    .refs li strong { font-size: 1em; }
+  </style>
+</head>
+<body>
+  <textarea id="source">
+
+class: title
+
+.session-label[SESSION 1]
+
+# Introduction to Context Engineering
+
+## From prompts to the systems that control what information reaches the model.
+
+.footer[Hands-On Context Engineering — Handout<span>O'Reilly Live Training · Lucas Soares</span>]
+
+---
+
+# How do you get good outputs from LLMs?
+
+**`f(a, b, c, …) = good output`**
+
+*Good outputs are a function of what?* The model, the prompt, the data in the prompt, the tools available, the prior conversation. That set IS context.
+
+.cite[[1] Anthropic, "Effective Context Engineering for AI Agents" (2025)]
+
+---
+
+# Attention is a relevance map
+
+> "Given token X, which other tokens are most relevant to understanding it?"
+
+Every token competes with every other token for the model's attention budget. **More context = more competing candidates** = diluted attention.
+
+.cite[[1] Vaswani et al., "Attention Is All You Need" (arXiv 1706.03762)]
+
+---
+
+# The wall every developer hits
+
+- **No private knowledge** — your docs, codebase, users
+- **No memory** — yesterday's chat is gone
+- **Confident hallucinations** — fabricates when it doesn't know
+
+Context engineering is how you fix all three.
+
+---
+
+# What is Context Engineering?
+
+**The discipline of designing the architecture that feeds an LLM the right information at the right time.**
+
+> Context engineering = **entropy reduction**. High-entropy human intent → low-entropy representations a machine can process.
+
+.cite[[1] Weaviate, "Context Engineering" — [2] arXiv 2510.26493 "Context Engineering 2.0"]
+
+---
+
+class: center, middle
+
+.eyebrow-label[02 / Context vs Prompt Engineering]
+
+# Prompt engineering is a subset.
+
+Prompt engineering = crafting one message.
+Context engineering = orchestrating the entire information system around the model — retrieval, memory, tools, orchestration, dynamic management.
+
+.cite[[1] Anthropic, "Effective Context Engineering for AI Agents" (2025)]
+
+---
+
+# The context window is RAM
+
+**CPU** = the LLM (the reasoning engine)
+**RAM** = the context window (active working memory)
+**Disk** = vector DBs, files, APIs (external storage)
+
+*Once RAM fills, older information gets evicted. Important details can vanish.*
+
+.cite[[1] Weaviate, "Context Engineering Guide" (2025)]
+
+---
+
+# Bigger windows ≠ better
+
+- **Accuracy drops** as irrelevant info crowds signal
+- **Hallucinations rise** when grounding is buried
+- **Costs climb** linearly; quality climbs sub-linearly
+
+**Performance degrades far before the window fills.**
+
+.cite[[1] Hua et al. (2025), "Context Engineering 2.0" (arXiv 2510.26493)]
+
+---
+
+# Context Rot
+
+Information goes stale — and the agent can't tell. Facts age. Tool outputs grow obsolete.
+
+**Context hygiene = ongoing maintenance, not one-time setup:** refresh, summarize, prune, validate.
+
+.cite[[1] Chroma Research on context rot — [2] Weaviate, "Context Engineering Guide"]
+
+---
+
+class: center, middle
+
+.eyebrow-label[03 / The four operations]
+
+# Write · Select · Compress · Isolate
+
+Every context engineering strategy maps to one of these four levers.
+
+.cite[[1] arXiv 2510.26493 "Context Engineering 2.0" — [2] LangChain, "Context Engineering for Agents"]
+
+---
+
+# W / S / C / I — in one slide
+
+.grid-4[
+.card[
+.tag.w-tag[WRITE]
+**Create context that doesn't exist yet.** Plans, scratchpads, learned memory.
+]
+.card[
+.tag.s-tag[SELECT]
+**Pull the right context per step.** Retrieval, agentic search, tool loadout.
+]
+.card[
+.tag.c-tag[COMPRESS]
+**Shrink without losing signal.** Summarize, prune, offload.
+]
+.card[
+.tag.i-tag[ISOLATE]
+**Keep concerns separate.** Sub-agents, sandboxes, state schemas.
+]
+]
+
+.cite[[1] LangChain, "How Agents Use Filesystems for Context Engineering"]
+
+---
+
+# Context prioritization
+
+- **Critical** — current code, error messages, active task → always include
+- **Helpful** — project structure, conventions → if space permits
+- **Optional** — historical decisions, background → only if needed
+
+*Rule: models can ignore irrelevant info, but cannot perform without relevant info. **Prioritize recall.***
+
+---
+
+class: middle
+
+.quote-slide[
+.quote-body[
+"Find the smallest set of high-signal tokens that maximize the likelihood of your desired outcome."
+]
+.attrib[— Anthropic, Effective Context Engineering for AI Agents]
+]
+
+---
+
+.takeaways[
+# Key takeaways
+
+<ol>
+<li><span class="num">1</span><div class="body"><strong>Context engineering is entropy reduction.</strong><span>Turn high-entropy human intent into low-entropy machine-ready input.</span></div></li>
+<li><span class="num">2</span><div class="body"><strong>Context is the RAM.</strong><span>Everything the model sees at inference: system, history, tools, retrieved info.</span></div></li>
+<li><span class="num">3</span><div class="body"><strong>Four levers: Write, Select, Compress, Isolate.</strong><span>Every technique in this course maps to one of these.</span></div></li>
+</ol>
+]
+
+---
+
+.refs[
+# References — Session 1
+
+<ol>
+<li><span class="ref-num">1</span><strong>Anthropic</strong> — "Effective Context Engineering for AI Agents" <em>anthropic.com/engineering/effective-context-engineering-for-ai-agents</em></li>
+<li><span class="ref-num">2</span><strong>Weaviate</strong> — "Context Engineering: LLM Memory and Retrieval for AI Agents" <em>weaviate.io/blog/context-engineering</em></li>
+<li><span class="ref-num">3</span><strong>arXiv 2510.26493</strong> — "Context Engineering 2.0"</li>
+<li><span class="ref-num">4</span><strong>LangChain</strong> — "How Agents Can Use Filesystems for Context Engineering"</li>
+<li><span class="ref-num">5</span><strong>Chroma Research</strong> — Context Rot studies</li>
+<li><span class="ref-num">6</span><strong>Lance Martin</strong> — "Context Engineering Deep Dive" (LangChain)</li>
+</ol>
+]
+
+---
+
+class: title
+
+.session-label[UP NEXT: SESSION 2]
+
+# Engineering Context in Agentic Systems
+
+## From naive agent loops to production-grade context management.
+
+---
+
+class: title
+
+.session-label[SESSION 2]
+
+# Engineering Context in Agentic Systems
+
+## From naive agent loops to production-grade context management.
+
+.footer[Hands-On Context Engineering — Handout<span>O'Reilly Live Training · Lucas Soares</span>]
+
+---
+
+# Chat → Agent: what changes
+
+.two-col[
+<div>
+<div class="col-head">CHAT MODEL</div>
+<strong>Human message</strong> is the primary input. Manually crafted by the user. Single turn or short conversation.
+</div>
+<div>
+<div class="col-head green">AGENT</div>
+Context flows from <strong>tool calls</strong> during the trajectory. Machine-generated, accumulating. Dozens to hundreds of tool calls.
+</div>
+]
+
+.cite[[1] Lance Martin, "Context Engineering for Agents in Practice"]
+
+---
+
+class: middle
+
+.stat[
+<div style="display: flex; justify-content: space-around; align-items: center;">
+<div><div class="hero" style="font-size: 3.5em;">500K</div><div class="caption">tokens / run<br>(naive deep research)</div></div>
+<div><div class="hero" style="font-size: 3.5em; color: #c89020;">$1–2</div><div class="caption">per single<br>agent run</div></div>
+<div><div class="hero blue" style="font-size: 3.5em;">50–100</div><div class="caption">tool calls in<br>production agents</div></div>
+</div>
+]
+
+**The naive agent doesn't scale. Context engineering is the fix.**
+
+.cite[[1] Lance Martin (2:49) — [2] Anthropic, "Effective Context Engineering"]
+
+---
+
+.eyebrow-label[01 / The agent loop]
+
+# The naive agent loop
+
+`USER QUERY → LLM THINKS → TOOL CALL → RESULT → (loop)`
+
+Each iteration adds the full tool result to message history. Context grows monotonically. The agent can't start over — it needs continuity across steps.
+
+Token-heavy results + sheer volume of iterations = the core engineering problem.
+
+.cite[[1] Lance Martin, "Context Engineering for Agents in Practice"]
+
+---
+
+class: middle
+
+.quote-slide[
+.quote-body[
+"Find the smallest set of high-signal tokens that maximize the likelihood of your desired outcome."
+]
+.attrib[— Anthropic · the engineering challenge, restated for agents]
+]
+
+---
+
+.eyebrow-label[02 / Write — external memory]
+
+# Write: scratchpads, memories, filesystem
+
+- **Scratchpads** persist *during* a task — todo.md, plan files, JSON progress logs
+- **Memories** persist *across* sessions — Cursor/Windsurf auto-generate them
+- **Filesystem** = single interface for storing infinite context outside the window
+
+.cite[[1] Lance Martin, "Context Engineering for Agents in Practice" — [2] LangChain, "Filesystems for Context Engineering"]
+
+---
+
+.eyebrow-label[03 / Select — pull only what you need]
+
+# Select: agentic retrieval beats brute force
+
+- **Vector store** — classic chunking + embeddings (high infrastructure)
+- **Agentic search** — `llm.txt` + a fetch tool (Lance Martin: "extremely effective")
+- **Context stuffing** — feed all 3M tokens (expensive, degrades quality)
+
+**Claude Code uses grep/glob. No indexing. Just progressive disclosure.**
+
+.cite[[1] Lance Martin, "Context Engineering Discussion" (17:00) — [2] Anthropic, "Effective Context Engineering"]
+
+---
+
+class: middle
+
+.quote-slide[
+.quote-body[
+"Claude Code doesn't do any indexing. It's just doing agentic retrieval — using simple tool calls, no indexing whatsoever, and it obviously works extremely well."
+]
+.attrib[— Lance Martin]
+]
+
+---
+
+.eyebrow-label[04 / Compress — offload before you summarize]
+
+# Compress: offload before you summarize
+
+1. Execute tool call (web search, file read, API)
+2. **Write full result to disk** or runtime state
+3. Return **summary + pointer** to the agent
+4. Agent fetches the full thing only when it needs to
+
+*Summarization is lossy. Offload to disk first as a safety net.*
+
+.cite[[1] Lance Martin, "Context Engineering Discussion" (7:00)]
+
+---
+
+# Compression toolkit
+
+.grid-4[
+.card[
+.tag.c-tag[SUMMARIZE]
+With **high recall**. Exhaustive bullets so the agent knows whether to re-fetch.
+]
+.card[
+.tag.c-tag[AUTO-COMPACT]
+Claude Code triggers at **95% capacity**. Don't wait for OOM.
+]
+.card[
+.tag.c-tag[TRIM]
+Clear verbose tool outputs after they've been processed.
+]
+.card[
+.tag.c-tag[CACHE]
+Cache invariant context — system prompts, tool defs. **Don't reprocess.**
+]
+]
+
+.cite[[1] Lance Martin (10:06) — [2] Anthropic, "Effective Context Engineering" — [3] Chroma Conversation (17:41)]
+
+---
+
+.eyebrow-label[05 / Isolate — sub-agents and sandboxes]
+
+# Isolate: sub-agents & sandboxes
+
+- Each sub-agent gets a **clean window** — explores 10Ks of tokens, returns 1–2K summary
+- **Sandbox** persists state across turns — houses images, audio, data files the LLM never sees
+- **State objects** (Pydantic models) — typed buckets; selectively expose fields per stage
+
+.cite[[1] Anthropic, "Effective Context Engineering" — [2] Lance Martin, "Context Engineering for Agents in Practice" (13:02)]
+
+---
+
+# Read tasks parallelize. Write tasks don't.
+
+.two-col[
+<div>
+<div class="col-head green">READ TASKS ✓</div>
+Sub-agents collect info in parallel; <strong>one</strong> writer synthesizes at the end. Example: Anthropic's deep researcher.
+</div>
+<div>
+<div class="col-head">WRITE TASKS ✗</div>
+Parallel writers make <strong>contradictory choices</strong> that compound. Example: Flappy Bird sub-agents built mismatched assets.
+</div>
+]
+
+.cite[[1] Lance Martin (13:11, 14:32) — [2] Cognition, "Don't Build Multi-Agents"]
+
+---
+
+.eyebrow-label[06 / The contrarian view]
+
+# Don't build multi-agents
+
+> Cognition (makers of Devin) argues multi-agent frameworks create **fragile systems** through dispersed decision-making.
+
+Parallel agents make unstated assumptions that conflict. **The real frontier isn't dispersing work — it's improving how single agents manage context.**
+
+.cite[[1] Cognition, "Don't Build Multi-Agents" (2025)]
+
+---
+
+# Inter-agent boundaries are where it breaks
+
+- **Shared plan files** for serial long-running tasks
+- **Boundary compression** — Cognition uses fine-tuned models specifically for this
+- **Full trace sharing** > individual messages — single messages lose decision context
+
+.cite[[1] Chroma Conversation (19:10) — [2] Cognition, "Don't Build Multi-Agents"]
+
+---
+
+# The core engineering challenge
+
+.grid-4[
+.card[
+.tag[LEAN]
+Remove everything the agent doesn't need for the next decision.
+]
+.card[
+.tag[COMPLETE]
+Preserve all info critical for the current task.
+]
+.card[
+.tag[FRESH]
+Prioritize recent, validated context over stale history.
+]
+.card[
+.tag[STRUCTURED]
+Organize so the model can navigate efficiently.
+]
+]
+
+.cite[[1] Anthropic, "Effective Context Engineering for AI Agents" (2025)]
+
+---
+
+.takeaways[
+# Key takeaways
+
+<ol>
+<li><span class="num">1</span><div class="body"><strong>Agents make context engineering critical.</strong><span>Context flows from tool calls, not just humans — the #1 engineering job.</span></div></li>
+<li><span class="num">2</span><div class="body"><strong>Offload before you summarize.</strong><span>Disk is your safety net. Summarization is lossy.</span></div></li>
+<li><span class="num">3</span><div class="body"><strong>Agentic retrieval beats heavyweight RAG (often).</strong><span>Simple tools (grep, glob, fetch) with progressive disclosure win for many cases.</span></div></li>
+<li><span class="num">4</span><div class="body"><strong>Read tasks parallelize, write tasks don't.</strong><span>Sub-agents for research. Single-threaded for code generation.</span></div></li>
+</ol>
+]
+
+---
+
+.refs[
+# References — Session 2
+
+<ol>
+<li><span class="ref-num">1</span><strong>Lance Martin</strong> — "Context Engineering for Agents in Practice" <em>youtu.be/4GiqzUHD5AA</em></li>
+<li><span class="ref-num">2</span><strong>Lance Martin</strong> — "Context Engineering Discussion" <em>youtube.com/watch?v=_lITcWciEC4</em></li>
+<li><span class="ref-num">3</span><strong>Lance Martin &amp; Chroma</strong> — "Conversation about Context Engineering" <em>youtu.be/MJScoDgIcXg</em></li>
+<li><span class="ref-num">4</span><strong>Cognition</strong> — "Don't Build Multi-Agents" <em>cognition.ai/blog/dont-build-multi-agents</em></li>
+<li><span class="ref-num">5</span><strong>Anthropic</strong> — "Effective Context Engineering for AI Agents"</li>
+<li><span class="ref-num">6</span><strong>LangChain</strong> — "Filesystems for Context Engineering"</li>
+<li><span class="ref-num">7</span><strong>Anthropic</strong> — "Effective Harnesses for Long-Running Agents"</li>
+</ol>
+]
+
+---
+
+class: title
+
+.session-label[UP NEXT: SESSION 3]
+
+# Diagnosing &amp; Fixing Context Failures
+
+## Four named failure modes, four matched fixes.
+
+---
+
+class: title
+
+.session-label[SESSION 3]
+
+# Diagnosing and Fixing Context Failures
+
+## Identifying failure modes in long-context agents and applying targeted fixes.
+
+.footer[Hands-On Context Engineering — Handout<span>O'Reilly Live Training · Lucas Soares</span>]
+
+---
+
+# The cost of unchecked context growth
+
+- **Overflow** — agent hits the window limit and stops working
+- **Cost explosion** — 500K tokens, $1–2 per naive deep-research run
+- **Self-reinforcing loop** — each turn adds context the agent itself generated
+
+*The agent feeds its own mistakes back into the next decision.*
+
+.cite[[1] Anthropic, "Effective Context Engineering" — [2] Lance Martin (2:49)]
+
+---
+
+class: middle
+
+.quote-slide[
+.quote-body[
+"When LLMs take a wrong turn in a conversation, they get lost and do not recover."
+]
+.attrib[— Drew Breunig (citing Microsoft/Salesforce multi-turn study)]
+]
+
+.cite[[1] Drew Breunig, "How Long Contexts Fail" (2025)]
+
+---
+
+# Four ways long context fails
+
+.grid-4[
+.card[
+.tag[POISONING]
+A hallucination enters context and compounds.
+]
+.card[
+.tag.s-tag[DISTRACTION]
+Context overwhelms training knowledge.
+]
+.card[
+.tag.c-tag[CONFUSION]
+Irrelevant content influences the response.
+]
+.card[
+.tag.i-tag[CLASH]
+Parts of context disagree with each other.
+]
+]
+
+**Drew Breunig's taxonomy.** Each mode has distinct symptoms — and a distinct fix.
+
+.cite[[1] Drew Breunig, "How Long Contexts Fail" (2025) — also referenced in LangChain, "Context Engineering for Agents"]
+
+---
+
+.eyebrow-label[FAILURE 01]
+
+# Context Poisoning
+
+> A hallucination makes it into the context, where it is repeatedly referenced.
+
+**Gemini Plays Pokémon:** the agent hallucinated game-state details, poisoned its goals section, and became **fixated on impossible goals**.
+
+The agent treats its own bad output as ground truth.
+
+.cite[[1] Drew Breunig, "How Long Contexts Fail" — [2] Anthropic, "Effective Context Engineering"]
+
+---
+
+# Fix: Isolate + Select
+
+**Primary lever: Isolate** — keep raw tool outputs in separate state fields. Don't let them flow into history unchecked.
+
+**Then Select** — promote only **validated** facts into the next prompt.
+
+*Supporting: Write a scratchpad of claims + sources. Only forward verified ones.*
+
+.cite[[1] LangChain, "Context Engineering for Agents" — [2] Lance Martin (7:00)]
+
+---
+
+.eyebrow-label[FAILURE 02]
+
+# Context Distraction
+
+> Context grows so long that the model over-focuses on it and neglects training knowledge.
+
+**Gemini 2.5 Pro:** decreased performance beyond **100K tokens** despite a 1M+ window — defaulted to **repeating past actions**.
+
+Llama 3.1 405B hit its distraction ceiling at ~32K tokens.
+
+.cite[[1] Drew Breunig, "How Long Contexts Fail" — [2] Anthropic, "Effective Context Engineering"]
+
+---
+
+# Fix: Compress + Select
+
+**Primary lever: Compress** — periodically summarize message history. Claude Code auto-compacts at 95%. Reinitiate with the summary.
+
+**Then Select** — pull a smaller working set each step.
+
+*Supporting: Write a persistent plan/scratchpad so you can compress history without losing intent.*
+
+.cite[[1] Lance Martin (7:00) — [2] Anthropic, "Effective Context Engineering"]
+
+---
+
+.eyebrow-label[FAILURE 03]
+
+# Context Confusion
+
+> Superfluous content influences the response. If you put something in context, the model has to pay attention to it.
+
+**Berkeley benchmark:** Llama 3.1 8B **failed** on GeoEngine with 46 tools — but **succeeded with only 19**.
+
+Every model performs worse with more tools.
+
+.cite[[1] Drew Breunig, "How Long Contexts Fail" — [2] Chroma Research, 2025]
+
+---
+
+# Fix: Select + Isolate
+
+**Primary lever: Select** — dynamic tool loading. LLM-powered tool recommender improved Llama 3.1 8B by **44%**.
+
+**Then Isolate** — keep "nice-to-have" context in separate fields. Inject only when required.
+
+*Supporting: Drew Breunig's "Tool Loadout" — DeepSeek-v3 fails at 100+ tools.*
+
+.cite[[1] Drew Breunig, "How to Fix Your Context" — [2] Lance Martin (8:10)]
+
+---
+
+.eyebrow-label[FAILURE 04]
+
+# Context Clash
+
+> New information accumulates that conflicts with information already in context.
+
+**Microsoft/Salesforce multi-turn study:** **39% avg performance drop** when identical info was spread across turns vs given at once. o3 dropped from 98.1 to 64.1.
+
+Once the model takes a wrong turn, it **does not recover.**
+
+.cite[[1] Drew Breunig, "How Long Contexts Fail" — [2] Lance Martin (2:49)]
+
+---
+
+# Fix: Isolate + Select
+
+**Primary lever: Isolate** — context quarantine. Anthropic's multi-agent system outperformed single-agent by **90.2%** on parallelizable tasks.
+
+**Then Select** — apply precedence rules to decide what gets included this step.
+
+*Supporting: Compress conflicting sections into a single resolved summary after deciding precedence.*
+
+.cite[[1] Drew Breunig, "How to Fix Your Context" — [2] Anthropic, "Effective Context Engineering"]
+
+---
+
+# Failures → fixes at a glance
+
+| Failure mode | Primary fix | Supporting fix | Key signal |
+|---|---|---|---|
+| **Poisoning** | Isolate + Select | Write (claims+sources) | Bad fact propagates |
+| **Distraction** | Compress + Select | Write (persistent plan) | Agent repeats past actions |
+| **Confusion** | Select + Isolate | Tool Loadout | Irrelevant tools selected |
+| **Clash** | Isolate + Select | Compress (resolved summary) | Flip-flopping |
+
+*Core principle: "Find the smallest set of high-signal tokens." — Anthropic*
+
+.cite[[1] Drew Breunig — [2] Lance Martin — [3] Anthropic, "Effective Context Engineering"]
+
+---
+
+# The debugging loop
+
+1. **Inspect trace** — walk through messages, tool calls, tool outputs turn-by-turn
+2. **Tag failure** — which of the four modes?
+3. **Pick a lever** — W / S / C / I based on the mode
+4. **Re-run & evaluate** — measure outcome quality, not just token count
+5. **Iterate** — context engineering is cyclical, not one-shot
+
+.cite[[1] LangChain, "Context Engineering for Agents" — [2] Anthropic, "Effective Context Engineering"]
+
+---
+
+# Measuring what matters
+
+- **Track token usage per step** — find where the context grew
+- **Validate with evals** — a fix that reduces tokens but degrades results is worse
+- **Iterate continuously** — context pruning reduced a Wikipedia article by **95%** while preserving QA accuracy
+- **Pair offload + domain prompts** — up to **54% performance improvement**
+
+.cite[[1] LangChain, "Context Engineering for Agents" — [2] Drew Breunig, "How to Fix Your Context" — [3] Lance Martin (10:06)]
+
+---
+
+.takeaways[
+# Key takeaways
+
+<ol>
+<li><span class="num">1</span><div class="body"><strong>Four failure modes, four names.</strong><span>Poisoning, Distraction, Confusion, Clash.</span></div></li>
+<li><span class="num">2</span><div class="body"><strong>Diagnose before you fix.</strong><span>Trace the trajectory, tag the mode, then pick the lever.</span></div></li>
+<li><span class="num">3</span><div class="body"><strong>Each failure maps to specific levers.</strong><span>Select shows up in every fix.</span></div></li>
+<li><span class="num">4</span><div class="body"><strong>Measure outcome quality, not token count.</strong><span>Token reduction without eval improvement is a regression.</span></div></li>
+</ol>
+]
+
+---
+
+.refs[
+# References — Session 3
+
+<ol>
+<li><span class="ref-num">1</span><strong>Drew Breunig</strong> — "How Long Contexts Fail" <em>dbreunig.com/2025/06/22/how-contexts-fail-and-how-to-fix-them.html</em></li>
+<li><span class="ref-num">2</span><strong>Drew Breunig</strong> — "How to Fix Your Context" <em>dbreunig.com/2025/06/26/how-to-fix-your-context.html</em></li>
+<li><span class="ref-num">3</span><strong>LangChain</strong> — "Context Engineering for Agents" <em>blog.langchain.com/context-engineering-for-agents</em></li>
+<li><span class="ref-num">4</span><strong>Anthropic</strong> — "Effective Context Engineering for AI Agents"</li>
+<li><span class="ref-num">5</span><strong>Lance Martin</strong> — "Context Engineering for Agents in Practice"</li>
+<li><span class="ref-num">6</span><strong>Chroma Research</strong> — Context Confusion benchmarks (2025)</li>
+<li><span class="ref-num">7</span><strong>Microsoft / Salesforce</strong> — Multi-turn evaluation (2025)</li>
+</ol>
+]
+
+---
+
+class: title
+
+.session-label[UP NEXT: SESSION 4]
+
+# Context Engineering Patterns in Modern AI Apps
+
+## How production systems apply these levers at scale.
+
+---
+
+class: title
+
+.session-label[SESSION 4]
+
+# Context Engineering Patterns in Modern AI Apps
+
+## How production systems manage what enters the context window — and when.
+
+.footer[Hands-On Context Engineering — Handout<span>O'Reilly Live Training · Lucas Soares</span>]
+
+---
+
+# The static-to-dynamic spectrum
+
+.grid-4[
+.card[
+.tag[STATIC]
+CLAUDE.md, .cursorrules. Always loaded. Predictable but stale.
+]
+.card[
+.tag.s-tag[TIERED]
+Hot/warm/cold layers loaded by role or trigger.
+]
+.card[
+.tag.c-tag[DYNAMIC]
+Agent discovers and fetches context on demand. Cursor, Claude Code.
+]
+.card[
+.tag.i-tag[SELF-IMPROVING]
+Contexts evolve from execution feedback. ACE-style.
+]
+]
+
+*Production systems combine multiple points on this spectrum.*
+
+.cite[[1] Martin Fowler, "Context Engineering for Coding Agents" — [2] Cursor, "Dynamic Context Discovery" — [3] arXiv 2510.04618 ACE]
+
+---
+
+.eyebrow-label[01 / Static context files]
+
+# Most CLAUDE.md files make agents worse.
+
+**ETH Zurich (arXiv 2602.11988, Feb 2026)** evaluated AGENTS.md / CLAUDE.md files across 4 agents and 300+ tasks.
+
+- LLM-generated files: **−3% success rate**, **+20% inference cost**
+- Human-written files: **+4% marginal**, still costs more
+- Agents do **more** (27% more grep/read) without solving more tasks
+
+.cite[[1] Gloaguen et al. — "Evaluating AGENTS.md" — arXiv 2602.11988 (Feb 2026)]
+
+---
+
+# The paradox & what works
+
+- **Paradox:** agents follow CLAUDE.md — they use mentioned tools 1.6–2.5× more. But following costs **14–22% more reasoning tokens**. They work harder without solving better.
+- **What works:** human-written, **minimal**, only what the agent **genuinely can't infer** (build commands, package manager quirks, non-obvious conventions).
+- **Don't duplicate** info already in READMEs or code comments.
+- **Instruction limit:** frontier LLMs follow ~150–200 instructions consistently. Claude Code's system prompt already uses ~50 — budget the rest carefully.
+
+.cite[[1] HumanLayer, "Writing a Good CLAUDE.md" — [2] Packmind, "Writing AI Coding Agent Context Files" — [3] Gloaguen et al.]
+
+---
+
+.eyebrow-label[02 / Dynamic context loading]
+
+# Context priming beats static dumping
+
+At session start, ask the model to **find and load reference materials** with its own tools (web search, file read).
+
+- **Accurate** — pulled fresh, not from stale training weights
+- **Targeted** — specific to the current task
+- **Always-fresh** — not always-on
+
+*Static file becomes a routing table, not a content dump.*
+
+.cite[[1] Chris Dzombak, "LLM Q&A Technique: Context Priming" — [2] Martin Fowler, "Context Engineering for Coding Agents"]
+
+---
+
+class: middle
+
+.stat[
+<div class="hero green">46.9%</div>
+<div class="caption"><strong>Token reduction</strong> in runs that use MCP tools<br>after Cursor switched to <strong>dynamic context discovery</strong>.</div>
+]
+
+.stat-attrib[Cursor Engineering · "Dynamic Context Discovery" · 2026 · production A/B test]
+
+.cite[[1] Cursor, "Dynamic Context Discovery" — cursor.com/blog/dynamic-context-discovery]
+
+---
+
+.eyebrow-label[03 / Production lessons]
+
+# Production lessons from Manus
+
+**Instructor synthesis** bridging two sources:
+
+- **Breunig (2025)** named four failure modes.
+- **Manus / Peak Ji (2025)** described production degradation patterns:
+  - "Context rot" — gradual decline as window fills → **≈ Distraction**
+  - "Context pollution" — noise drowns signal → **≈ Confusion**
+
+*These are different vocabularies for the same phenomena. Manus's other lessons (action-space hierarchy, KV-cache, recitation) cut across multiple failure modes — see the next slide.*
+
+.cite[Failure modes: Breunig (2025). Production lessons: Ji / Manus via philschmid.de "Context Engineering Part 2" (2025). Mapping: instructor synthesis.]
+
+---
+
+# Manus: five strategies for production
+
+1. **Compaction & summarization** — reversible (paths, not contents) + lossy at ~128K tokens
+2. **Communication over shared context** — fresh sub-agents for discrete tasks
+3. **Hierarchical action spaces** — ~20 atomic tools; sandbox utilities; code libraries for complex chains
+4. **Agent-as-tool** — sub-agents as deterministic functions with JSON schemas
+5. **Pre-rot thresholds** — set compaction triggers at 70–80% utilization, **proactively**
+
+> "Share memory by communicating, don't communicate by sharing memory." — Peak Ji
+
+.cite[[1] Peak Ji / Manus via philschmid.de, "Context Engineering Part 2"]
+
+---
+
+.eyebrow-label[04 / Tool design]
+
+# 80% → 100%
+
+.stat[
+<div class="hero">80% → 100%</div>
+<div class="caption">Vercel removed 80% of their text-to-SQL agent's tools (15 → 1 bash primitive).<br><strong>Success rate went up.</strong> Tokens, steps, and latency went down.</div>
+]
+
+.stat-attrib[Vercel Engineering · "We removed 80% of our agent's tools" · Dec 22 2025 · Claude Opus 4.5 · 5-query benchmark]
+
+.cite[[1] Vercel, "We removed 80% of our agent's tools" — vercel.com/blog/we-removed-80-percent-of-our-agents-tools]
+
+---
+
+# Tool design = context engineering
+
+| Architecture | Token multiplier |
+|---|---|
+| Single agent (chat) | 1× baseline |
+| Single agent + tools | ~4× baseline |
+| Multi-agent system | ~15× baseline |
+
+- **Consolidate** — fewer, more powerful tools beat many narrow ones
+- **Tool descriptions are prompts** — vague params, missing error guidance = silent confusion
+- **Tool outputs consume 83.9%** of total context in typical agent trajectories
+- **MCP best practice** — use fully qualified names (`ServerName:tool_name`) to avoid "tool not found" errors
+
+.cite[[1] Koylan, "Agent Skills — tool-design" — [2] philschmid.de, "Context Engineering Part 2"]
+
+---
+
+# Agent Skills: loadable knowledge modules (handout-only detail)
+
+Skills stored as files with brief name/description exposed statically. When a task activates a skill, the agent loads the full content. **This IS context engineering: load what you need when you need it.**
+
+**Category breakdown from Koylan's Agent Skills evaluation:**
+- **Foundational (3):** context-fundamentals, context-degradation, context-compression
+- **Architectural (5):** multi-agent-patterns, memory-systems, tool-design, filesystem-context, hosted-agents
+- **Operational (3):** context-optimization, evaluation, advanced-evaluation
+- **Methodology (1):** project-development
+- **Cognitive (1):** bdi-mental-states
+
+.cite[[1] Koylan, "Agent Skills for Context Engineering" — github.com/muratcankoylan/Agent-Skills-for-Context-Engineering]
+
+---
+
+# Where agent performance actually lives
+
+- **Token usage (context engineering)** — ~80% of performance variance
+- **Tool calls** — ~10%
+- **Model choice** — ~5%
+
+**Optimizing context has ~16× more impact than upgrading models.**
+
+*Before going from Haiku to Opus, optimize what the agent sees.*
+
+.cite[[1] Koylan, "Agent Skills for Context Engineering — evaluation"]
+
+---
+
+# Pattern selection guide
+
+| Situation | Pattern | Why |
+|---|---|---|
+| Stable project conventions | Minimal CLAUDE.md | Rarely changes |
+| Topic-specific research | Context priming at session start | Fetches current docs |
+| Large codebases, many tools | Dynamic discovery + tool consolidation | Avoids confusion |
+| Long-running multi-step agents | Tiered architecture + filesystem | Hot/cold separation |
+| Multi-agent systems | Communication over shared context | Manus pattern |
+| Repetitive learnable workflows | Self-improving contexts (ACE) | No manual maintenance |
+
+.cite[[1] Martin Fowler — [2] Cursor — [3] Manus — [4] arXiv 2510.04618 ACE]
+
+---
+
+.takeaways[
+# Key takeaways
+
+<ol>
+<li><span class="num">1</span><div class="body"><strong>Static files help only when minimal and human-written.</strong><span>ETH Zurich: LLM-generated CLAUDE.md hurts performance.</span></div></li>
+<li><span class="num">2</span><div class="body"><strong>Dynamic loading beats static dumping.</strong><span>Cursor cut tokens 46.9%.</span></div></li>
+<li><span class="num">3</span><div class="body"><strong>Fewer tools, better tools.</strong><span>Vercel: 80% → 100% success after removing 80% of their tools.</span></div></li>
+<li><span class="num">4</span><div class="body"><strong>Context engineering is 16× more impactful than model choice.</strong><span>Optimize what the agent sees before upgrading the model.</span></div></li>
+</ol>
+]
+
+---
+
+.refs[
+# References — Session 4
+
+<ol>
+<li><span class="ref-num">1</span><strong>Gloaguen et al.</strong> — "Evaluating AGENTS.md" <em>arXiv 2602.11988</em></li>
+<li><span class="ref-num">2</span><strong>Cursor</strong> — "Dynamic Context Discovery" <em>cursor.com/blog/dynamic-context-discovery</em></li>
+<li><span class="ref-num">3</span><strong>Vercel</strong> — "We removed 80% of our agent's tools" <em>vercel.com/blog/we-removed-80-percent-of-our-agents-tools</em></li>
+<li><span class="ref-num">4</span><strong>Peak Ji / Manus</strong> via <strong>philschmid.de</strong> — "Context Engineering Part 2"</li>
+<li><span class="ref-num">5</span><strong>Chris Dzombak</strong> — "LLM Q&A Technique: Context Priming"</li>
+<li><span class="ref-num">6</span><strong>Koylan</strong> — "Agent Skills for Context Engineering" <em>github.com/muratcankoylan/Agent-Skills-for-Context-Engineering</em></li>
+<li><span class="ref-num">7</span><strong>Martin Fowler</strong> — "Context Engineering for Coding Agents"</li>
+<li><span class="ref-num">8</span><strong>HumanLayer</strong> — "Writing a Good CLAUDE.md"</li>
+<li><span class="ref-num">9</span><strong>arXiv 2510.04618</strong> — "Agentic Context Engineering (ACE)"</li>
+<li><span class="ref-num">10</span><strong>arXiv 2602.20478</strong> — "Codified Context: Infrastructure for AI Agents"</li>
+</ol>
+]
+
+---
+
+class: title
+
+.session-label[UP NEXT: SESSION 5]
+
+# Tools and Techniques for Modern Development
+
+## Everything you've learned — applied with your day-to-day tools.
+
+---
+
+class: title
+
+.session-label[SESSION 5]
+
+# Tools and Techniques for Modern Development
+
+## Hooks, sub-agents, MCP, and the Claude Code primitives that make context engineering tractable.
+
+.footer[Hands-On Context Engineering — Handout<span>O'Reilly Live Training · Lucas Soares</span>]
+
+---
+
+# The Claude Code primitives map
+
+- **`CLAUDE.md`** — minimal static context (the routing table)
+- **Custom slash commands** — repeatable workflows you author once
+- **Hooks** — lifecycle events (`post-tool-use`, `pre-commit`) for sidecar files
+- **Sub-agents** — isolated context windows, summary-only return
+- **MCP servers** — bring your tools to the agent
+
+*Each primitive maps to one of the four levers from Session 1.*
+
+---
+
+# CLAUDE.md — keep it minimal
+
+> "Most CLAUDE.md files make agents worse." — ETH Zurich (arXiv 2602.11988, Feb 2026)
+
+**What goes in:** project purpose (one line); non-obvious commands (build, test, deploy); hard-to-infer conventions.
+
+**What stays out:** anything already in the README; anything the agent can `ls` to discover.
+
+.cite[[1] Gloaguen et al., "Evaluating AGENTS.md" (arXiv 2602.11988)]
+
+---
+
+# Custom slash commands
+
+A custom slash command is a **reusable prompt** authored once, invoked from any project.
+
+**Patterns that work:**
+- `/audit-context` — run a context-engineering agent on the current repo
+- `/ci_commit` — structured commit with conventional-commit prefix
+- `/review` — diff-aware code review
+
+*Stored in `~/.claude/commands/` (user-global) or `.claude/commands/` (per-project).*
+
+---
+
+# Hooks: lifecycle events as a context lever
+
+- **`post-tool-use`** — write tool output to a sidecar file (the Cursor "tool response files" pattern)
+- **`pre-commit`** — gate context changes through validation
+- **`session-start`** — auto-prime the context with current docs
+
+**Hooks implement Compress + Isolate without changing your prompts.**
+
+.cite[[1] Cursor, "Dynamic Context Discovery"]
+
+---
+
+# Sub-agents in Claude Code
+
+Each sub-agent gets:
+
+- **Its own context window** (clean, no parent history)
+- **Its own system prompt** (specialized role)
+- **A scoped toolset** (only the tools it needs)
+
+The parent agent sees only the **summary** the sub-agent returns. Token-heavy exploration stays isolated.
+
+.cite[[1] Anthropic, "Effective Harnesses for Long-Running Agents"]
+
+---
+
+# MCP: bring your tools to the agent
+
+Model Context Protocol = a standard way to expose tools, resources, and prompts to any MCP-aware agent.
+
+- **Servers** publish capabilities
+- **Clients** (Claude Code, Cursor, etc.) consume them
+- One configuration → works across editors and CLIs
+
+*Composable context primitives, vendor-agnostic.*
+
+---
+
+# The cheatsheet
+
+**`assets/context-engineering-tools-cheatsheet.pdf`** — every pattern from the five sessions on a printable two-page reference.
+
+- W / S / C / I lever cheatsheet
+- Four failure modes + matched fixes
+- Pattern selection guide
+- Claude Code primitive → lever mapping
+
+---
+
+# Build your own playbook
+
+You have:
+
+- A **vocabulary** — Write / Select / Compress / Isolate
+- A **taxonomy** — Poisoning / Distraction / Confusion / Clash
+- A **toolkit** — Claude Code primitives + the cheatsheet
+- A **discipline** — diagnose, lever, measure, iterate
+
+**Now: go apply it to one real agent at work this week.**
+
+---
+
+.refs[
+# References — Session 5
+
+<ol>
+<li><span class="ref-num">1</span><strong>Gloaguen et al.</strong> — "Evaluating AGENTS.md" <em>arXiv 2602.11988</em></li>
+<li><span class="ref-num">2</span><strong>Anthropic</strong> — Claude Code docs <em>code.claude.com/docs</em></li>
+<li><span class="ref-num">3</span><strong>Model Context Protocol</strong> — <em>modelcontextprotocol.io</em></li>
+<li><span class="ref-num">4</span><strong>Cursor</strong> — "Dynamic Context Discovery"</li>
+<li><span class="ref-num">5</span><strong>Anthropic</strong> — "Effective Harnesses for Long-Running Agents"</li>
+<li><span class="ref-num">6</span>This repo's <code>assets/context-engineering-tools-cheatsheet.pdf</code></li>
+</ol>
+]
+
+---
+
+class: title
+
+# Questions?
+
+## Repo · slides · cheatsheet · demos:
+## `github.com/<your-org>/context-engineering-hands-on`
+
+.footer[Lucas Soares<span>O'Reilly Live Training</span>]
+
+  </textarea>
+  <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+  <script>
+    var slideshow = remark.create({
+      ratio: '16:9',
+      countIncrementalSlides: false,
+      navigation: { scroll: false }
+    });
+  </script>
+</body>
+</html>
