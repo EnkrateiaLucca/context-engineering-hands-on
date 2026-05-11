@@ -3,6 +3,8 @@
 # dependencies = ["anthropic", "python-dotenv"]
 # ///
 """
+Minimal structured-outputs primer — for the full agent app see app.py.
+
 Act 1: Same Prompt, Three Schemas, Three Outputs.
 
 Run: uv run structured_outputs_demo.py

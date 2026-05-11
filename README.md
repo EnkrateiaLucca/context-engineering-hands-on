@@ -1,3 +1,6 @@
+> **TL;DR** — 5 sessions, 4 runnable demos, 1 notebook.
+> `export ANTHROPIC_API_KEY=… && cd demos/<name> && uv run app.py`
+
 # Context Engineering Hands-On
 
 **O'Reilly Live Training** — Teaching developers how to design, manage, and optimize the context that flows into LLMs and agentic systems.
@@ -151,6 +154,8 @@ Then open **http://127.0.0.1:8000** in your browser.
 - Structured output via a single `create_artifact` tool
 - Dynamic context injection — the artifact registry grows and re-enters the system prompt
 - Conversation history as accumulating context
+
+**Bonus — minimal structured-outputs primer:** `structured_outputs_demo.py` in the same directory is a standalone ~30-second read showing the same prompt forced through 3 different tool schemas (no FastAPI scaffolding). Run with `uv run structured_outputs_demo.py`.
 
 ---
 
