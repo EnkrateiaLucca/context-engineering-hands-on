@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.12"
-# dependencies = ["claude-agent-sdk"]
+# dependencies = ["claude-agent-sdk", "python-dotenv"]
 # ///
 """
 Repo Q&A agent — answers questions about this course repo.
@@ -13,7 +13,10 @@ Usage:
 import sys
 import anyio
 from pathlib import Path
-from claude_agent_sdk import query, ClaudeAgentOptions, ResultMessage
+from dotenv import load_dotenv
+from claude_agent_sdk import query, ClaudeAgentOptions, ResultMessage, AssistantMessage, ToolUseBlock
+
+load_dotenv()
 
 REPO_ROOT = str(Path(__file__).resolve().parent.parent.parent)
 
@@ -28,7 +31,9 @@ The course teaches developers how to design, manage, and optimize the context fl
 5. Tools and Techniques for Modern Development
 
 Answer questions about file locations, document content, and context engineering concepts in the repo.
-Be concise and direct. Always include file paths when relevant."""
+Be concise and direct. Always include file paths when relevant.
+
+IMPORTANT: Use ONLY Read, Glob, and Grep tools to search the repository. Never use Bash. Never run any scripts or external programs — including this script itself."""
 
 
 async def main():
@@ -38,6 +43,7 @@ async def main():
 
     question = " ".join(sys.argv[1:])
 
+    print(f"Asking: {question}\n", flush=True)
     async for message in query(
         prompt=question,
         options=ClaudeAgentOptions(
@@ -47,8 +53,12 @@ async def main():
             max_turns=15,
         ),
     ):
-        if isinstance(message, ResultMessage):
-            print(message.result)
+        if isinstance(message, AssistantMessage):
+            for block in message.content:
+                if isinstance(block, ToolUseBlock):
+                    print(f"  [tool] {block.name}({list(block.input.values())[0] if block.input else ''})", flush=True)
+        elif isinstance(message, ResultMessage):
+            print(f"\n{message.result}")
 
 
 anyio.run(main)
