@@ -255,7 +255,7 @@ This demo is a placeholder for Session 5 content on advanced context engineering
 
 ```
 context-engineering-hands-on/
-├── presentation/                          # Slide decks (.key, .pdf, .pptx)
+├── presentation-slides/                   # Slide decks (.html — remark.js live + handout)
 ├── assets/                                # Reference PDFs (attention paper, cheatsheets)
 └── demos/
     ├── ctx-engineering-principles-claude-code/  # Session 1 — Claude Code live demo guide
@@ -314,4 +314,4 @@ uv run app.py
 
 ---
 
-*Course slides and reference materials are in `presentation/` and `assets/`.*
+*Course slides and reference materials are in `presentation-slides/` and `assets/`.*

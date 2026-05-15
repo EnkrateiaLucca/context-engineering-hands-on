@@ -9,7 +9,7 @@ O'Reilly live training course — **Context Engineering Hands-On** — teaching 
 ## Structure
 
 ```
-presentation/          # Slide decks (.key, .pdf)
+presentation-slides/   # Slide decks (.html — remark.js live + handout)
 assets/                # Reference PDFs
 demos/
   agentic-retrieval/   # Session 2 — hand-rolled agent loop with TF-IDF retrieval

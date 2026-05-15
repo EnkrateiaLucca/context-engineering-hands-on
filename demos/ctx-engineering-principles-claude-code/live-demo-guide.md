@@ -53,6 +53,8 @@ claude
 
 **WHAT TO EXPECT:** Claude Code displays a structured breakdown of everything currently loaded in the context window — the system prompt, CLAUDE.md instructions (if present), tool definitions, and any conversation history. Students see that the window is *already populated* before they typed a single real question.
 
+> **EXPECTED DELTA: ~14–24k tokens already used at baseline** (system prompt ~6k + tool definitions ~7k + CLAUDE.md ~0.3k + any memory/skills loaded). Exact number varies by Claude Code version and personal config.
+
 > **INSTRUCTOR NOTE:** Pause here. Point at the screen: "You haven't asked anything yet. But look at how much is already loaded — system prompt, tool definitions, CLAUDE.md. This is the invisible cost of context. Every session starts with thousands of tokens already spoken for."
 
 **3. Now do something simple — ask a quick question:**
@@ -69,6 +71,8 @@ What is the capital of Portugal?
 
 **WHAT TO EXPECT:** The context has grown — it now includes the question, Claude's response, and any internal reasoning. Even a trivial one-line exchange adds tokens.
 
+> **EXPECTED DELTA: ~+6k tokens** from a one-line Q&A exchange (user message + assistant response + internal reasoning).
+
 **5. Read a file to show a bigger jump:**
 
 ```
@@ -82,6 +86,8 @@ Read demos/ctx-engineering-principles-claude-code/context-window-guide.md
 ```
 
 **WHAT TO EXPECT:** Dramatic jump. The entire file (~3,000 tokens) is now sitting in the context window alongside everything else.
+
+> **EXPECTED DELTA: ~+10–11k tokens** from reading one file (file content + tool call overhead + assistant summary).
 
 > **INSTRUCTOR NOTE:** Call out the progression: "One question added a little. One file read added *a lot*. Now multiply that by a real working session where you read 10–20 files, run tools, and have a long conversation. Context fills up fast — and everything in it competes for the model's attention."
 
