@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Context Engineering Hands-On — Cheatsheet</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        @page {
+            size: A4;
+            margin: 12mm;
+            @top-left { content: none; }
+            @top-center { content: none; }
+            @top-right { content: none; }
+            @bottom-left { content: none; }
+            @bottom-center { content: none; }
+            @bottom-right { content: none; }
+        }
+
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 9pt;
+            line-height: 1.4;
+            color: #000;
+            background: #fff;
+            max-width: 210mm;
+            margin: 0 auto;
+            padding: 12mm;
+        }
+
+        /* Header */
+        .page-header {
+            text-align: center;
+            padding-bottom: 8pt;
+            margin-bottom: 10pt;
+            border-bottom: 3px solid #000;
+        }
+        .page-header h1 {
+            font-size: 20pt;
+            font-weight: 700;
+            letter-spacing: 2pt;
+            text-transform: uppercase;
+            margin-bottom: 3pt;
+        }
+        .page-header .subtitle { font-size: 10pt; color: #333; margin-bottom: 2pt; }
+        .page-header .meta { font-size: 8pt; color: #666; }
+
+        /* Section titles */
+        .section-title {
+            font-size: 10pt;
+            font-weight: 700;
+            margin: 9pt 0 6pt 0;
+            padding: 4pt 8pt;
+            background: #000;
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 1pt;
+            break-after: avoid;
+            page-break-after: avoid;
+        }
+
+        /* Grids */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 7pt; margin-bottom: 8pt; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 7pt; margin-bottom: 8pt; }
+        .grid-4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 7pt; margin-bottom: 8pt; }
+
+        /* Cards */
+        .card {
+            border: 2px solid #000;
+            padding: 7pt;
+            background: #fff;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        .card-title {
+            font-size: 9.5pt;
+            font-weight: 700;
+            margin-bottom: 5pt;
+            padding-bottom: 4pt;
+            border-bottom: 1px solid #ccc;
+        }
+        .card-content { font-size: 8.5pt; }
+        .card ul { margin-left: 12pt; }
+        .card li { margin-bottom: 2pt; }
+
+        /* Lever tag colors (matching course slide palette) */
+        .tag-w { color: #b85c1f; font-weight: 700; font-size: 9pt; letter-spacing: 0.05em; }
+        .tag-s { color: #c89020; font-weight: 700; font-size: 9pt; letter-spacing: 0.05em; }
+        .tag-c { color: #4d8a3a; font-weight: 700; font-size: 9pt; letter-spacing: 0.05em; }
+        .tag-i { color: #4078a8; font-weight: 700; font-size: 9pt; letter-spacing: 0.05em; }
+
+        /* Lever card accent borders */
+        .card-w { border-left: 4px solid #b85c1f; }
+        .card-s { border-left: 4px solid #c89020; }
+        .card-c { border-left: 4px solid #4d8a3a; }
+        .card-i { border-left: 4px solid #4078a8; }
+
+        /* Failure mode card accents */
+        .card-poison { border-left: 4px solid #c0392b; }
+        .card-distract { border-left: 4px solid #e67e22; }
+        .card-confuse { border-left: 4px solid #8e44ad; }
+        .card-clash { border-left: 4px solid #2c3e50; }
+
+        /* Hero stat boxes */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(4,1fr);
+            gap: 7pt;
+            margin-bottom: 8pt;
+        }
+        .stat-box {
+            border: 2px solid #000;
+            padding: 7pt 5pt;
+            text-align: center;
+            background: #fff;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        .stat-hero {
+            font-size: 18pt;
+            font-weight: 800;
+            color: #b85c1f;
+            line-height: 1;
+            margin-bottom: 3pt;
+        }
+        .stat-hero.green { color: #4d8a3a; }
+        .stat-hero.blue  { color: #4078a8; }
+        .stat-hero.amber { color: #c89020; }
+        .stat-caption { font-size: 7.5pt; color: #444; line-height: 1.3; }
+        .stat-source { font-size: 7pt; color: #888; margin-top: 3pt; font-style: italic; }
+
+        /* Table cards */
+        .table-card {
+            border: 2px solid #000;
+            background: #fff;
+            padding: 0;
+            break-inside: avoid;
+            page-break-inside: avoid;
+            margin-bottom: 8pt;
+        }
+        .table-card-header {
+            background: #000;
+            color: #fff;
+            padding: 4pt 8pt;
+            font-weight: 700;
+            font-size: 9.5pt;
+        }
+        .table-card table { width: 100%; border-collapse: collapse; font-size: 8.5pt; }
+        .table-card th {
+            background: #f0f0f0;
+            font-weight: 700;
+            text-align: left;
+            padding: 4pt 7pt;
+            border-bottom: 2px solid #000;
+        }
+        .table-card td { padding: 4pt 7pt; border-bottom: 1px solid #ddd; }
+        .table-card tr:last-child td { border-bottom: none; }
+
+        /* Code blocks */
+        .code-card {
+            border: 2px solid #000;
+            background: #fff;
+            padding: 0;
+            break-inside: avoid;
+            page-break-inside: avoid;
+        }
+        .code-card-header {
+            background: #000;
+            color: #fff;
+            padding: 4pt 8pt;
+            font-weight: 700;
+            font-size: 9pt;
+        }
+        .code-card pre {
+            margin: 0;
+            padding: 7pt;
+            font-family: 'Courier New', 'Courier', monospace;
+            font-size: 7.5pt;
+            line-height: 1.35;
+            background: #f9f9f9;
+            overflow: hidden;
+            white-space: pre-wrap;
+            word-break: break-all;
+            overflow-wrap: break-word;
+        }
+
+        /* Info / callout boxes */
+        .info-box {
+            border: 2px solid #666;
+            border-left: 5px solid #000;
+            padding: 7pt;
+            margin-bottom: 7pt;
+            background: #f5f5f5;
+            break-inside: avoid;
+            page-break-inside: avoid;
+            font-size: 8.5pt;
+        }
+        .info-box strong { font-size: 9pt; }
+
+        /* Quote block */
+        .quote-box {
+            border-left: 4px solid #000;
+            padding: 5pt 10pt;
+            margin: 6pt 0;
+            background: #f9f9f9;
+            font-style: italic;
+            font-size: 8.5pt;
+            break-inside: avoid;
+        }
+        .quote-attrib { font-style: normal; font-size: 7.5pt; color: #555; margin-top: 3pt; }
+
+        /* Fix badge inline */
+        .fix-badge {
+            display: inline-block;
+            background: #000;
+            color: #fff;
+            font-size: 7.5pt;
+            font-weight: 700;
+            padding: 1pt 4pt;
+            margin-bottom: 3pt;
+            letter-spacing: 0.05em;
+        }
+
+        /* Primitive mapping list */
+        .prim-list { list-style: none; margin: 0; padding: 0; }
+        .prim-list li { display: flex; align-items: baseline; gap: 5pt; margin-bottom: 4pt; font-size: 8.5pt; }
+        .prim-name { font-family: 'Courier New', monospace; font-size: 8pt; background: #f0f0f0; padding: 1pt 4pt; border: 1px solid #ccc; white-space: nowrap; flex-shrink: 0; }
+        .prim-arrow { color: #888; flex-shrink: 0; }
+
+        /* Footer */
+        footer {
+            margin-top: 10pt;
+            padding-top: 6pt;
+            border-top: 2px solid #000;
+            text-align: center;
+            font-size: 7.5pt;
+            color: #666;
+        }
+
+        /* Print */
+        @media print {
+            body { margin: 0; padding: 12mm; }
+            .card, .stat-box, .table-card, .code-card, .info-box, .quote-box {
+                break-inside: avoid;
+                page-break-inside: avoid;
+            }
+            .section-title { break-after: avoid; page-break-after: avoid; }
+            a { text-decoration: none; color: #000; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── HEADER ── -->
+    <div class="page-header">
+        <h1>Context Engineering Hands-On</h1>
+        <div class="subtitle">O'Reilly Live Training — Design, manage, and optimize the context that flows into LLMs and agentic systems</div>
+        <div class="meta">5 Sessions · 4 Runnable Demos · 1 Notebook &nbsp;|&nbsp; Python 3.12+ · uv · Anthropic Claude API &nbsp;|&nbsp; Lucas Soares</div>
+    </div>
+
+    <!-- ── SECTION 1: THE FOUR LEVERS ── -->
+    <div class="section-title">1. The Four Levers — Write · Select · Compress · Isolate</div>
+
+    <div class="grid-4">
+        <div class="card card-w">
+            <div class="card-title"><span class="tag-w">WRITE</span> — Create</div>
+            <div class="card-content">
+                <ul>
+                    <li>Plans &amp; scratchpads during a task</li>
+                    <li>Learned memories across sessions</li>
+                    <li>Filesystem logs &amp; progress files</li>
+                    <li>Write claims + sources to verify</li>
+                </ul>
+                <p style="margin-top:4pt;font-size:8pt;color:#555">→ <em>todo.md, plan files, JSON logs</em></p>
+            </div>
+        </div>
+        <div class="card card-s">
+            <div class="card-title"><span class="tag-s">SELECT</span> — Pull</div>
+            <div class="card-content">
+                <ul>
+                    <li>Agentic retrieval (grep, glob, fetch)</li>
+                    <li>Tool loadout: only what's needed</li>
+                    <li>Progressive disclosure vs. stuffing</li>
+                    <li>llm.txt + fetch tool (Lance Martin)</li>
+                </ul>
+                <p style="margin-top:4pt;font-size:8pt;color:#555">→ <em>Claude Code: no indexing, pure agentic retrieval</em></p>
+            </div>
+        </div>
+        <div class="card card-c">
+            <div class="card-title"><span class="tag-c">COMPRESS</span> — Shrink</div>
+            <div class="card-content">
+                <ul>
+                    <li><strong>Offload to disk first</strong> (lossy safety net)</li>
+                    <li>Summarize with high recall (exhaustive bullets)</li>
+                    <li>Auto-compact at 95% capacity (Claude Code)</li>
+                    <li>Trim verbose tool outputs after processing</li>
+                    <li>Cache invariant context (system prompts)</li>
+                </ul>
+            </div>
+        </div>
+        <div class="card card-i">
+            <div class="card-title"><span class="tag-i">ISOLATE</span> — Separate</div>
+            <div class="card-content">
+                <ul>
+                    <li>Sub-agents: clean window, summary return</li>
+                    <li>Sandbox: persists state (images, data files)</li>
+                    <li>State objects (Pydantic): expose fields selectively per stage</li>
+                    <li>Read tasks parallelize — write tasks don't</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── SECTION 2: FAILURE MODES ── -->
+    <div class="section-title">2. Four Failure Modes + Fixes (Drew Breunig's Taxonomy)</div>
+
+    <div class="grid-2">
+        <div class="card card-poison">
+            <div class="card-title">POISONING — Hallucination compounds</div>
+            <div class="card-content">
+                <p>A bad output enters context and is repeatedly referenced as ground truth. Agent becomes fixated on impossible goals (Gemini Plays Pokémon).</p>
+                <div class="fix-badge" style="margin-top:5pt">FIX: ISOLATE + SELECT</div>
+                <ul>
+                    <li>Keep raw tool outputs in <strong>separate state fields</strong></li>
+                    <li>Promote only <strong>validated facts</strong> into next prompt</li>
+                    <li>Write a scratchpad of claims + sources; forward verified only</li>
+                </ul>
+            </div>
+        </div>
+        <div class="card card-distract">
+            <div class="card-title">DISTRACTION — Model ignores training</div>
+            <div class="card-content">
+                <p>Context grows so long the model over-focuses on it. Gemini 2.5 Pro: ↓ performance beyond <strong>100K tokens</strong>; defaulted to repeating past actions. Llama 3.1 405B ceiling: ~32K.</p>
+                <div class="fix-badge" style="margin-top:5pt">FIX: COMPRESS + SELECT</div>
+                <ul>
+                    <li>Periodically <strong>summarize history</strong>; reinitiate with summary</li>
+                    <li>Pull smaller working set each step</li>
+                    <li>Write persistent plan so you can compress without losing intent</li>
+                </ul>
+            </div>
+        </div>
+        <div class="card card-confuse">
+            <div class="card-title">CONFUSION — Irrelevant content pollutes</div>
+            <div class="card-content">
+                <p>If you put it in context, the model attends to it. Berkeley: Llama 3.1 8B <strong>failed</strong> with 46 tools — <strong>succeeded</strong> with 19. Every model worsens with more tools.</p>
+                <div class="fix-badge" style="margin-top:5pt">FIX: SELECT + ISOLATE</div>
+                <ul>
+                    <li><strong>Dynamic tool loading</strong> (LLM-powered recommender: +<strong>44%</strong> Llama 3.1 8B)</li>
+                    <li>Keep "nice-to-have" context in separate state fields</li>
+                    <li>DeepSeek-v3 fails at 100+ tools — keep loadouts small</li>
+                </ul>
+            </div>
+        </div>
+        <div class="card card-clash">
+            <div class="card-title">CLASH — Conflicting context compounds</div>
+            <div class="card-content">
+                <p>New info conflicts with earlier context. Microsoft/Salesforce: <strong>39% avg drop</strong> when identical info spread across turns. o3: 98.1 → 64.1. Wrong turns don't self-correct.</p>
+                <div class="fix-badge" style="margin-top:5pt">FIX: ISOLATE + SELECT</div>
+                <ul>
+                    <li><strong>Context quarantine</strong>: multi-agent isolated context → +90.2% on parallelizable tasks</li>
+                    <li>Apply <strong>precedence rules</strong> to decide what's included this step</li>
+                    <li>Compress conflicting sections into single resolved summary</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── SECTION 3: PRIORITIZATION + DEBUGGING ── -->
+    <div class="section-title">3. Context Prioritization &amp; Debugging Loop</div>
+
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-title">Context Prioritization Tiers</div>
+            <div class="card-content">
+                <ul>
+                    <li><strong>CRITICAL</strong> — current code, error messages, active task → <em>always include</em></li>
+                    <li><strong>HELPFUL</strong> — project structure, conventions → <em>if space permits</em></li>
+                    <li><strong>OPTIONAL</strong> — historical decisions, background → <em>only if needed</em></li>
+                </ul>
+                <div class="quote-box" style="margin-top:6pt">
+                    "Find the smallest set of high-signal tokens that maximize the likelihood of your desired outcome."
+                    <div class="quote-attrib">— Anthropic, Effective Context Engineering for AI Agents</div>
+                </div>
+                <p style="margin-top:4pt;font-size:8pt"><em>Models can ignore irrelevant info but cannot perform without relevant info — prioritize recall.</em></p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">The Debugging Loop</div>
+            <div class="card-content">
+                <ol style="margin-left:14pt">
+                    <li style="margin-bottom:3pt"><strong>Inspect trace</strong> — walk through messages, tool calls, and outputs turn-by-turn</li>
+                    <li style="margin-bottom:3pt"><strong>Tag failure</strong> — which of the four modes? (Poisoning / Distraction / Confusion / Clash)</li>
+                    <li style="margin-bottom:3pt"><strong>Pick a lever</strong> — W / S / C / I based on the mode (Select appears in every fix)</li>
+                    <li style="margin-bottom:3pt"><strong>Re-run &amp; evaluate</strong> — measure outcome quality, not just token count</li>
+                    <li><strong>Iterate</strong> — context engineering is cyclical, not one-shot</li>
+                </ol>
+                <p style="margin-top:5pt;font-size:8pt"><em>Context pruning reduced a Wikipedia article by 95% while preserving QA accuracy. Offload + domain prompts: up to +54% performance.</em></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── SECTION 4: KEY STATS ── -->
+    <div class="section-title">4. Key Stats from Production</div>
+
+    <div class="stat-grid">
+        <div class="stat-box">
+            <div class="stat-hero green">46.9%</div>
+            <div class="stat-caption">Token reduction — Cursor dynamic context discovery (MCP tools)</div>
+            <div class="stat-source">Cursor Engineering · 2026 A/B test</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-hero">80%→100%</div>
+            <div class="stat-caption">Vercel removed 80% of tools (15→1 bash primitive); success rate went <strong>up</strong></div>
+            <div class="stat-source">Vercel Engineering · Dec 2025</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-hero amber">−3% / +20%</div>
+            <div class="stat-caption">LLM-generated CLAUDE.md: −3% success rate, +20% inference cost</div>
+            <div class="stat-source">ETH Zurich · arXiv 2602.11988</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-hero blue">16×</div>
+            <div class="stat-caption">Context engineering is ~16× more impactful than model choice (80% of variance)</div>
+            <div class="stat-source">Koylan, Agent Skills eval</div>
+        </div>
+    </div>
+    <div class="stat-grid">
+        <div class="stat-box">
+            <div class="stat-hero" style="font-size:14pt">39% drop</div>
+            <div class="stat-caption">Avg performance drop — identical info spread across turns vs. given at once. o3: 98.1→64.1</div>
+            <div class="stat-source">Microsoft/Salesforce multi-turn</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-hero green" style="font-size:14pt">+44%</div>
+            <div class="stat-caption">LLM-powered tool recommender improved Llama 3.1 8B on GeoEngine</div>
+            <div class="stat-source">Chroma Research / Drew Breunig</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-hero" style="font-size:14pt">83.9%</div>
+            <div class="stat-caption">Tool outputs consume 83.9% of total context in typical agent trajectories</div>
+            <div class="stat-source">philschmid.de / Manus analysis</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-hero blue" style="font-size:14pt">500K / $1–2</div>
+            <div class="stat-caption">Tokens per run &amp; cost for naive deep-research agent</div>
+            <div class="stat-source">Lance Martin (LangChain)</div>
+        </div>
+    </div>
+
+    <!-- ── SECTION 5: CLAUDE CODE PRIMITIVES ── -->
+    <div class="section-title">5. Claude Code Primitives → Lever Mapping</div>
+
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-title">Primitive → Lever</div>
+            <div class="card-content">
+                <ul class="prim-list">
+                    <li>
+                        <span class="prim-name">CLAUDE.md</span>
+                        <span class="prim-arrow">→</span>
+                        <span><span class="tag-w">WRITE</span> — Minimal static context; routing table not content dump. Human-written, &lt;150–200 instructions.</span>
+                    </li>
+                    <li>
+                        <span class="prim-name">Slash commands</span>
+                        <span class="prim-arrow">→</span>
+                        <span><span class="tag-w">WRITE</span> — Reusable prompts authored once. <code style="font-size:7.5pt">/audit-context</code> <code style="font-size:7.5pt">/ci_commit</code> <code style="font-size:7.5pt">/review</code></span>
+                    </li>
+                    <li>
+                        <span class="prim-name">Hooks</span>
+                        <span class="prim-arrow">→</span>
+                        <span><span class="tag-c">COMPRESS</span> + <span class="tag-i">ISOLATE</span> — <code style="font-size:7.5pt">post-tool-use</code>, <code style="font-size:7.5pt">pre-commit</code>, <code style="font-size:7.5pt">session-start</code>. Sidecar files without changing prompts.</span>
+                    </li>
+                    <li>
+                        <span class="prim-name">Sub-agents</span>
+                        <span class="prim-arrow">→</span>
+                        <span><span class="tag-i">ISOLATE</span> — Clean window, scoped toolset, summary-only return to parent.</span>
+                    </li>
+                    <li>
+                        <span class="prim-name">MCP servers</span>
+                        <span class="prim-arrow">→</span>
+                        <span><span class="tag-s">SELECT</span> — Composable context primitives, vendor-agnostic. Use fully qualified names (<code style="font-size:7.5pt">Server:tool_name</code>).</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">CLAUDE.md — What Works</div>
+            <div class="card-content">
+                <p style="margin-bottom:5pt;font-size:8pt">ETH Zurich (arXiv 2602.11988): agents follow CLAUDE.md and use mentioned tools 1.6–2.5× more — but this costs 14–22% more reasoning tokens without solving more tasks.</p>
+                <p style="font-weight:700;margin-bottom:3pt">✓ Put IN:</p>
+                <ul>
+                    <li>Project purpose (one line)</li>
+                    <li>Non-obvious commands (build, test, deploy)</li>
+                    <li>Hard-to-infer conventions &amp; package manager quirks</li>
+                </ul>
+                <p style="font-weight:700;margin-top:5pt;margin-bottom:3pt">✗ Keep OUT:</p>
+                <ul>
+                    <li>Anything already in README or code comments</li>
+                    <li>Anything the agent can <code style="font-size:7.5pt">ls</code> to discover</li>
+                    <li>LLM-generated content (−3% success, +20% cost)</li>
+                </ul>
+                <p style="margin-top:5pt;font-size:8pt"><em>Claude Code system prompt already uses ~50 instructions — budget the remaining ~100–150 carefully.</em></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── SECTION 6: PATTERN SELECTION GUIDE ── -->
+    <div class="section-title">6. Pattern Selection Guide</div>
+
+    <div class="table-card">
+        <div class="table-card-header">When to Use Which Pattern</div>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width:30%">Situation</th>
+                    <th style="width:35%">Pattern</th>
+                    <th style="width:35%">Why</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Stable project conventions</td>
+                    <td><strong>Minimal CLAUDE.md</strong></td>
+                    <td>Rarely changes; static is fine</td>
+                </tr>
+                <tr>
+                    <td>Topic-specific research</td>
+                    <td><strong>Context priming</strong> at session start</td>
+                    <td>Fetches current docs, not stale weights</td>
+                </tr>
+                <tr>
+                    <td>Large codebases, many tools</td>
+                    <td><strong>Dynamic discovery + tool consolidation</strong></td>
+                    <td>Avoids Confusion; 46.9% token savings (Cursor)</td>
+                </tr>
+                <tr>
+                    <td>Long-running multi-step agents</td>
+                    <td><strong>Tiered architecture + filesystem</strong></td>
+                    <td>Hot/cold separation; pre-rot at 70–80%</td>
+                </tr>
+                <tr>
+                    <td>Multi-agent systems</td>
+                    <td><strong>Communication over shared context</strong></td>
+                    <td>"Share memory by communicating" — Peak Ji (Manus)</td>
+                </tr>
+                <tr>
+                    <td>Repetitive learnable workflows</td>
+                    <td><strong>Self-improving contexts (ACE)</strong></td>
+                    <td>No manual maintenance; contexts evolve from execution</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ── SECTION 7: QUICK START + DEMOS ── -->
+    <div class="section-title">7. Quick Start — 5 Sessions · 4 Demos · 1 Notebook</div>
+
+    <div class="grid-3">
+        <div class="code-card">
+            <div class="code-card-header">Setup</div>
+            <pre><code># Install uv (once)
+curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Set API key
+export ANTHROPIC_API_KEY=sk-ant-...
+
+# Run any demo
+cd demos/&lt;name&gt;
+uv run app.py
+# No global pip install needed</code></pre>
+        </div>
+        <div class="code-card">
+            <div class="code-card-header">Session 1 &amp; 2 Demos</div>
+            <pre><code># S1: Claude Code live demos
+# (no script — follow guide)
+demos/ctx-engineering-principles-claude-code/
+live-demo-guide.md
+
+# S2: Hand-rolled agent loop
+cd demos/agentic-retrieval
+uv run app.py
+# Slash commands: /context
+# /stats /clear /docs</code></pre>
+        </div>
+        <div class="code-card">
+            <div class="code-card-header">Session 2/4 &amp; 3 Demos</div>
+            <pre><code># S2/4: FastAPI chat app
+cd demos/chat-with-artifacts
+uv run app.py
+# Open: http://127.0.0.1:8000
+
+# S3: Context failures notebook
+# demos/context-failures/
+#   context_failures.ipynb
+# 4 modes: Poisoning, Distraction,
+# Confusion, Clash — broken + fixed</code></pre>
+        </div>
+    </div>
+
+    <!-- ── SECTION 8: MANUS FIVE STRATEGIES ── -->
+    <div class="section-title">8. Production Lessons — Manus Five Strategies (Peak Ji)</div>
+
+    <div class="grid-2">
+        <div class="card">
+            <div class="card-title">Five Strategies for Production Context</div>
+            <div class="card-content">
+                <ol style="margin-left:14pt">
+                    <li style="margin-bottom:4pt"><strong>Compaction &amp; summarization</strong> — reversible (paths, not contents) + lossy at ~128K tokens; always offload before summarizing</li>
+                    <li style="margin-bottom:4pt"><strong>Communication over shared context</strong> — fresh sub-agents for discrete tasks; never let agents share a growing context window</li>
+                    <li style="margin-bottom:4pt"><strong>Hierarchical action spaces</strong> — ~20 atomic tools + sandbox utilities + code libraries for complex chains</li>
+                    <li style="margin-bottom:4pt"><strong>Agent-as-tool</strong> — sub-agents as deterministic functions with JSON schemas; parent sees only structured output</li>
+                    <li><strong>Pre-rot thresholds</strong> — trigger compaction at <strong>70–80% utilization</strong>, proactively (not at overflow)</li>
+                </ol>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">Token Economics at Scale</div>
+            <div class="card-content">
+                <div class="table-card" style="margin-bottom:6pt;border:1px solid #ccc">
+                    <table>
+                        <thead>
+                            <tr><th>Architecture</th><th>Token multiplier</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Single agent (chat)</td><td><strong>1×</strong> baseline</td></tr>
+                            <tr><td>Single agent + tools</td><td><strong>~4×</strong> baseline</td></tr>
+                            <tr><td>Multi-agent system</td><td><strong>~15×</strong> baseline</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="quote-box">
+                    "Share memory by communicating, don't communicate by sharing memory."
+                    <div class="quote-attrib">— Peak Ji, Manus</div>
+                </div>
+                <div class="info-box" style="margin-top:5pt;margin-bottom:0;padding:5pt;font-size:8pt">
+                    <strong>Context engineering ≈ 80% of performance variance.</strong> Tool calls ~10%. Model choice ~5%.<br>
+                    Optimize what the agent <em>sees</em> before upgrading the model.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── FOOTER ── -->
+    <footer>
+        <p>© 2025 Automata Learning Lab &nbsp;|&nbsp; Context Engineering Hands-On &nbsp;·&nbsp; O'Reilly Live Training &nbsp;·&nbsp; Lucas Soares &nbsp;|&nbsp; Sources: Anthropic, Lance Martin (LangChain), Drew Breunig, Cursor, Vercel, ETH Zurich arXiv 2602.11988, Peak Ji / Manus</p>
+    </footer>
+
+</body>
+</html>
