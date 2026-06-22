@@ -17,7 +17,7 @@ Five sessions across ~4.5 hours: slides, live demos, and hands-on code — all r
 | 2 | Engineering Context in Agentic Systems | Hand-rolled agent loop with TF-IDF retrieval |
 | 2 / 4 | Context Engineering in Modern AI Apps | FastAPI chat app with structured artifact output |
 | 3 | Diagnosing and Fixing Context Failures | Jupyter notebook — four failure modes |
-| 5 | Tools and Techniques for Modern Development | *(coming soon)* |
+| 5 | Tools and Techniques for Modern Development | Claude Code primitives demo — CLAUDE.md, slash command, hook, MCP |
 
 ---
 
@@ -243,11 +243,29 @@ Each failure cell is self-contained — you can run them independently if you on
 
 ---
 
-### Session 5 — Tools and Techniques *(coming soon)*
+### Session 5 — Context Engineering Tools in Claude Code
 
 **Directory:** `demos/ctx-engineering-tools-claude-code/`
 
-This demo is a placeholder for Session 5 content on advanced context engineering tools and patterns for production systems.
+A ~20-minute **live instructor demo** showing four Claude Code primitives co-located in one project — no Python script to run, no `npm install` or Docker (`uv`/`uvx` only). Open the project in Claude Code and walk through each primitive.
+
+**Files:**
+- `CLAUDE.md` — Minimal repo-level context file (carries only what the agent can't infer)
+- `.claude/commands/audit-context.md` — Custom `/audit-context` slash command that wraps the course's retrieval helper
+- `.claude/settings.json` — `PostToolUse` hook that offloads Bash/Read tool outputs to `.claude/tool-outputs/`
+- `.mcp.json` — One `fetch` MCP server registered for live HTTP retrieval
+
+**Suggested flow (~20 min):**
+1. Open `CLAUDE.md` — note how short it is; a bloated context file makes the agent worse, so this one carries only what it can't infer.
+2. Run `/audit-context "where does Session 3 cover context failures?"` — a slash command is just a markdown file with frontmatter, no plugin install.
+3. Trigger any Bash or Read tool call (e.g. `ls demos/`), then open `.claude/tool-outputs/` to show the new file — the "offload large outputs from the live window" pattern.
+4. Use the `fetch` MCP server to retrieve a short doc page; inspect `.mcp.json` and explain stdio vs. http transport.
+
+**What's demonstrated:**
+- CLAUDE.md as a deliberately minimal, high-signal context file
+- Slash commands as zero-install, file-based agent shortcuts
+- Hooks for offloading large tool outputs out of the live context window
+- MCP servers for extending an agent with live external retrieval
 
 ---
 
@@ -270,8 +288,15 @@ context-engineering-hands-on/
     │   ├── app.py                               # FastAPI backend
     │   ├── schemas.py                           # Artifact type schemas
     │   └── static/index.html                    # Single-file frontend
-    └── context-failures/                        # Session 3 — Jupyter notebook
-        └── context_failures.ipynb               # Four failure modes, broken + fixed
+    ├── context-failures/                        # Session 3 — Jupyter notebook
+    │   └── context_failures.ipynb               # Four failure modes, broken + fixed
+    ├── live-sesh-agent-claude-code/             # Retrieval helper for CLAUDE.md + /audit-context
+    │   └── agent_tool_for_claude_code.py        # Answers repo questions via TF-IDF retrieval
+    └── ctx-engineering-tools-claude-code/       # Session 5 — Claude Code primitives demo
+        ├── CLAUDE.md                            # Minimal repo-level context file
+        ├── .claude/commands/audit-context.md    # /audit-context slash command
+        ├── .claude/settings.json                # PostToolUse hook (offloads tool outputs)
+        └── .mcp.json                            # fetch MCP server
 ```
 
 ---
