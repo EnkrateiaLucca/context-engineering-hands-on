@@ -265,7 +265,7 @@ Every context engineering strategy maps to one of these four levers.
 ]
 .card[
 .tag.s-tag[SELECT]
-**Pull the right context per step.** Retrieval, agentic search, tool loadout.
+**Pull the right context per step.** Retrieval, agentic search, tool loadout, skills.
 ]
 .card[
 .tag.c-tag[COMPRESS]
@@ -430,6 +430,8 @@ class: middle
 - **Context stuffing** — feed all 3M tokens (expensive, degrades quality)
 
 **Claude Code uses grep/glob. No indexing. Just progressive disclosure.**
+
+*This same load-on-demand principle now ships as a packaged primitive — **Agent Skills** (Session 5).*
 
 .cite[[1] Lance Martin, "Context Engineering Discussion" (17:00) — [2] Anthropic, "Effective Context Engineering"]
 
@@ -737,7 +739,7 @@ Every model performs worse with more tools.
 
 **Then Isolate** — keep "nice-to-have" context in separate fields. Inject only when required.
 
-*Supporting: Drew Breunig's "Tool Loadout" — DeepSeek-v3 fails at 100+ tools.*
+*Supporting: Drew Breunig's "Tool Loadout" — DeepSeek-v3 fails at 100+ tools. **Agent Skills** apply the same idea to instructions — capabilities load only when triggered (Session 5).*
 
 .cite[[1] Drew Breunig, "How to Fix Your Context" — [2] Lance Martin (8:10)]
 
@@ -871,7 +873,7 @@ Hot/warm/cold layers loaded by role or trigger.
 ]
 .card[
 .tag.c-tag[DYNAMIC]
-Agent discovers and fetches context on demand. Cursor, Claude Code.
+Agent discovers and fetches context on demand. Cursor, Claude Code, Agent Skills.
 ]
 .card[
 .tag.i-tag[SELF-IMPROVING]
@@ -931,7 +933,9 @@ At session start, ask the model to **find and load reference materials** with it
 
 *Static file becomes a routing table, not a content dump.*
 
-.cite[[1] Chris Dzombak, "LLM Q&A Technique: Context Priming" — [2] Martin Fowler, "Context Engineering for Coding Agents"]
+**Agent Skills package this pattern:** the name + one-line description stay resident; the full instructions load only when the skill is triggered.
+
+.cite[[1] Chris Dzombak, "LLM Q&A Technique: Context Priming" — [2] Martin Fowler, "Context Engineering for Coding Agents" — [3] Anthropic, "Agent Skills" (Oct 2025)]
 
 ---
 
@@ -1045,6 +1049,7 @@ Skills stored as files with brief name/description exposed statically. When a ta
 | Stable project conventions | Minimal CLAUDE.md | Rarely changes |
 | Topic-specific research | Context priming at session start | Fetches current docs |
 | Large codebases, many tools | Dynamic discovery + tool consolidation | Avoids confusion |
+| Packaged, reusable expertise | Skill (`SKILL.md`, loaded on demand) | Progressive disclosure |
 | Long-running multi-step agents | Tiered architecture + filesystem | Hot/cold separation |
 | Multi-agent systems | Communication over shared context | Manus pattern |
 | Repetitive learnable workflows | Self-improving contexts (ACE) | No manual maintenance |
@@ -1114,6 +1119,7 @@ class: title
 - **Hooks** — lifecycle events (`post-tool-use`, `pre-commit`) for sidecar files
 - **Sub-agents** — isolated context windows, summary-only return
 - **MCP servers** — bring your tools to the agent
+- **Skills** — `SKILL.md` folders loaded just-in-time (progressive disclosure)
 
 *Each primitive maps to one of the four levers from Session 1.*
 
@@ -1179,6 +1185,20 @@ Model Context Protocol = a standard way to expose tools, resources, and prompts 
 - One configuration → works across editors and CLIs
 
 *Composable context primitives, vendor-agnostic.*
+
+---
+
+# Skills: progressive disclosure as a primitive
+
+A **skill** is a folder — a `SKILL.md` plus optional scripts — the agent loads **only when the task needs it**.
+
+- **At startup:** only the name + one-line description (~30–80 tokens) sit in context
+- **On trigger:** the full `SKILL.md` body loads; bundled scripts run without ever entering the window
+- **Open standard** (Dec 2025) — portable across Claude Code, Cursor, and 25+ other platforms
+
+**The Select lever, productized: instructions pulled just-in-time instead of carried always-on.** Contrast CLAUDE.md (always-on) with a skill (load-on-demand).
+
+.cite[[1] Anthropic, "Equipping Agents for the Real World with Agent Skills" (Oct 2025) — [2] SKILL.md open standard (Dec 2025)]
 
 ---
 

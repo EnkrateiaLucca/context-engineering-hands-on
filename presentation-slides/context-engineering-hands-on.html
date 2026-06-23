@@ -320,7 +320,7 @@ Plans, scratchpads, learned memory.
 .card[
 .tag.s-tag[SELECT]
 **Pull the right context per step.**
-Retrieval, agentic search, tool loadout.
+Retrieval, agentic search, tool loadout, skills.
 ]
 .card[
 .tag.c-tag[COMPRESS]
@@ -499,6 +499,8 @@ The same quote from S1, now operationalized for agents: cyclically refine, don't
 - **Context stuffing** — feed all 3M tokens (expensive, degrades quality)
 
 **Claude Code uses grep/glob. No indexing. Just progressive disclosure.**
+
+*This same load-on-demand principle now ships as a packaged primitive — **Agent Skills** (Session 5).*
 
 ???
 Lance Martin benchmarked all three on LangGraph docs. Agentic search with descriptions + fetch tool won. Claude Code's "no indexing" approach is a real-world endorsement.
@@ -826,7 +828,7 @@ Counterintuitive but well-documented. "More options" isn't free — it's a tax o
 
 **Then Isolate** — keep "nice-to-have" context in separate fields. Inject only when required.
 
-*Supporting: Drew Breunig's "Tool Loadout" pattern — DeepSeek-v3 fails at 100+ tools; select a subset per task.*
+*Supporting: Drew Breunig's "Tool Loadout" pattern — DeepSeek-v3 fails at 100+ tools; select a subset per task. **Agent Skills** apply the same idea to instructions — capabilities load only when triggered (Session 5).*
 
 ???
 44% is a big number — let it land. The fix is "RAG over tool descriptions," same retrieval pattern as document RAG but applied to tools.
@@ -959,7 +961,7 @@ Hot/warm/cold layers loaded by role or trigger.
 ]
 .card[
 .tag.c-tag[DYNAMIC]
-Agent discovers and fetches context on demand. Cursor, Claude Code.
+Agent discovers and fetches context on demand. Cursor, Claude Code, Agent Skills.
 ]
 .card[
 .tag.i-tag[SELF-IMPROVING]
@@ -1021,6 +1023,8 @@ At session start, ask the model to **find and load reference materials** with it
 - **Always-fresh** — not always-on
 
 *Static = routing table. Dynamic = the actual content.*
+
+**Agent Skills package this pattern:** the name + one-line description stay resident; the full instructions load only when the skill is triggered.
 
 ???
 "At the beginning of our conversation, I'll ask Claude to find reference materials about the topic I plan to ask about." — Chris Dzombak. Reframe CLAUDE.md as a routing table, not a content dump.
@@ -1127,6 +1131,7 @@ The bottom-line slide. If a student remembers only one stat from S4, this is it.
 | Stable project conventions | Minimal static file (CLAUDE.md) |
 | Topic-specific research | Context priming at session start |
 | Large codebases, many tools | Dynamic discovery + tool consolidation |
+| Packaged, reusable expertise | Skill (`SKILL.md`, loaded on demand) |
 | Long-running multi-step agents | Tiered architecture + filesystem context |
 | Multi-agent systems | Communication over shared context |
 | Repetitive learnable workflows | Self-improving contexts (ACE) |
@@ -1187,6 +1192,7 @@ class: title
 - **Hooks** — lifecycle events (`post-tool-use`, `pre-commit`) for sidecar files
 - **Sub-agents** — isolated context windows, summary-only return
 - **MCP servers** — bring your tools to the agent
+- **Skills** — `SKILL.md` folders loaded just-in-time (progressive disclosure)
 
 *Each primitive maps to one of the four levers from Session 1.*
 
@@ -1269,6 +1275,21 @@ Model Context Protocol = a standard way to expose tools, resources, and prompts 
 
 ???
 Quick MCP intro — students may or may not have used it. Demo connecting one MCP server (filesystem or a custom one) to Claude Code live.
+
+---
+
+# Skills: progressive disclosure as a primitive
+
+A **skill** is a folder — a `SKILL.md` plus optional scripts — the agent loads **only when the task needs it**.
+
+- **At startup:** only the name + one-line description (~30–80 tokens) sit in context
+- **On trigger:** the full `SKILL.md` body loads; bundled scripts run without ever entering the window
+- **Open standard** (Dec 2025) — portable across Claude Code, Cursor, and 25+ other platforms
+
+**This is the Select lever, productized: the model pulls instructions just-in-time instead of carrying them always-on.**
+
+???
+Skills are the named, packaged form of the progressive-disclosure idea built across S1–S4. The contrast that makes it land: CLAUDE.md is always-on (every token, every turn); a skill is load-on-demand (description resident, body deferred). Demo: show a SKILL.md frontmatter, trigger it, point out only the one-line description was in context until invoked. Sources: Anthropic "Equipping agents with Agent Skills" (Oct 2025); SKILL.md published as an open standard (Dec 2025), adopted across 26+ platforms.
 
 ---
 
