@@ -167,13 +167,13 @@ A Jupyter notebook walking through all four LLM context failure modes: Poisoning
 
 #### Kernel Setup (required before first run)
 
-The notebook uses `anthropic` and `IPython.display` — you need a Jupyter kernel that has these installed.
+The notebook uses `anthropic`, `python-dotenv`, and `IPython.display` — you need a Jupyter kernel that has these installed.
 
 **Option A — Install into an existing kernel (quickest):**
 
 ```bash
 cd demos/context-failures
-pip install anthropic ipython jupyter
+pip install anthropic python-dotenv ipython jupyter
 ```
 
 If you already have Jupyter installed system-wide, this is enough. Open the notebook and select your default kernel.
@@ -186,10 +186,10 @@ cd demos/context-failures
 # Create a virtual environment and install dependencies
 uv venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
-uv pip install anthropic ipython jupyter ipykernel
+uv pip install anthropic python-dotenv ipython jupyter ipykernel
 
-# Register it as a named Jupyter kernel
-python -m ipykernel install --user --name context-failures --display-name "Context Failures (uv)"
+# Register it as a named Jupyter kernel (matches the notebook's declared kernel)
+python -m ipykernel install --user --name ctx-eng --display-name "Python (ctx-eng)"
 ```
 
 Then launch Jupyter:
@@ -200,7 +200,7 @@ jupyter notebook context_failures.ipynb
 jupyter lab
 ```
 
-When the notebook opens, select **"Context Failures (uv)"** from the kernel picker (top-right or Kernel menu).
+When the notebook opens, select **"Python (ctx-eng)"** from the kernel picker (top-right or Kernel menu).
 
 **Option C — VS Code / Cursor:**
 
@@ -215,7 +215,7 @@ export ANTHROPIC_API_KEY=sk-ant-...
 jupyter notebook context_failures.ipynb
 ```
 
-Or create a `.env` file in the demo directory — the notebook's setup cell will pick it up if you add a `load_dotenv()` call, or just export it in the shell that launches Jupyter.
+Or create a `.env` file in the demo directory (or the repo root) — the notebook's setup cell already calls `load_dotenv()`, so it will pick the key up automatically. Otherwise, just export it in the shell that launches Jupyter.
 
 **Verify the key is visible:**
 
