@@ -98,7 +98,7 @@
     .grid-4 .card { background: #fff; border: 2px solid #1a1a1a; padding: 0.8em; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8em; margin-top: 0.5em; }
     .grid-3 .card { background: #fff; border: 2px solid #1a1a1a; padding: 0.8em; }
-    .grid-3 .tag, .grid-4 .tag { font-weight: 700; font-size: 0.8em; letter-spacing: 0.08em; }
+    .grid-3 .tag, .grid-4 .tag { display: block; margin-bottom: 0.35em; font-weight: 700; font-size: 0.8em; letter-spacing: 0.08em; text-transform: uppercase; }
     .grid-3 .w-tag, .grid-4 .w-tag { color: #b85c1f; }
     .grid-3 .s-tag, .grid-4 .s-tag { color: #c89020; }
     .grid-3 .c-tag, .grid-4 .c-tag { color: #4d8a3a; }
@@ -110,12 +110,36 @@
     .takeaways li .body strong { display: block; font-size: 1em; }
     .takeaways li .body span { color: #555; font-size: 0.8em; display: block; margin-top: 0.1em; }
 
-    .stat-attrib { text-align: center; color: #777; font-size: 0.65em; margin-top: 0.8em; font-style: italic; }
+    .stat-attrib { display: block; text-align: center; color: #777; font-size: 0.65em; margin-top: 0.8em; font-style: italic; }
 
     .refs ol { list-style: none; padding-left: 0; }
     .refs li { margin-bottom: 0.5em; font-size: 0.75em; }
     .refs li .ref-num { display: inline-block; width: 1.5em; height: 1.5em; line-height: 1.5em; background: #1a1a1a; color: #f5f0e6; text-align: center; font-weight: 700; margin-right: 0.6em; font-size: 0.85em; }
     .refs li strong { font-size: 1em; }
+
+    /* TABLES — styled to match the deck's card aesthetic */
+    .remark-slide-content table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 0.7em 0;
+      background: #fff;
+      border: 2px solid #1a1a1a;
+    }
+    .remark-slide-content thead th {
+      background: #1c1c1c;
+      color: #f5f0e6;
+      font-weight: 700;
+      text-align: left;
+      padding: 0.4em 0.7em;
+      letter-spacing: 0.02em;
+    }
+    .remark-slide-content tbody td {
+      padding: 0.35em 0.7em;
+      border-top: 1px solid #d4cdb8;
+      vertical-align: top;
+    }
+    .remark-slide-content tbody tr:nth-child(even) { background: #faf6ec; }
+    .remark-slide-content tbody td:first-child { font-weight: 700; }
   </style>
 </head>
 <body>
@@ -517,19 +541,19 @@ Parallel agents make unstated assumptions that conflict. **The real frontier isn
 
 .grid-4[
 .card[
-.tag[LEAN]
+.tag.w-tag[LEAN]
 Remove everything the agent doesn't need for the next decision.
 ]
 .card[
-.tag[COMPLETE]
+.tag.c-tag[COMPLETE]
 Preserve all info critical for the current task.
 ]
 .card[
-.tag[FRESH]
+.tag.i-tag[FRESH]
 Prioritize recent, validated context over stale history.
 ]
 .card[
-.tag[STRUCTURED]
+.tag.s-tag[STRUCTURED]
 Organize so the model can navigate efficiently.
 ]
 ]
@@ -673,11 +697,11 @@ The agent treats its own bad output as ground truth.
 
 > Context grows so long that the model over-focuses on it and neglects training knowledge.
 
-**Gemini 2.5 Pro:** decreased performance beyond **100K tokens** despite a 1M+ window — defaulted to **repeating past actions**.
+**Chroma's "Context Rot" study (2025):** across **18 frontier models** (GPT-4.1, Claude Opus 4, Gemini 2.5 Pro), accuracy dropped **20–50%** between 10K and 100K tokens — abrupt **"cliffs,"** not gradual decline.
 
-Llama 3.1 405B hit its distraction ceiling at ~32K tokens.
+Published context window ≠ usable context window.
 
-.cite[[1] Drew Breunig, "How Long Contexts Fail" — [2] Anthropic, "Effective Context Engineering"]
+.cite[[1] Chroma, "Context Rot" (2025) — [2] Drew Breunig, "How Long Contexts Fail" — [3] Anthropic, "Effective Context Engineering"]
 
 ---
 
@@ -877,9 +901,18 @@ Contexts evolve from execution feedback. ACE-style.
 
 # The paradox & what works
 
-- **Paradox:** agents follow CLAUDE.md — they use mentioned tools 1.6–2.5× more. But following costs **14–22% more reasoning tokens**. They work harder without solving better.
-- **What works:** human-written, **minimal**, only what the agent **genuinely can't infer** (build commands, package manager quirks, non-obvious conventions).
-- **Don't duplicate** info already in READMEs or code comments.
+.two-col[
+<div>
+<div class="col-head">THE PARADOX</div>
+Agents follow CLAUDE.md — they use mentioned tools <strong>1.6–2.5× more</strong>. But following costs <strong>14–22% more reasoning tokens</strong>. They work harder without solving better.
+</div>
+<div>
+<div class="col-head green">WHAT WORKS</div>
+Human-written, <strong>minimal</strong>, only what the agent <strong>genuinely can't infer</strong> (build commands, package manager quirks, non-obvious conventions).
+</div>
+]
+
+- *<strong>Don't duplicate</strong> info already in READMEs or code comments.*
 - **Instruction limit:** frontier LLMs follow ~150–200 instructions consistently. Claude Code's system prompt already uses ~50 — budget the rest carefully.
 
 .cite[[1] HumanLayer, "Writing a Good CLAUDE.md" — [2] Packmind, "Writing AI Coding Agent Context Files" — [3] Gloaguen et al.]
@@ -947,8 +980,6 @@ class: middle
 ---
 
 .eyebrow-label[04 / Tool design]
-
-# 80% → 100%
 
 .stat[
 <div class="hero">80% → 100%</div>
