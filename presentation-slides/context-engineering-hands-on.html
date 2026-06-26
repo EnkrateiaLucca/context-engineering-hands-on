@@ -170,6 +170,9 @@
     }
     .remark-slide-content tbody tr:nth-child(even) { background: #faf6ec; }
     .remark-slide-content tbody td:first-child { font-weight: 700; }
+    .remark-slide-content.small-table table { font-size: 0.82em; margin: 0.3em 0; }
+    .remark-slide-content.small-table thead th { padding: 0.3em 0.6em; }
+    .remark-slide-content.small-table tbody td { padding: 0.22em 0.6em; }
   </style>
 </head>
 <body>
@@ -1124,17 +1127,19 @@ The bottom-line slide. If a student remembers only one stat from S4, this is it.
 
 ---
 
+class: small-table
+
 # Pattern selection guide
 
-| Situation | Pattern |
-|---|---|
-| Stable project conventions | Minimal static file (CLAUDE.md) |
-| Topic-specific research | Context priming at session start |
-| Large codebases, many tools | Dynamic discovery + tool consolidation |
-| Packaged, reusable expertise | Skill (`SKILL.md`, loaded on demand) |
-| Long-running multi-step agents | Tiered architecture + filesystem context |
-| Multi-agent systems | Communication over shared context |
-| Repetitive learnable workflows | Self-improving contexts (ACE) |
+| Situation | Pattern | Why |
+|---|---|---|
+| Stable project conventions | Minimal CLAUDE.md | Rarely changes |
+| Topic-specific research | Context priming at session start | Fetches current docs |
+| Large codebases, many tools | Dynamic discovery + tool consolidation | Avoids confusion |
+| Packaged, reusable expertise | Skill (`SKILL.md`, loaded on demand) | Progressive disclosure |
+| Long-running multi-step agents | Tiered architecture + filesystem | Hot/cold separation |
+| Multi-agent systems | Communication over shared context | Manus pattern |
+| Repetitive learnable workflows | Self-improving contexts (ACE) | No manual maintenance |
 
 ???
 Decision table. This is the second-most-photographed slide in the deck. Keep terse.

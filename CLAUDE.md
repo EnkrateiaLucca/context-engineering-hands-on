@@ -16,7 +16,7 @@ demos/
   chat-with-artifacts/ # Session 2/4 — FastAPI app with structured outputs
   context-failures/    # Session 3 — Jupyter notebook, four LLM context failure modes
   ctx-engineering-principles-claude-code/  # Session 1 — Claude Code live demo scripts
-  ctx-engineering-tools-claude-code/       # Session 5 (placeholder)
+  ctx-engineering-tools-claude-code/       # Session 5 — Claude Code primitives (CLAUDE.md, slash command, hook, MCP)
 ```
 
 
