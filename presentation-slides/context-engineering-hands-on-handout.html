@@ -51,6 +51,7 @@
       color: #888;
       border-top: 1px solid #d4cdb8;
       padding-top: 0.4em;
+      text-align: left;
     }
 
     /* TITLE slides */
@@ -98,7 +99,7 @@
     .grid-4 .card { background: #fff; border: 2px solid #1a1a1a; padding: 0.8em; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8em; margin-top: 0.5em; }
     .grid-3 .card { background: #fff; border: 2px solid #1a1a1a; padding: 0.8em; }
-    .grid-3 .tag, .grid-4 .tag { font-weight: 700; font-size: 0.8em; letter-spacing: 0.08em; }
+    .grid-3 .tag, .grid-4 .tag { display: block; margin-bottom: 0.35em; font-weight: 700; font-size: 0.8em; letter-spacing: 0.08em; text-transform: uppercase; }
     .grid-3 .w-tag, .grid-4 .w-tag { color: #b85c1f; }
     .grid-3 .s-tag, .grid-4 .s-tag { color: #c89020; }
     .grid-3 .c-tag, .grid-4 .c-tag { color: #4d8a3a; }
@@ -110,12 +111,45 @@
     .takeaways li .body strong { display: block; font-size: 1em; }
     .takeaways li .body span { color: #555; font-size: 0.8em; display: block; margin-top: 0.1em; }
 
-    .stat-attrib { text-align: center; color: #777; font-size: 0.65em; margin-top: 0.8em; font-style: italic; }
+    .stat-attrib { display: block; text-align: center; color: #777; font-size: 0.65em; margin-top: 0.8em; font-style: italic; }
 
     .refs ol { list-style: none; padding-left: 0; }
     .refs li { margin-bottom: 0.5em; font-size: 0.75em; }
     .refs li .ref-num { display: inline-block; width: 1.5em; height: 1.5em; line-height: 1.5em; background: #1a1a1a; color: #f5f0e6; text-align: center; font-weight: 700; margin-right: 0.6em; font-size: 0.85em; }
     .refs li strong { font-size: 1em; }
+
+    /* TABLES — styled to match the deck's card aesthetic */
+    .remark-slide-content table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 0.7em 0;
+      background: #fff;
+      border: 2px solid #1a1a1a;
+    }
+    .remark-slide-content thead th {
+      background: #1c1c1c;
+      color: #f5f0e6;
+      font-weight: 700;
+      text-align: left;
+      padding: 0.4em 0.7em;
+      letter-spacing: 0.02em;
+    }
+    .remark-slide-content tbody td {
+      padding: 0.35em 0.7em;
+      border-top: 1px solid #d4cdb8;
+      vertical-align: top;
+    }
+    .remark-slide-content tbody tr:nth-child(even) { background: #faf6ec; }
+    .remark-slide-content tbody td:first-child { font-weight: 700; }
+    .remark-slide-content.small-table table { font-size: 0.82em; margin: 0.3em 0; }
+    .remark-slide-content.small-table thead th { padding: 0.3em 0.6em; }
+    .remark-slide-content.small-table tbody td { padding: 0.22em 0.6em; }
+    .remark-slide-number {
+      font-size: 0.55em;
+      bottom: 2.2em;
+      right: 2em;
+      color: #888;
+    }
   </style>
 </head>
 <body>
@@ -241,7 +275,7 @@ Every context engineering strategy maps to one of these four levers.
 ]
 .card[
 .tag.s-tag[SELECT]
-**Pull the right context per step.** Retrieval, agentic search, tool loadout.
+**Pull the right context per step.** Retrieval, agentic search, tool loadout, skills.
 ]
 .card[
 .tag.c-tag[COMPRESS]
@@ -407,6 +441,8 @@ class: middle
 
 **Claude Code uses grep/glob. No indexing. Just progressive disclosure.**
 
+*This same load-on-demand principle now ships as a packaged primitive — **Agent Skills** (Session 5).*
+
 .cite[[1] Lance Martin, "Context Engineering Discussion" (17:00) — [2] Anthropic, "Effective Context Engineering"]
 
 ---
@@ -517,19 +553,19 @@ Parallel agents make unstated assumptions that conflict. **The real frontier isn
 
 .grid-4[
 .card[
-.tag[LEAN]
+.tag.w-tag[LEAN]
 Remove everything the agent doesn't need for the next decision.
 ]
 .card[
-.tag[COMPLETE]
+.tag.c-tag[COMPLETE]
 Preserve all info critical for the current task.
 ]
 .card[
-.tag[FRESH]
+.tag.i-tag[FRESH]
 Prioritize recent, validated context over stale history.
 ]
 .card[
-.tag[STRUCTURED]
+.tag.s-tag[STRUCTURED]
 Organize so the model can navigate efficiently.
 ]
 ]
@@ -673,11 +709,11 @@ The agent treats its own bad output as ground truth.
 
 > Context grows so long that the model over-focuses on it and neglects training knowledge.
 
-**Gemini 2.5 Pro:** decreased performance beyond **100K tokens** despite a 1M+ window — defaulted to **repeating past actions**.
+**Chroma's "Context Rot" study (2025):** across **18 frontier models** (GPT-4.1, Claude Opus 4, Gemini 2.5 Pro), accuracy dropped **20–50%** between 10K and 100K tokens — abrupt **"cliffs,"** not gradual decline.
 
-Llama 3.1 405B hit its distraction ceiling at ~32K tokens.
+Published context window ≠ usable context window.
 
-.cite[[1] Drew Breunig, "How Long Contexts Fail" — [2] Anthropic, "Effective Context Engineering"]
+.cite[[1] Chroma, "Context Rot" (2025) — [2] Drew Breunig, "How Long Contexts Fail" — [3] Anthropic, "Effective Context Engineering"]
 
 ---
 
@@ -713,7 +749,7 @@ Every model performs worse with more tools.
 
 **Then Isolate** — keep "nice-to-have" context in separate fields. Inject only when required.
 
-*Supporting: Drew Breunig's "Tool Loadout" — DeepSeek-v3 fails at 100+ tools.*
+*Supporting: Drew Breunig's "Tool Loadout" — DeepSeek-v3 fails at 100+ tools. **Agent Skills** apply the same idea to instructions — capabilities load only when triggered (Session 5).*
 
 .cite[[1] Drew Breunig, "How to Fix Your Context" — [2] Lance Martin (8:10)]
 
@@ -847,7 +883,7 @@ Hot/warm/cold layers loaded by role or trigger.
 ]
 .card[
 .tag.c-tag[DYNAMIC]
-Agent discovers and fetches context on demand. Cursor, Claude Code.
+Agent discovers and fetches context on demand. Cursor, Claude Code, Agent Skills.
 ]
 .card[
 .tag.i-tag[SELF-IMPROVING]
@@ -877,9 +913,18 @@ Contexts evolve from execution feedback. ACE-style.
 
 # The paradox & what works
 
-- **Paradox:** agents follow CLAUDE.md — they use mentioned tools 1.6–2.5× more. But following costs **14–22% more reasoning tokens**. They work harder without solving better.
-- **What works:** human-written, **minimal**, only what the agent **genuinely can't infer** (build commands, package manager quirks, non-obvious conventions).
-- **Don't duplicate** info already in READMEs or code comments.
+.two-col[
+<div>
+<div class="col-head">THE PARADOX</div>
+Agents follow CLAUDE.md — they use mentioned tools <strong>1.6–2.5× more</strong>. But following costs <strong>14–22% more reasoning tokens</strong>. They work harder without solving better.
+</div>
+<div>
+<div class="col-head green">WHAT WORKS</div>
+Human-written, <strong>minimal</strong>, only what the agent <strong>genuinely can't infer</strong> (build commands, package manager quirks, non-obvious conventions).
+</div>
+]
+
+- *<strong>Don't duplicate</strong> info already in READMEs or code comments.*
 - **Instruction limit:** frontier LLMs follow ~150–200 instructions consistently. Claude Code's system prompt already uses ~50 — budget the rest carefully.
 
 .cite[[1] HumanLayer, "Writing a Good CLAUDE.md" — [2] Packmind, "Writing AI Coding Agent Context Files" — [3] Gloaguen et al.]
@@ -898,7 +943,9 @@ At session start, ask the model to **find and load reference materials** with it
 
 *Static file becomes a routing table, not a content dump.*
 
-.cite[[1] Chris Dzombak, "LLM Q&A Technique: Context Priming" — [2] Martin Fowler, "Context Engineering for Coding Agents"]
+**Agent Skills package this pattern:** the name + one-line description stay resident; the full instructions load only when the skill is triggered.
+
+.cite[[1] Chris Dzombak, "LLM Q&A Technique: Context Priming" — [2] Martin Fowler, "Context Engineering for Coding Agents" — [3] Anthropic, "Agent Skills" (Oct 2025)]
 
 ---
 
@@ -947,8 +994,6 @@ class: middle
 ---
 
 .eyebrow-label[04 / Tool design]
-
-# 80% → 100%
 
 .stat[
 <div class="hero">80% → 100%</div>
@@ -1007,6 +1052,8 @@ Skills stored as files with brief name/description exposed statically. When a ta
 
 ---
 
+class: small-table
+
 # Pattern selection guide
 
 | Situation | Pattern | Why |
@@ -1014,6 +1061,7 @@ Skills stored as files with brief name/description exposed statically. When a ta
 | Stable project conventions | Minimal CLAUDE.md | Rarely changes |
 | Topic-specific research | Context priming at session start | Fetches current docs |
 | Large codebases, many tools | Dynamic discovery + tool consolidation | Avoids confusion |
+| Packaged, reusable expertise | Skill (`SKILL.md`, loaded on demand) | Progressive disclosure |
 | Long-running multi-step agents | Tiered architecture + filesystem | Hot/cold separation |
 | Multi-agent systems | Communication over shared context | Manus pattern |
 | Repetitive learnable workflows | Self-improving contexts (ACE) | No manual maintenance |
@@ -1083,6 +1131,7 @@ class: title
 - **Hooks** — lifecycle events (`post-tool-use`, `pre-commit`) for sidecar files
 - **Sub-agents** — isolated context windows, summary-only return
 - **MCP servers** — bring your tools to the agent
+- **Skills** — `SKILL.md` folders loaded just-in-time (progressive disclosure)
 
 *Each primitive maps to one of the four levers from Session 1.*
 
@@ -1148,6 +1197,20 @@ Model Context Protocol = a standard way to expose tools, resources, and prompts 
 - One configuration → works across editors and CLIs
 
 *Composable context primitives, vendor-agnostic.*
+
+---
+
+# Skills: progressive disclosure as a primitive
+
+A **skill** is a folder — a `SKILL.md` plus optional scripts — the agent loads **only when the task needs it**.
+
+- **At startup:** only the name + one-line description (~30–80 tokens) sit in context
+- **On trigger:** the full `SKILL.md` body loads; bundled scripts run without ever entering the window
+- **Open standard** (Dec 2025) — portable across Claude Code, Cursor, and 25+ other platforms
+
+**The Select lever, productized: instructions pulled just-in-time instead of carried always-on.** Contrast CLAUDE.md (always-on) with a skill (load-on-demand).
+
+.cite[[1] Anthropic, "Equipping Agents for the Real World with Agent Skills" (Oct 2025) — [2] SKILL.md open standard (Dec 2025)]
 
 ---
 
