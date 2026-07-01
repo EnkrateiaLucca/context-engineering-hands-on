@@ -1,0 +1,10 @@
+Software Engineer | Full-time | Lisbon, Portugal | Engineering | Build backend services in Python and Go | Apply: careers@acmetech.example
+Frontend Developer | Full-time | Remote (EU) | Engineering | Develop React and TypeScript web applications | Apply: careers@acmetech.example
+Data Scientist | Full-time | Porto, Portugal | Data | Build predictive models and analytics pipelines | Apply: careers@acmetech.example
+DevOps Engineer | Full-time | Hybrid | Infrastructure | Manage Kubernetes, CI/CD, and cloud platforms | Apply: careers@acmetech.example
+Product Manager | Full-time | Lisbon, Portugal | Product | Lead roadmap and cross-functional delivery | Apply: careers@acmetech.example
+UX/UI Designer | Full-time | Remote | Design | Design user-centered web and mobile experiences | Apply: careers@acmetech.example
+QA Automation Engineer | Full-time | Braga, Portugal | Quality Assurance | Build automated testing frameworks | Apply: careers@acmetech.example
+AI Engineer | Full-time | Lisbon, Portugal | AI | Develop LLM-powered applications and agents | Apply: careers@acmetech.example
+Technical Support Specialist | Full-time | Remote | Customer Success | Resolve technical issues and assist customers | Apply: careers@acmetech.example
+Sales Executive | Full-time | Lisbon, Portugal | Sales | Grow enterprise accounts and manage client relationships | Apply: careers@acmetech.example

@@ -1,0 +1,13 @@
+Coding an agent from scratch is undeniably the best way to learn context engineering 
+because it forces you to confront every decision about what information goes into 
+the context window, when it gets added, and why it matters — there are no abstractions
+hiding the complexity from you. When you build an agent by hand, you must deliberately
+design how the agent perceives its environment, retains memory, manages conversation
+history, and passes instructions across multiple steps, making every trade-off in token
+usage, relevance, and structure immediately visible and consequential. Frameworks and
+pre-built tools can scaffold these decisions for you, but they also obscure the reasoning
+behind them; building from scratch means you feel the pain of a bloated or poorly structured
+context firsthand, and you develop an intuition for crafting prompts and state management
+that no tutorial or high-level library can replicate. This hands-on struggle transforms
+context engineering from an abstract concept into a deeply understood skill, because you
+are not just consuming a pattern — you are inventing it, breaking it, and refining it in real time.
