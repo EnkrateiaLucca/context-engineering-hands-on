@@ -3,15 +3,13 @@
 # requires-python = ">=3.11"
 # dependencies = [
 #   "anthropic>=0.115.0",
-#   "prompt-toolkit==3.0.52",
 # ]
 # ///
 import os
 import anthropic
-# import prompt_toolkit
 
 MAX_ROUNDS = 10
-MODEL_NAME = "claude-sonnet-4-6"
+MODEL_NAME = "claude-sonnet-5"
 SYSTEM_PROMPT = "You are a helpful assistant that can search the web, create and read files."
 
 
@@ -50,7 +48,7 @@ def search_files(folder_path: str):
 def get_tool_definitions():
     """Definitions for the tools the agent will use."""
     tool_defs = [
-        {"type": "web_search_20260209", "name": "web_search"},
+        {"type": "web_search_20260209", "name": "web_search", "allowed_callers": ["direct"]},
         {
             "name": "read_file",
             "description": "Function that reads a .txt or .md file.",

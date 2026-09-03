@@ -29,7 +29,7 @@ from fastapi.requests import Request
 from fastapi.responses import HTMLResponse, JSONResponse
 from pydantic import BaseModel, Field
 
-MODEL = "claude-sonnet-4-6"
+MODEL = "claude-sonnet-5"
 
 client = anthropic.Anthropic()
 app = FastAPI()

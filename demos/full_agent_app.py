@@ -126,7 +126,7 @@ docs_server = create_sdk_mcp_server(
 )
 
 OPTIONS = ClaudeAgentOptions(
-    model="claude-sonnet-4-6",
+    model="claude-sonnet-5",
     system_prompt=SYSTEM_PROMPT,
     mcp_servers={"docs": docs_server},
     allowed_tools=[

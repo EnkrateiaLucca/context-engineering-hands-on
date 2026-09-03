@@ -34,7 +34,7 @@ from fastapi.staticfiles import StaticFiles
 
 from schemas import ArtifactRegistry, get_artifact_descriptions, get_artifact_tool
 
-MODEL = "claude-sonnet-4-6"
+MODEL = "claude-sonnet-5"
 
 # ─── TEACHING MOMENT ──────────────────────────────────────────────
 # The system prompt is built from 3 layers, each with a different
