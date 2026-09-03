@@ -28,3 +28,7 @@ walkthrough.md
 
 # MCP server artifacts
 .playwright-mcp/
+
+# Course process artifacts (not student-facing content)
+Plans/
+research/
