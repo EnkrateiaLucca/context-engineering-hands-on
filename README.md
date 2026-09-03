@@ -13,11 +13,13 @@ Five sessions across ~4.5 hours: slides, live demos, and hands-on code — all r
 
 | Session | Topic | Demo |
 |---------|-------|------|
+| 1 | Introduction to Context Engineering | Taught live — no committed demo |
 | 2 | Engineering Context in Agentic Systems | Hand-rolled agent loop with TF-IDF retrieval |
 | 2 / 4 | Context Engineering in Modern AI Apps | FastAPI chat app with structured artifact output |
+| 3 | Diagnosing and Fixing Context Failures | Taught live — no committed demo |
+| 5 | Tools and Techniques for Modern Development | Taught live in Claude Code — no committed demo directory |
 | Bonus | Agentic RAG via the Agent SDK | `full_agent_app.py` — custom MCP tools over the knowledge base |
 | Bonus | Context Engineering Chat Agent Overview | From-scratch tool-use agent loop, quiz app, structured-output primer |
-| 5 | Tools and Techniques for Modern Development | Taught live in Claude Code — no committed demo directory |
 
 ---
 

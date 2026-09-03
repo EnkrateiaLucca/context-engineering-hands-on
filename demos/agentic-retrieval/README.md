@@ -35,9 +35,6 @@ A hands-on demo showing how context flows through an agent loop with retrieval t
 ```bash
 # Run the main demo
 uv run app.py
-
-# Run the bonus Agent SDK version
-uv run agent_sdk_example.py
 ```
 
 No virtual environment or `pip install` needed — uv handles dependencies automatically.
@@ -77,7 +74,7 @@ Try these queries in order to see context grow across turns:
 | Tool results entering context | `agent.py` → `tool_result` append |
 | Tool definitions as fixed cost | `tools.py` → `get_tool_definitions()` |
 | Selecting context (retrieval) | `retrieval.py` → `KnowledgeBase.search()` |
-| Framework vs manual tradeoff | Compare `app.py` (~100 lines) vs `agent_sdk_example.py` (~60 lines) |
+| Framework vs manual tradeoff | Compare `agent.py` (hand-rolled loop, ~245 lines) vs `../full_agent_app.py` (claude-agent-sdk version over the same `knowledge_base/`, ~184 lines) |
 
 ## File Overview
 
@@ -94,6 +91,5 @@ Try these queries in order to see context grow across turns:
 │   ├── rag-patterns.md
 │   ├── context-failures.md
 │   └── manus-architecture.md
-├── agent_sdk_example.py      # Bonus: Agent SDK version (~60 lines)
 └── README.md                 # This file
 ```
