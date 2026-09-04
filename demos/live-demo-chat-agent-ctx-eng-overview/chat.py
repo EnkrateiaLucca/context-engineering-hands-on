@@ -3,10 +3,14 @@
 # requires-python = ">=3.11"
 # dependencies = [
 #   "anthropic>=0.115.0",
+#   "python-dotenv",
 # ]
 # ///
 import os
 import anthropic
+from dotenv import load_dotenv
+
+load_dotenv()
 
 MAX_ROUNDS = 10
 MODEL_NAME = "claude-sonnet-5"

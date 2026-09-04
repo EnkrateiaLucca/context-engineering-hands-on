@@ -270,4 +270,4 @@ if __name__ == "__main__":
     print("Starting Chat with Artifacts...")
     print("  Open: http://127.0.0.1:8000")
     print("  Press Ctrl+C to stop\n")
-    uvicorn.run(app, host="127.0.0.1", port=8001)
+    uvicorn.run(app, host="127.0.0.1", port=8000)
