@@ -21,6 +21,9 @@ venv/
 *.pickle
 *.h5
 
+# Runtime state (prompt-toolkit history, etc.)
+.chat_history
+
 # IDE
 .idea/
 .vscode/
@@ -28,3 +31,7 @@ walkthrough.md
 
 # MCP server artifacts
 .playwright-mcp/
+
+# Course process artifacts (not student-facing content)
+Plans/
+research/

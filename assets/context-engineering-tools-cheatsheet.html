@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Context Engineering Tools &amp; Patterns — Cheatsheet</title>
+<style>
+  @page {
+    size: letter;
+    margin: 14mm 13mm 12mm 13mm;
+    @bottom-center {
+      content: "Hands-On Context Engineering — O'Reilly Live Training · Lucas Soares · 2026    ·    page " counter(page) " / " counter(pages);
+      font-family: "DejaVu Sans", sans-serif;
+      font-size: 7pt;
+      color: #8a8378;
+    }
+  }
+
+  body {
+    font-family: "DejaVu Sans", "Inter", sans-serif;
+    font-size: 8.6pt;
+    line-height: 1.42;
+    color: #1a1a1a;
+    margin: 0;
+  }
+
+  h1 {
+    font-size: 19pt;
+    margin: 0 0 1mm;
+    letter-spacing: -0.3pt;
+  }
+  .subtitle {
+    font-size: 8.5pt;
+    color: #6b655c;
+    margin: 0 0 4mm;
+    padding-bottom: 3mm;
+    border-bottom: 2.5pt solid #1a1a1a;
+  }
+
+  h2 {
+    font-size: 11pt;
+    margin: 5mm 0 2mm;
+    padding-bottom: 1mm;
+    border-bottom: 1pt solid #d4cdb8;
+    color: #1a1a1a;
+    break-after: avoid;
+  }
+  h3 {
+    font-size: 9pt;
+    margin: 3.5mm 0 1.5mm;
+    color: #b85c1f;
+    letter-spacing: 0.2pt;
+    break-after: avoid;
+  }
+  .lede {
+    font-size: 8.2pt;
+    color: #55504a;
+    margin: -1mm 0 2mm;
+    font-style: italic;
+  }
+
+  ul { margin: 0 0 2mm; padding-left: 4.5mm; }
+  li { margin-bottom: 1.4mm; break-inside: avoid; }
+
+  .tag { font-weight: bold; letter-spacing: 0.3pt; }
+  .w { color: #b85c1f; }
+  .s { color: #c89020; }
+  .c { color: #4d8a3a; }
+  .i { color: #4078a8; }
+
+  .callout {
+    border-left: 3pt solid #d9a441;
+    background: #fbf6e8;
+    padding: 2mm 3mm;
+    margin: 2.5mm 0 3mm;
+    font-size: 8.2pt;
+    break-inside: avoid;
+  }
+  .callout .label {
+    display: block;
+    font-weight: bold;
+    font-size: 7pt;
+    letter-spacing: 1pt;
+    color: #b85c1f;
+    margin-bottom: 0.8mm;
+  }
+  .callout.alert { border-left-color: #c0392b; background: #fbefed; }
+  .callout.alert .label { color: #c0392b; }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 7.8pt;
+    margin: 1.5mm 0 3mm;
+    break-inside: avoid;
+  }
+  th {
+    background: #1a1a1a;
+    color: #f5f0e6;
+    text-align: left;
+    padding: 1.4mm 2mm;
+    font-size: 7pt;
+    letter-spacing: 0.5pt;
+    text-transform: uppercase;
+  }
+  td {
+    padding: 1.4mm 2mm;
+    border-bottom: 0.5pt solid #ddd5c0;
+    vertical-align: top;
+  }
+  tr:nth-child(even) td { background: #faf7ee; }
+  td:first-child { font-weight: bold; color: #b85c1f; white-space: nowrap; }
+
+  code {
+    font-family: "DejaVu Sans Mono", monospace;
+    font-size: 7.6pt;
+    background: #ebe4d4;
+    padding: 0.2mm 1mm;
+    border-radius: 1pt;
+  }
+
+  .cols { column-count: 2; column-gap: 6mm; }
+  .cols > * { break-inside: avoid; }
+
+  .principles li { margin-bottom: 1.8mm; }
+  .principles strong { color: #1a1a1a; }
+</style>
+</head>
+<body>
+
+<h1>Context Engineering Tools &amp; Patterns</h1>
+<p class="subtitle">Cheatsheet · Hands-On Context Engineering — O'Reilly Live Training · Lucas Soares</p>
+
+<div class="callout">
+  <span class="label">WHAT IT IS</span>
+  Context engineering is the discipline of designing the architecture that feeds an LLM the right information at the
+  right time. It transforms high-entropy human intentions into low-entropy representations machines can process.
+  Unlike humans, machines cannot "fill in the gaps."
+</div>
+
+<h2>The Four Context Operations (W / S / C / I)</h2>
+<p class="lede">Every context engineering strategy maps to one of these four fundamental operations.</p>
+<ul>
+  <li><span class="tag w">WRITE</span> — Create context that doesn't exist yet. Plans, instructions, scratchpads,
+      learned knowledge, memories. Agent writes files for future reference.</li>
+  <li><span class="tag s">SELECT</span> — Choose the most relevant context from available sources. Semantic search,
+      structural search (grep/glob), adaptive retrieval, dynamic tool loading.</li>
+  <li><span class="tag c">COMPRESS</span> — Reduce size while preserving essential information. Summarization,
+      pruning, offloading to disk, spawning sub-agents for token-heavy operations.</li>
+  <li><span class="tag i">ISOLATE</span> — Separate context types to prevent interference. Sub-agent isolation,
+      dynamic tool loading, working-memory scratchpads, state objects.</li>
+</ul>
+
+<h2>The Four Context Failure Modes</h2>
+<p class="lede">Drew Breunig's taxonomy — each mode has distinct symptoms and specific fix levers.</p>
+<ul>
+  <li><span class="tag w">POISONING</span> — Hallucination enters context and compounds. Agent treats its own prior
+      output as ground truth. <em>Signal:</em> bad fact reappears across steps. <em>Fix:</em> Isolate + Select</li>
+  <li><span class="tag s">DISTRACTION</span> — Too much history causes the agent to repeat past behaviour instead of
+      reasoning fresh. <em>Signal:</em> agent repeats prior actions. <em>Fix:</em> Compress + Select</li>
+  <li><span class="tag c">CONFUSION</span> — Irrelevant tools or documents crowd the context, leading to wrong tool
+      selection. <em>Signal:</em> irrelevant tools/docs selected. <em>Fix:</em> Select + Isolate</li>
+  <li><span class="tag i">CLASH</span> — Contradictory information creates conflicting assumptions and unreliable
+      output. <em>Signal:</em> flip-flopping between approaches. <em>Fix:</em> Isolate + Select</li>
+</ul>
+
+<h2>Quick Reference: Failures to Fixes</h2>
+<table>
+  <thead>
+    <tr><th>Failure</th><th>Primary fix</th><th>Supporting fix</th><th>Move</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Poisoning</td><td>Isolate + Select</td><td>Write (claims + sources)</td>
+        <td>Prune hallucinated turns, add validation instructions</td></tr>
+    <tr><td>Distraction</td><td>Compress + Select</td><td>Write (persistent plan)</td>
+        <td>Summarize stale history, select a smaller working set</td></tr>
+    <tr><td>Confusion</td><td>Select + Isolate</td><td>Tool loadout (dynamic)</td>
+        <td>Load only relevant tools per step, isolate nice-to-have context</td></tr>
+    <tr><td>Clash</td><td>Isolate + Select</td><td>Compress (resolved summary)</td>
+        <td>Quarantine tasks into separate contexts, set precedence rules</td></tr>
+  </tbody>
+</table>
+
+<h2>The Five-Step Debugging Loop</h2>
+<ul>
+  <li><strong>1. Inspect trace</strong> — Walk through messages, tool calls, and outputs turn by turn.</li>
+  <li><strong>2. Tag failure</strong> — Which mode? Poisoning / Distraction / Confusion / Clash.</li>
+  <li><strong>3. Pick a lever</strong> — Use the Write / Select / Compress / Isolate framework.</li>
+  <li><strong>4. Re-run &amp; evaluate</strong> — Track token usage per step <em>and</em> measure outcome quality.</li>
+  <li><strong>5. Iterate</strong> — Context engineering is iterative, not one-shot.</li>
+</ul>
+
+<div class="callout alert">
+  <span class="label">DON'T OPTIMIZE THE WRONG THING</span>
+  Don't just optimize for fewer tokens — measure outcome quality. A fix that reduces tokens but degrades results is
+  worse than no fix at all.
+</div>
+
+<h2>The Context Budget Problem</h2>
+<p class="lede">Every agent must make critical decisions about its finite context budget.</p>
+<ul>
+  <li><strong>Keep active</strong> — What stays in the context window right now?</li>
+  <li><strong>Store externally</strong> — What goes to disk or a database for later?</li>
+  <li><strong>Compress</strong> — What can be summarized to save space?</li>
+  <li><strong>Reserve</strong> — How much capacity is left for reasoning?</li>
+</ul>
+
+<div class="callout">
+  <span class="label">BIGGER WINDOWS ARE NOT BETTER</span>
+  Models support 100K, 200K, even 1M+ tokens — but performance degrades well before the limit. Gemini 2.5 Pro showed
+  decreased performance beyond 100K tokens; Llama 3.1 405B hit its distraction ceiling at ~32K.
+  <strong>2026 update — the ceiling moved, but it did not disappear:</strong> on MRCR v2 (8-needle) at 1M tokens,
+  reported scores still split hard — Claude Opus 4.6 76%, GPT-5.4 36.6%, Gemini 3 Pro 24.5%. Same nominal window,
+  very different <em>usable</em> window. (Vendor-reported; MRCR measures retrieval, not distraction.)
+</div>
+
+<h2>Context Prioritization Hierarchy</h2>
+<ul>
+  <li><span class="tag w">CRITICAL</span> (always include) — Current code/content being modified, specific error
+      messages, expected output format, active task requirements.</li>
+  <li><span class="tag s">HELPFUL</span> (include if space permits) — Project structure, dependencies in use, coding
+      conventions, related documentation.</li>
+  <li><span class="tag c">OPTIONAL</span> (only if needed) — Historical decisions, future plans, tangential examples,
+      background reference.</li>
+</ul>
+
+<h2>Production Patterns from Real Systems</h2>
+
+<h3>The Static-to-Dynamic Spectrum</h3>
+<ul>
+  <li><strong>Static</strong> — Always loaded (<code>CLAUDE.md</code>, <code>.cursorrules</code>). Predictable but
+      stale; always costs tokens.</li>
+  <li><strong>Tiered</strong> — Hot/warm/cold layers loaded by role or trigger. Structured, requires infrastructure.</li>
+  <li><strong>Dynamic</strong> — Agent discovers and fetches on demand (Cursor, Claude Code grep/glob). Token-efficient,
+      always fresh.</li>
+  <li><strong>Self-improving</strong> — Contexts evolve based on execution feedback (ACE framework). No manual
+      maintenance.</li>
+</ul>
+
+<h3>Manus's 5 Production Strategies</h3>
+<ul>
+  <li><strong>Context compaction &amp; summarization</strong> — Reversible compaction (store file paths, not contents)
+      plus lossy summarization triggered around 128K tokens.</li>
+  <li><strong>Communication over shared context</strong> — Fresh sub-agents for discrete tasks instead of sharing full
+      conversation history.</li>
+  <li><strong>Hierarchical action spaces</strong> — Limit visible tools to ~20 atomic tools. Level 2: sandbox
+      utilities. Level 3: code libraries.</li>
+  <li><strong>Agent-as-tool pattern</strong> — Sub-agents as deterministic functions with defined inputs, outputs, and
+      JSON schemas.</li>
+  <li><strong>Implementation best practices</strong> — Avoid dynamic RAG-based tool retrieval (breaks KV cache). Set
+      pre-rot thresholds at 70–80% utilization.</li>
+</ul>
+
+<h3>Static Context Files: The ETH Zurich Study</h3>
+<ul>
+  <li><strong>−3% success rate</strong> — LLM-generated context files actually hurt performance.</li>
+  <li><strong>+4% success rate</strong> — Human-written context files give marginal improvement.</li>
+  <li><strong>+20% cost</strong> across both file types (14–22% more reasoning tokens).</li>
+  <li><strong>Best practice</strong> — Keep it minimal (10–20 lines), specific tooling only, don't duplicate README
+      content, review quarterly.</li>
+</ul>
+
+<h2>Key Retrieval Approaches</h2>
+<ul>
+  <li><strong>Vector store (RAG)</strong> — Classic chunking + embeddings + similarity search. Requires indexing and
+      chunking decisions.</li>
+  <li><strong>Agentic search</strong> — An <code>llm.txt</code> file with URLs + descriptions; the agent fetches docs on
+      demand. Extremely effective with good descriptions.</li>
+  <li><strong>Context stuffing</strong> — Feed all docs directly to the agent. Brute force; expensive and degrades
+      quality.</li>
+  <li><strong>Progressive disclosure</strong> — Start small, expand as needed. File paths and links first; load full
+      content only when needed.</li>
+</ul>
+
+<h2>The Compression Toolkit</h2>
+<ul>
+  <li><strong>Prompted summarization</strong> — Compress with high recall. Exhaustive bullets so the agent knows
+      whether to re-fetch the full context.</li>
+  <li><strong>Auto-compaction</strong> — Automatic compression nearing limits. Claude Code auto-compacts at 95%
+      capacity.</li>
+  <li><strong>Trimming</strong> — Selective removal using heuristics. Keep only recent N messages, or LLM-scored
+      relevance.</li>
+  <li><strong>Prompt caching</strong> — Avoid re-sending invariant context. System prompts and tool definitions:
+      cache, don't reprocess.</li>
+  <li><strong>Context offloading</strong> — Write full results to disk, return a summary plus a pointer. The agent
+      fetches on demand.</li>
+</ul>
+
+<div class="callout alert">
+  <span class="label">ORDER MATTERS</span>
+  Summarization is lossy. Always offload to disk <em>before</em> summarizing, so the raw context survives as a safety
+  net.
+</div>
+
+<h2>Course Demos Quick Reference</h2>
+<p class="lede">Every demo runs with <code>uv run</code> — no global install or virtualenv needed. Set
+<code>ANTHROPIC_API_KEY</code> in your environment, or drop a <code>.env</code> in the demo directory.</p>
+
+<h3>Session 1 — Introduction to Context Engineering <span style="color:#6b655c;font-weight:normal">(taught live, no committed demo)</span></h3>
+<ul>
+  <li><code>/context</code> — Make the context window visible (see what the model sees).</li>
+  <li><code>/cost</code> — Track token consumption per session. <code>/clear</code> — Reset to demonstrate context-rot
+      recovery.</li>
+  <li><strong>Read tool</strong> — Ground the model in documents; beats parametric memory.
+      <strong>CLAUDE.md</strong> — Static context file as persistent instructions.</li>
+  <li><strong>Lost in the middle</strong> — Same question, same document: answer quality depends on <em>where</em> the
+      fact sits.</li>
+</ul>
+
+<h3>Session 2 — Agentic Document Retrieval (interactive TUI)</h3>
+<p class="lede">Run: <code>uv run app.py</code> in <code>demos/agentic-retrieval/</code></p>
+<ul>
+  <li><strong>Hand-rolled agent loop</strong> — <code>self.messages</code> <em>is</em> the context window, made explicit
+      and inspectable.</li>
+  <li><strong>Progressive disclosure</strong> — <code>list_documents</code> (cheap) → <code>search_documents</code>
+      (moderate) → <code>get_document</code> (expensive).</li>
+  <li>System prompt ~200 tokens (WRITE lever); tool definitions ~800 tokens of fixed overhead per call.</li>
+  <li>TF-IDF search with scikit-learn — no vector DB needed for small knowledge bases.</li>
+  <li>Slash commands: <code>/context</code> shows the live messages array, <code>/stats</code> shows token counts.</li>
+  <li><em>Teaching point:</em> every <code>append()</code> to messages is a permanent token cost.</li>
+</ul>
+
+<h3>Session 2 / 4 — Chat with Artifacts (web app)</h3>
+<p class="lede">Run: <code>uv run app.py</code> in <code>demos/chat-with-artifacts/</code> → open
+<code>http://127.0.0.1:8000</code></p>
+<ul>
+  <li><strong>Layered system prompt</strong> — Layer 1 (fixed persona ~150 tok) + Layer 2 (static artifact schemas
+      ~400 tok) + Layer 3 (dynamic state 0–200 tok).</li>
+  <li>7 artifact types: <code>selectable_options</code>, <code>flashcard_deck</code>, <code>checklist</code>,
+      <code>flowchart</code>, <code>semantic_zoom</code>, <code>inline_quiz</code>, <code>concept_explorer</code>.</li>
+  <li><strong>Structured output via <code>tool_choice</code></strong> — guaranteed JSON matching the schema. "The
+      prompt provides the content; the schema provides the shape."</li>
+  <li><strong>ArtifactRegistry</strong> injects dynamic context: tracks what's been created, tells the model to build
+      on existing artifacts.</li>
+  <li><code>structured_outputs_demo.py</code> — same prompt, 3 schemas, 3 output shapes, same input cost.</li>
+</ul>
+
+<h3>Session 3 — Diagnosing &amp; Fixing Context Failures <span style="color:#6b655c;font-weight:normal">(taught live, no committed demo)</span></h3>
+<ul>
+  <li><strong>Poisoning</strong> — A hallucinated feature compounds across turns. <em>Fix:</em> prune + validation
+      instruction.</li>
+  <li><strong>Distraction</strong> — Verbose brute-force turns bias the model away from the optimal solution.
+      <em>Fix:</em> summarize to a one-liner.</li>
+  <li><strong>Confusion</strong> — A dozen irrelevant tool schemas (~2,400 tokens of overhead) for a simple factual
+      question. <em>Fix:</em> remove the tools.</li>
+  <li><strong>Clash</strong> — A budget trip plan contradicts later luxury requirements. <em>Fix:</em> prune the old
+      plan, add a CURRENT REQUIREMENTS override.</li>
+  <li>Work each scenario broken-vs-fixed, comparing real token cost against outcome quality.</li>
+</ul>
+
+<h3>Bonus — Agentic RAG via the Agent SDK</h3>
+<p class="lede">Run: <code>uv run demos/full_agent_app.py</code> (optionally with a folder path)</p>
+<ul>
+  <li>Custom MCP tools over the knowledge base, driven by <code>claude-agent-sdk</code>.</li>
+  <li>Shows the same progressive-disclosure retrieval shape as Session 2, but wired through the SDK.</li>
+</ul>
+
+<h3>Bonus — Context Engineering Chat Agent Overview</h3>
+<p class="lede">In <code>demos/live-demo-chat-agent-ctx-eng-overview/</code></p>
+<ul>
+  <li><code>uv run chat.py</code> — from-scratch tool-use agent loop.</li>
+  <li><code>uv run quiz_app.py</code> — quiz app, then open <code>http://127.0.0.1:8501</code>.</li>
+  <li><code>uv run structured_output_example.py</code> — minimal structured-output primer.</li>
+</ul>
+
+<h3>Session 5 — Tools &amp; Techniques <span style="color:#6b655c;font-weight:normal">(taught live in Claude Code, no committed demo)</span></h3>
+<ul>
+  <li>Claude Code primitives: <code>CLAUDE.md</code> as a routing table, custom slash commands, hooks, sub-agents, MCP.</li>
+</ul>
+
+<h2>Key Numbers to Remember</h2>
+<ul>
+  <li><strong>500K tokens</strong> per run for naive deep-research agents · <strong>$1–2</strong> per single agent run.</li>
+  <li><strong>~50–100 tool calls</strong> in production agents · <strong>83.9%</strong> of context consumed by tool
+      outputs.</li>
+  <li><strong>n² attention complexity</strong> — more tokens means exponentially more pairwise relationships to score.</li>
+  <li><strong>95% capacity</strong> — Claude Code auto-compaction trigger · <strong>70–80%</strong> — Manus pre-rot
+      threshold.</li>
+  <li><strong>46.9%</strong> token reduction from Cursor's dynamic context discovery · <strong>44%</strong> performance
+      improvement from dynamic tool loading.</li>
+  <li><strong>~150–200 instructions</strong> — frontier-LLM instruction-following limit; Claude Code's system prompt
+      already uses ~50.</li>
+</ul>
+
+<h2>Core Principles</h2>
+<div class="callout">
+  <span class="label">THE ONE-LINE VERSION</span>
+  "Find the smallest set of high-signal tokens that maximize the likelihood of your desired outcome."
+  — Anthropic, <em>Effective Context Engineering for AI Agents</em>
+</div>
+<ul class="principles">
+  <li><strong>Context engineering is entropy reduction</strong> — high-entropy intentions into low-entropy
+      representations machines understand.</li>
+  <li><strong>Systems, not prompts</strong> — the full architecture of information flow: storage, management, usage.</li>
+  <li><strong>Four operations: Write, Select, Compress, Isolate</strong> — every strategy maps to one of these.</li>
+  <li><strong>Quality over quantity</strong> — bigger windows don't help; focused, relevant, well-managed context does.</li>
+  <li><strong>Context hygiene is continuous</strong> — monitor, prune, refresh, and validate throughout the lifecycle.</li>
+  <li><strong>Agentic retrieval beats naive RAG</strong> — simple tools (grep/glob) with progressive disclosure
+      outperform complex pipelines.</li>
+  <li><strong>Read tasks parallelize, write tasks don't</strong> — sub-agents for research, single-threaded execution
+      for code generation.</li>
+  <li><strong>Offload before you summarize</strong> — save raw context to disk first, then compress. Summarization is
+      lossy.</li>
+</ul>
+
+</body>
+</html>

@@ -44,7 +44,7 @@ Available tools:
 - list_documents: See all available documents and their metadata
 """
 
-MODEL = "claude-sonnet-4-6"
+MODEL = "claude-sonnet-5"
 MAX_TOOL_ROUNDS = 10  # Safety limit to prevent infinite tool loops
 
 

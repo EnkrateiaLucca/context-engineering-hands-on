@@ -43,14 +43,50 @@
       color: #2a2a2a;
     }
 
-    /* Handout-only citation footer */
+    /* Tables inherit the card language: white field, dark header, ruled rows.
+       Without this they fall back to browser defaults — no rules, no padding,
+       auto-sized columns — which reads as misaligned. */
+    .remark-slide-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.6em;
+      font-size: 0.78em;
+      background: #fff;
+      border: 2px solid #1a1a1a;
+    }
+    .remark-slide-content th, .remark-slide-content td {
+      text-align: left;
+      vertical-align: top;
+      padding: 0.5em 0.7em;
+      border-bottom: 1px solid #ddd5c0;
+    }
+    .remark-slide-content thead th {
+      background: #1a1a1a;
+      color: #f5f0e6;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-size: 0.85em;
+    }
+    .remark-slide-content tbody tr:last-child td { border-bottom: none; }
+    .remark-slide-content tbody tr:nth-child(even) td { background: #faf7ee; }
+    .remark-slide-content tbody td:first-child { font-weight: 700; color: #b85c1f; }
+
+    /* Handout-only citation footer.
+       px (not em) so the inset is measured against the 24px slide font, matching
+       the 2em side padding of .remark-slide-content — .cite's own em is 0.55 of it. */
     .cite {
       position: absolute;
-      bottom: 0.6em; left: 2em; right: 2em;
+      bottom: 12px; left: 48px; right: 48px;
       font-size: 0.55em;
       color: #888;
       border-top: 1px solid #d4cdb8;
       padding-top: 0.4em;
+    }
+    /* Page number shares the citation's footer band: same baseline, same right edge */
+    .remark-slide-number {
+      bottom: 12px; right: 48px;
+      font-size: 0.55em;
     }
 
     /* TITLE slides */
@@ -93,12 +129,20 @@
     .two-col .col-head { font-weight: 700; color: #b85c1f; margin-bottom: 0.4em; letter-spacing: 0.05em; }
     .two-col .col-head.green { color: #4d8a3a; }
     .two-col .col-head.blue  { color: #4078a8; }
+    /* Concrete example sits on its own line, under the claim it illustrates */
+    .two-col .example { display: block; margin-top: 0.5em; }
 
     .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0.8em; margin-top: 0.5em; }
-    .grid-4 .card { background: #fff; border: 2px solid #1a1a1a; padding: 0.8em; }
+    /* 4-up columns are only ~260px wide. Stepping the card body down buys the
+       label enough room to stay on one line (AUTO-COMPACT, SELF-IMPROVING) while
+       still reading larger than the body it heads. */
+    .grid-4 .card { background: #fff; border: 2px solid #1a1a1a; padding: 0.8em 0.55em; font-size: 0.85em; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8em; margin-top: 0.5em; }
     .grid-3 .card { background: #fff; border: 2px solid #1a1a1a; padding: 0.8em; }
-    .grid-3 .tag, .grid-4 .tag { font-weight: 700; font-size: 0.8em; letter-spacing: 0.08em; }
+    /* Card label reads as a heading: larger than the card body, on its own line */
+    .grid-3 .tag, .grid-4 .tag { font-weight: 700; letter-spacing: 0.08em; display: block; margin-bottom: 0.3em; }
+    .grid-3 .tag { font-size: 1.15em; }
+    .grid-4 .tag { font-size: 1.15em; letter-spacing: 0.03em; white-space: nowrap; }
     .grid-3 .w-tag, .grid-4 .w-tag { color: #b85c1f; }
     .grid-3 .s-tag, .grid-4 .s-tag { color: #c89020; }
     .grid-3 .c-tag, .grid-4 .c-tag { color: #4d8a3a; }
@@ -110,7 +154,9 @@
     .takeaways li .body strong { display: block; font-size: 1em; }
     .takeaways li .body span { color: #555; font-size: 0.8em; display: block; margin-top: 0.1em; }
 
-    .stat-attrib { text-align: center; color: #777; font-size: 0.65em; margin-top: 0.8em; font-style: italic; }
+    /* remark renders .class[...] as an inline span, so this must be display:block
+       or text-align is inert and the line sits flush left under a centred stat. */
+    .stat-attrib { display: block; text-align: center; color: #777; font-size: 0.65em; margin-top: 2em; font-style: italic; }
 
     .refs ol { list-style: none; padding-left: 0; }
     .refs li { margin-bottom: 0.5em; font-size: 0.75em; }
@@ -188,9 +234,20 @@ Context engineering = orchestrating the entire information system around the mod
 
 # The context window is RAM
 
-**CPU** = the LLM (the reasoning engine)
-**RAM** = the context window (active working memory)
-**Disk** = vector DBs, files, APIs (external storage)
+.grid-3[
+.card[
+.tag.w-tag[CPU]
+**The LLM.** The reasoning engine.
+]
+.card[
+.tag.c-tag[RAM]
+**The context window.** Active working memory.
+]
+.card[
+.tag.i-tag[DISK]
+**Vector DBs, files, APIs.** External storage.
+]
+]
 
 *Once RAM fills, older information gets evicted. Important details can vanish.*
 
@@ -479,11 +536,13 @@ Cache invariant context — system prompts, tool defs. **Don't reprocess.**
 .two-col[
 <div>
 <div class="col-head green">READ TASKS ✓</div>
-Sub-agents collect info in parallel; <strong>one</strong> writer synthesizes at the end. Example: Anthropic's deep researcher.
+Sub-agents collect info in parallel; <strong>one</strong> writer synthesizes at the end.
+<span class="example">Example: Anthropic's deep researcher.</span>
 </div>
 <div>
 <div class="col-head">WRITE TASKS ✗</div>
-Parallel writers make <strong>contradictory choices</strong> that compound. Example: Flappy Bird sub-agents built mismatched assets.
+Parallel writers make <strong>contradictory choices</strong> that compound.
+<span class="example">Example: Flappy Bird sub-agents built mismatched assets.</span>
 </div>
 ]
 
@@ -677,7 +736,9 @@ The agent treats its own bad output as ground truth.
 
 Llama 3.1 405B hit its distraction ceiling at ~32K tokens.
 
-.cite[[1] Drew Breunig, "How Long Contexts Fail" — [2] Anthropic, "Effective Context Engineering"]
+**2026 — the ceiling moved, but it did not disappear.** MRCR v2 (8-needle) at **1M tokens**: Claude Opus 4.6 **76%**, GPT-5.4 **36.6%**, Gemini 3 Pro **24.5%**. Same nominal window, very different *usable* window.
+
+.cite[[1] Drew Breunig, "How Long Contexts Fail" — [2] Anthropic, "Effective Context Engineering" — [3] MRCR v2 8-needle, vendor-reported (2026)]
 
 ---
 
@@ -1153,7 +1214,7 @@ Model Context Protocol = a standard way to expose tools, resources, and prompts 
 
 # The cheatsheet
 
-**`assets/context-engineering-tools-cheatsheet.pdf`** — every pattern from the five sessions on a printable two-page reference.
+**`assets/context-engineering-tools-cheatsheet.pdf`** — every pattern from the five sessions on a printable four-page reference.
 
 - W / S / C / I lever cheatsheet
 - Four failure modes + matched fixes

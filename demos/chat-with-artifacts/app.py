@@ -34,7 +34,7 @@ from fastapi.staticfiles import StaticFiles
 
 from schemas import ArtifactRegistry, get_artifact_descriptions, get_artifact_tool
 
-MODEL = "claude-sonnet-4-6"
+MODEL = "claude-sonnet-5"
 
 # ─── TEACHING MOMENT ──────────────────────────────────────────────
 # The system prompt is built from 3 layers, each with a different
@@ -270,4 +270,4 @@ if __name__ == "__main__":
     print("Starting Chat with Artifacts...")
     print("  Open: http://127.0.0.1:8000")
     print("  Press Ctrl+C to stop\n")
-    uvicorn.run(app, host="127.0.0.1", port=8001)
+    uvicorn.run(app, host="127.0.0.1", port=8000)

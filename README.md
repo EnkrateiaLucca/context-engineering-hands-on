@@ -1,4 +1,4 @@
-> **TL;DR** — 5 sessions, 4 runnable demos, 1 notebook.
+> **TL;DR** — 5 sessions, 4 runnable demos.
 > `export ANTHROPIC_API_KEY=… && cd demos/<name> && uv run app.py`
 
 # Context Engineering Hands-On
@@ -13,11 +13,13 @@ Five sessions across ~4.5 hours: slides, live demos, and hands-on code — all r
 
 | Session | Topic | Demo |
 |---------|-------|------|
-| 1 | Introduction to Context Engineering | Claude Code live demo scripts |
+| 1 | Introduction to Context Engineering | Taught live — no committed demo |
 | 2 | Engineering Context in Agentic Systems | Hand-rolled agent loop with TF-IDF retrieval |
 | 2 / 4 | Context Engineering in Modern AI Apps | FastAPI chat app with structured artifact output |
-| 3 | Diagnosing and Fixing Context Failures | Jupyter notebook — four failure modes |
-| 5 | Tools and Techniques for Modern Development | *(coming soon)* |
+| 3 | Diagnosing and Fixing Context Failures | Taught live — no committed demo |
+| 5 | Tools and Techniques for Modern Development | Taught live in Claude Code — no committed demo directory |
+| Bonus | Agentic RAG via the Agent SDK | `full_agent_app.py` — custom MCP tools over the knowledge base |
+| Bonus | Context Engineering Chat Agent Overview | From-scratch tool-use agent loop, quiz app, structured-output primer |
 
 ---
 
@@ -57,40 +59,6 @@ No global `pip install` or virtual environment needed — every demo uses `uv ru
 ---
 
 ## Demos
-
-### Session 1 — Claude Code Live Demos
-
-**Directory:** `demos/ctx-engineering-principles-claude-code/`
-
-This is a **live instructor demo** — no Python script to run. Follow the guide in your terminal using Claude Code.
-
-**Files:**
-- `live-demo-guide.md` — Step-by-step demo script (5 demos, ~30 min)
-- `context-window-guide.md` — Supporting reference: context window mechanics
-- `long-doc-middle.txt` / `long-doc-top.txt` — Documents used in the "Lost in the Middle" demo
-
-**Prerequisites:**
-
-```bash
-# Install Claude Code
-npm install -g @anthropic-ai/claude-code
-
-# Verify it works
-claude -p "hello"
-```
-
-**Running the demo:**
-
-Open `live-demo-guide.md` and follow the instructions. Each demo section tells you exactly what to type in the Claude Code terminal, what to expect, and what to highlight for the audience.
-
-**What's demonstrated:**
-- Demo 1: What's already in the context window before you type anything
-- Demo 2: Context rot — how accumulated irrelevant context degrades output quality
-- Demo 3: Lost in the Middle — how information position affects retrieval
-- Demo 4: Grounding vs. memory — why `Read <file>` beats parametric recall
-- Demo 5: All 7 Playbook rules in rapid succession
-
----
 
 ### Session 2 — Agentic Document Retrieval
 
@@ -159,95 +127,58 @@ Then open **http://127.0.0.1:8000** in your browser.
 
 ---
 
-### Session 3 — Context Failures Notebook
+### Agentic RAG via the Agent SDK
 
-**Directory:** `demos/context-failures/`
+**Directory:** `demos/full_agent_app.py` (single script; uses `demos/agentic-retrieval/knowledge_base/` by default)
 
-A Jupyter notebook walking through all four LLM context failure modes: Poisoning, Distraction, Confusion, and Clash. Each section runs a **broken** version, then a **fixed** version, and compares token costs side by side.
+A simplified agentic-RAG CLI built on `claude-agent-sdk` instead of a hand-rolled loop — a framework-assisted counterpoint to the Session 2 demo above.
 
-#### Kernel Setup (required before first run)
-
-The notebook uses `anthropic` and `IPython.display` — you need a Jupyter kernel that has these installed.
-
-**Option A — Install into an existing kernel (quickest):**
+**Run:**
 
 ```bash
-cd demos/context-failures
-pip install anthropic ipython jupyter
+uv run demos/full_agent_app.py
+# or point it at a different folder of .md files
+uv run demos/full_agent_app.py path/to/folder
 ```
 
-If you already have Jupyter installed system-wide, this is enough. Open the notebook and select your default kernel.
-
-**Option B — Dedicated uv environment (recommended for isolation):**
-
-```bash
-cd demos/context-failures
-
-# Create a virtual environment and install dependencies
-uv venv .venv
-source .venv/bin/activate          # Windows: .venv\Scripts\activate
-uv pip install anthropic ipython jupyter ipykernel
-
-# Register it as a named Jupyter kernel
-python -m ipykernel install --user --name context-failures --display-name "Context Failures (uv)"
-```
-
-Then launch Jupyter:
-
-```bash
-jupyter notebook context_failures.ipynb
-# or
-jupyter lab
-```
-
-When the notebook opens, select **"Context Failures (uv)"** from the kernel picker (top-right or Kernel menu).
-
-**Option C — VS Code / Cursor:**
-
-Open `context_failures.ipynb` in VS Code/Cursor. When prompted to select a kernel, choose the `.venv` interpreter at `demos/context-failures/.venv/bin/python`. VS Code will detect it automatically if you created the venv inside the demo directory.
-
-#### API Key Setup
-
-The notebook reads `ANTHROPIC_API_KEY` from the environment. Set it before launching Jupyter:
-
-```bash
-export ANTHROPIC_API_KEY=sk-ant-...
-jupyter notebook context_failures.ipynb
-```
-
-Or create a `.env` file in the demo directory — the notebook's setup cell will pick it up if you add a `load_dotenv()` call, or just export it in the shell that launches Jupyter.
-
-**Verify the key is visible:**
-
-```python
-# Run this in a notebook cell to confirm
-import os
-print(os.environ.get("ANTHROPIC_API_KEY", "NOT SET"))
-```
-
-#### Running the Notebook
-
-Run cells **top to bottom** — the `results` dict accumulates outputs used in the final dashboard. Don't skip the setup cell (Section 0).
-
-**What's covered:**
-
-| Section | Failure Mode | What Goes Wrong | Fix Applied |
-|---------|-------------|-----------------|-------------|
-| 1 | Poisoning | Hallucinated assistant message overrides system prompt | Context pruning + validation instruction |
-| 2 | Distraction | Prior brute-force examples bias model away from DP solution | Context quarantine + summarization |
-| 3 | Confusion | 12 irrelevant tool schemas overwhelm a simple factual question | Tool loadout (remove unused tools) |
-| 4 | Clash | Budget and luxury travel plans coexist, producing incoherent output | Pruning + state replacement |
-| 5 | Dashboard | Side-by-side token comparison for all four failures | — |
-
-Each failure cell is self-contained — you can run them independently if you only want to demonstrate one.
+**What's demonstrated:**
+- Three custom MCP tools (`list_docs`, `read_doc`, `search_docs`) registered via `create_sdk_mcp_server` and exposed to Claude through `ClaudeAgentOptions`
+- Claude decides when to search vs. read a full file, guided by a "search first, then read the top 1-2 files" instruction in the system prompt
+- Framework vs. manual tradeoff — contrast the ~185 lines here with `agentic-retrieval/agent.py`
+- Uses `claude-sonnet-5`
 
 ---
 
-### Session 5 — Tools and Techniques *(coming soon)*
+### Context Engineering Chat Agent Overview
 
-**Directory:** `demos/ctx-engineering-tools-claude-code/`
+**Directory:** `demos/live-demo-chat-agent-ctx-eng-overview/`
 
-This demo is a placeholder for Session 5 content on advanced context engineering tools and patterns for production systems.
+**Files:**
+- `chat.py` — a from-scratch tool-use agent loop (no framework) with `create_file`, `read_file`, `search_files` tools plus Claude's built-in web search
+- `quiz_app.py` — a small FastAPI chat-driven quiz generator using structured output (`messages.parse`)
+- `structured_output_example.py` — a minimal ~30-line primer for `messages.parse`
+- `company_job_openings.txt`, `lucas-rocks-in-live-sessions.txt` — grounding fixtures read by `chat.py`'s tools to show grounding vs. parametric recall
+
+**Run:**
+
+```bash
+uv run demos/live-demo-chat-agent-ctx-eng-overview/chat.py
+uv run demos/live-demo-chat-agent-ctx-eng-overview/quiz_app.py   # then open http://127.0.0.1:8501
+uv run demos/live-demo-chat-agent-ctx-eng-overview/structured_output_example.py
+```
+
+**What's demonstrated:**
+- Explicit context window management in a hand-rolled agent loop (`Agent.messages`)
+- A tool-use cycle built from scratch: `create_file` / `read_file` / `search_files` + built-in web search
+- Grounding vs. memory — reading the fixture `.txt` files beats parametric recall
+- Structured output via `messages.parse`, from a minimal primer to a full quiz app with a browser UI
+- Uses `claude-sonnet-5`
+
+---
+
+### Session 5 — Tools and Techniques
+
+Taught live in Claude Code during the session — no committed demo directory. Covers advanced context engineering tools and patterns for production systems using Claude Code itself as the demo environment.
 
 ---
 
@@ -258,7 +189,6 @@ context-engineering-hands-on/
 ├── presentation-slides/                   # Slide decks (.html — remark.js live + handout)
 ├── assets/                                # Reference PDFs (attention paper, cheatsheets)
 └── demos/
-    ├── ctx-engineering-principles-claude-code/  # Session 1 — Claude Code live demo guide
     ├── agentic-retrieval/                       # Session 2 — hand-rolled agent loop
     │   ├── app.py                               # Entry point (TUI + slash commands)
     │   ├── agent.py                             # Agent loop — THE core teaching file
@@ -269,9 +199,15 @@ context-engineering-hands-on/
     ├── chat-with-artifacts/                     # Session 2/4 — FastAPI app
     │   ├── app.py                               # FastAPI backend
     │   ├── schemas.py                           # Artifact type schemas
+    │   ├── structured_outputs_demo.py           # Bonus: minimal structured-outputs primer
     │   └── static/index.html                    # Single-file frontend
-    └── context-failures/                        # Session 3 — Jupyter notebook
-        └── context_failures.ipynb               # Four failure modes, broken + fixed
+    ├── full_agent_app.py                        # Agentic RAG via claude-agent-sdk MCP tools
+    └── live-demo-chat-agent-ctx-eng-overview/    # From-scratch chat agent + quiz app + structured-output primer
+        ├── chat.py                               # From-scratch tool-use agent loop
+        ├── quiz_app.py                           # FastAPI chat-driven quiz generator
+        ├── structured_output_example.py          # Minimal messages.parse primer
+        ├── company_job_openings.txt              # Grounding fixture
+        └── lucas-rocks-in-live-sessions.txt       # Grounding fixture
 ```
 
 ---
@@ -294,14 +230,6 @@ export ANTHROPIC_API_KEY=sk-ant-...
 curl -LsSf https://astral.sh/uv/install.sh | sh
 # Then restart your terminal
 ```
-
-**Jupyter kernel not finding the API key**
-
-Jupyter inherits environment variables from the shell that launched it. Always `export ANTHROPIC_API_KEY=...` *before* running `jupyter notebook`, not after.
-
-**`ModuleNotFoundError: No module named 'anthropic'` in the notebook**
-
-Your selected kernel doesn't have the package installed. Either install it into the active kernel (`pip install anthropic`) or switch to the kernel you created with `ipykernel install` (see Option B above).
 
 **Port 8000 already in use (chat-with-artifacts)**
 

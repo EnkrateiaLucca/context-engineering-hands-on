@@ -1,5 +1,12 @@
+# /// script
+# requires-python = ">=3.12"
+# dependencies = ["anthropic", "pydantic", "python-dotenv"]
+# ///
 from pydantic import BaseModel
 from anthropic import Anthropic
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 class Quiz(BaseModel):
@@ -17,7 +24,7 @@ for building personal automations.
 """
 
 response = client.messages.parse(
-    model="claude-sonnet-4-6",
+    model="claude-sonnet-5",
     max_tokens=1024,
     messages=[
         {

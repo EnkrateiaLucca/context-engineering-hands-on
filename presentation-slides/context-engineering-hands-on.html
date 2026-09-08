@@ -41,6 +41,35 @@
       color: #2a2a2a;
     }
 
+    /* Tables inherit the card language: white field, dark header, ruled rows.
+       Without this they fall back to browser defaults — no rules, no padding,
+       auto-sized columns — which reads as misaligned. */
+    .remark-slide-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.6em;
+      font-size: 0.78em;
+      background: #fff;
+      border: 2px solid #1a1a1a;
+    }
+    .remark-slide-content th, .remark-slide-content td {
+      text-align: left;
+      vertical-align: top;
+      padding: 0.5em 0.7em;
+      border-bottom: 1px solid #ddd5c0;
+    }
+    .remark-slide-content thead th {
+      background: #1a1a1a;
+      color: #f5f0e6;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-size: 0.85em;
+    }
+    .remark-slide-content tbody tr:last-child td { border-bottom: none; }
+    .remark-slide-content tbody tr:nth-child(even) td { background: #faf7ee; }
+    .remark-slide-content tbody td:first-child { font-weight: 700; color: #b85c1f; }
+
     /* TITLE slides — dark, four-color top bar */
     .title {
       background: #1c1c1c;
@@ -112,14 +141,22 @@
     .two-col .col-head { font-weight: 700; color: #b85c1f; margin-bottom: 0.4em; letter-spacing: 0.05em; }
     .two-col .col-head.green { color: #4d8a3a; }
     .two-col .col-head.blue  { color: #4078a8; }
+    /* Concrete example sits on its own line, under the claim it illustrates */
+    .two-col .example { display: block; margin-top: 0.5em; }
     .two-col .col-head.amber { color: #c89020; }
 
     /* 4-CARD grid (use sparingly — kept for the one essential W/S/C/I slide) */
     .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0.8em; margin-top: 0.5em; }
-    .grid-4 .card { background: #fff; border: 2px solid #1a1a1a; padding: 0.8em; }
+    /* 4-up columns are only ~260px wide. Stepping the card body down buys the
+       label enough room to stay on one line (AUTO-COMPACT, SELF-IMPROVING) while
+       still reading larger than the body it heads. */
+    .grid-4 .card { background: #fff; border: 2px solid #1a1a1a; padding: 0.8em 0.55em; font-size: 0.85em; }
     .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8em; margin-top: 0.5em; }
     .grid-3 .card { background: #fff; border: 2px solid #1a1a1a; padding: 0.8em; }
-    .grid-3 .tag, .grid-4 .tag { font-weight: 700; font-size: 0.8em; letter-spacing: 0.08em; }
+    /* Card label reads as a heading: larger than the card body, on its own line */
+    .grid-3 .tag, .grid-4 .tag { font-weight: 700; letter-spacing: 0.08em; display: block; margin-bottom: 0.3em; }
+    .grid-3 .tag { font-size: 1.15em; }
+    .grid-4 .tag { font-size: 1.15em; letter-spacing: 0.03em; white-space: nowrap; }
     .grid-3 .w-tag, .grid-4 .w-tag { color: #b85c1f; }
     .grid-3 .s-tag, .grid-4 .s-tag { color: #c89020; }
     .grid-3 .c-tag, .grid-4 .c-tag { color: #4d8a3a; }
@@ -140,10 +177,13 @@
     .takeaways li .body strong { display: block; font-size: 1em; }
     .takeaways li .body span { color: #555; font-size: 0.8em; display: block; margin-top: 0.1em; }
 
-    /* Small attribution line for hero-stat slides only */
+    /* Small attribution line for hero-stat slides only.
+       remark renders .class[...] as an inline span, so this must be display:block
+       or text-align is inert and the line sits flush left under a centred stat. */
     .stat-attrib {
+      display: block;
       text-align: center; color: #777; font-size: 0.65em;
-      margin-top: 0.8em; font-style: italic;
+      margin-top: 2em; font-style: italic;
     }
   </style>
 </head>
@@ -231,9 +271,20 @@ This is the Anthropic "Effective Context Engineering" diagram in one sentence. I
 
 # The context window is RAM
 
-**CPU** = the LLM (the reasoning engine)
-**RAM** = the context window (active working memory)
-**Disk** = vector DBs, files, APIs (external storage)
+.grid-3[
+.card[
+.tag.w-tag[CPU]
+**The LLM.** The reasoning engine.
+]
+.card[
+.tag.c-tag[RAM]
+**The context window.** Active working memory.
+]
+.card[
+.tag.i-tag[DISK]
+**Vector DBs, files, APIs.** External storage.
+]
+]
 
 *Once RAM fills, older information gets evicted. Important details can vanish.*
 
@@ -556,11 +607,13 @@ The Anthropic deep-research pattern. Detailed search context stays inside sub-ag
 .two-col[
 <div>
 <div class="col-head green">READ TASKS ✓</div>
-Sub-agents collect info in parallel; <strong>one</strong> writer synthesizes at the end. Example: Anthropic's deep researcher.
+Sub-agents collect info in parallel; <strong>one</strong> writer synthesizes at the end.
+<span class="example">Example: Anthropic's deep researcher.</span>
 </div>
 <div>
 <div class="col-head">WRITE TASKS ✗</div>
-Parallel writers make <strong>contradictory choices</strong> that compound. Example: Flappy Bird sub-agents built mismatched Super Mario assets.
+Parallel writers make <strong>contradictory choices</strong> that compound.
+<span class="example">Example: Flappy Bird sub-agents built mismatched Super Mario assets.</span>
 </div>
 ]
 
@@ -665,7 +718,7 @@ class: title
 .footer[Hands-On Context Engineering<span>O'Reilly Live Training · Lucas Soares</span>]
 
 ???
-S3 is the most-tactical session. Students leave with: a taxonomy, a debugging loop, and a hands-on notebook for each failure.
+S3 is the most-tactical session. Students leave with: a taxonomy and a debugging loop for each failure, reinforced by the cheatsheet PDF.
 
 ---
 
@@ -762,8 +815,12 @@ Map back to the W/S/C/I framework explicitly. This is the pedagogical payoff for
 
 Llama 3.1 405B hit its distraction ceiling at ~32K tokens.
 
+**2026 — the ceiling moved, but it did not disappear.** MRCR v2 (8-needle) at **1M tokens**: Claude Opus 4.6 **76%**, GPT-5.4 **36.6%**, Gemini 3 Pro **24.5%**. Same nominal window, very different *usable* window.
+
 ???
 The 100K number is empirically observed, not theoretical. The lesson: published context window ≠ usable context window.
+
+On the 2026 line: MRCR is a *retrieval* benchmark, not a distraction benchmark — say so if asked. It's here to show the gap between nominal and usable window is still large in 2026, even though the absolute numbers improved. The Opus 4.6 figure is vendor-reported and not yet independently verified.
 
 ---
 
@@ -889,7 +946,7 @@ The 95% and 54% numbers are real from the LangChain context-engineering writeups
 ]
 
 ???
-Land the diagnosis-then-fix discipline. The hands-on notebook covers all four failures with broken-vs-fixed comparisons.
+Land the diagnosis-then-fix discipline. The taxonomy and the debugging loop are the toolkit students take into their own agents, reinforced by the cheatsheet PDF.
 
 ---
 
@@ -1144,7 +1201,7 @@ class: title
 .footer[Hands-On Context Engineering<span>O'Reilly Live Training · Lucas Soares</span>]
 
 ???
-45 minutes. Slides are scaffolding for the demo. The cheatsheet PDF is the real deliverable students take home.
+45 minutes. Slides are scaffolding for a live Claude Code demonstration. The cheatsheet PDF is the real deliverable students take home.
 
 ---
 
@@ -1221,7 +1278,7 @@ The parent agent sees only the **summary** the sub-agent returns. Token-heavy ex
 *This is the Anthropic deep-research pattern, available as a built-in primitive.*
 
 ???
-Sub-agents are the cleanest implementation of S2's Isolate lever. Demo: the agent_tool_for_claude_code.py sub-agent that this repo's CLAUDE.md references.
+Sub-agents are the cleanest implementation of S2's Isolate lever.
 
 ---
 
@@ -1242,7 +1299,7 @@ Quick MCP intro — students may or may not have used it. Demo connecting one MC
 
 # The cheatsheet
 
-**`assets/context-engineering-tools-cheatsheet.pdf`** — every pattern from the five sessions on a printable two-page reference.
+**`assets/context-engineering-tools-cheatsheet.pdf`** — every pattern from the five sessions on a printable four-page reference.
 
 - W / S / C / I lever cheatsheet
 - Four failure modes + matched fixes
