@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Context Engineering — The Basics</title>
+  <!--
+    Live presenter deck. Sparse, citation-free, ~25-40 words per slide.
+    Handout variant (with footers + extra context) lives in:
+      context-engineering-hands-on-handout.html  (Option A — separate file)
+    Edit the live deck first; then mirror structural changes into the handout.
+  -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
+
+    body { font-family: 'Inter', -apple-system, sans-serif; }
+
+    .remark-slide-content {
+      background: #f5f0e6;
+      color: #1a1a1a;
+      padding: 1.2em 2em;
+      font-size: 26px;
+      line-height: 1.4;
+    }
+    .remark-slide-content h1 { font-size: 1.7em; font-weight: 800; margin: 0.2em 0 0.4em; }
+    .remark-slide-content h2 { font-size: 1.25em; font-weight: 600; margin: 0.2em 0; color: #444; }
+    .remark-slide-content strong { font-weight: 700; }
+    .remark-slide-content em { color: #555; }
+    .remark-slide-content code, .remark-slide-content tt {
+      font-family: 'JetBrains Mono', monospace;
+      background: #ebe4d4;
+      padding: 0.05em 0.3em;
+      border-radius: 3px;
+      font-size: 0.9em;
+    }
+    .remark-slide-content blockquote {
+      border-left: 4px solid #d9a441;
+      padding: 0.4em 1em;
+      margin: 0.6em 0;
+      background: #fbf6e8;
+      font-style: italic;
+      color: #2a2a2a;
+    }
+
+    /* Tables inherit the card language: white field, dark header, ruled rows.
+       Without this they fall back to browser defaults — no rules, no padding,
+       auto-sized columns — which reads as misaligned. */
+    .remark-slide-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.6em;
+      font-size: 0.78em;
+      background: #fff;
+      border: 2px solid #1a1a1a;
+    }
+    .remark-slide-content th, .remark-slide-content td {
+      text-align: left;
+      vertical-align: top;
+      padding: 0.5em 0.7em;
+      border-bottom: 1px solid #ddd5c0;
+    }
+    .remark-slide-content thead th {
+      background: #1a1a1a;
+      color: #f5f0e6;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      font-size: 0.85em;
+    }
+    .remark-slide-content tbody tr:last-child td { border-bottom: none; }
+    .remark-slide-content tbody tr:nth-child(even) td { background: #faf7ee; }
+    .remark-slide-content tbody td:first-child { font-weight: 700; color: #b85c1f; }
+
+    /* TITLE slides — dark, four-color top bar */
+    .title {
+      background: #1c1c1c;
+      color: #f5f0e6;
+      padding: 4em 2.5em 2em;
+      border-top: 12px solid;
+      border-image: linear-gradient(to right, #e26b5a 0%, #e26b5a 25%, #e7c548 25%, #e7c548 50%, #7eb069 50%, #7eb069 75%, #66a3d2 75%, #66a3d2 100%) 1;
+    }
+    .title h1 { font-size: 2.4em; line-height: 1.05; margin-bottom: 0.2em; color: #f5f0e6; }
+    .title h2 { color: #c9c4b5; font-weight: 400; font-size: 1.05em; }
+    .title .session-label {
+      color: #e7c548; font-size: 0.75em; letter-spacing: 0.2em;
+      font-weight: 700; margin-bottom: 1em;
+    }
+    .title .footer {
+      position: absolute; bottom: 1.5em; left: 2.5em;
+      color: #e7c548; font-size: 0.6em; font-weight: 600;
+    }
+    .title .footer span { color: #888; font-weight: 400; display: block; margin-top: 0.2em; }
+
+    /* EYEBROW label above slide headline */
+    .eyebrow-label {
+      color: #b85c1f; font-size: 0.6em; letter-spacing: 0.15em;
+      font-weight: 700; text-transform: uppercase; margin-bottom: 0.2em;
+    }
+
+    /* SINGLE-STAT hero */
+    .stat {
+      text-align: center;
+      padding-top: 1.5em;
+    }
+    .stat .hero {
+      font-size: 5.5em;
+      font-weight: 800;
+      color: #b85c1f;
+      line-height: 1;
+      margin: 0.2em 0;
+    }
+    .stat .hero.green { color: #4d8a3a; }
+    .stat .hero.blue  { color: #4078a8; }
+    .stat .caption {
+      font-size: 0.95em; color: #444; margin-top: 0.4em;
+    }
+
+    /* PULL QUOTE slide */
+    .quote-slide {
+      padding-top: 2em;
+      text-align: center;
+    }
+    .quote-slide .quote-body {
+      font-size: 1.5em;
+      font-style: italic;
+      color: #1a1a1a;
+      max-width: 22em;
+      margin: 0.5em auto;
+      line-height: 1.35;
+    }
+    .quote-slide .attrib {
+      font-size: 0.75em;
+      color: #777;
+      margin-top: 1em;
+      font-style: normal;
+      letter-spacing: 0.05em;
+    }
+
+    /* TWO-COLUMN compare */
+    .two-col { display: flex; gap: 1.5em; margin-top: 0.6em; }
+    .two-col > div { flex: 1; padding: 1em; border: 2px solid #1a1a1a; background: #fff; }
+    .two-col .col-head { font-weight: 700; color: #b85c1f; margin-bottom: 0.4em; letter-spacing: 0.05em; }
+    .two-col .col-head.green { color: #4d8a3a; }
+    .two-col .col-head.blue  { color: #4078a8; }
+    /* Concrete example sits on its own line, under the claim it illustrates */
+    .two-col .example { display: block; margin-top: 0.5em; }
+    .two-col .col-head.amber { color: #c89020; }
+
+    /* 4-CARD grid (use sparingly — kept for the one essential W/S/C/I slide) */
+    .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0.8em; margin-top: 0.5em; }
+    /* 4-up columns are only ~260px wide. Stepping the card body down buys the
+       label enough room to stay on one line (AUTO-COMPACT, SELF-IMPROVING) while
+       still reading larger than the body it heads. */
+    .grid-4 .card { background: #fff; border: 2px solid #1a1a1a; padding: 0.8em 0.55em; font-size: 0.85em; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.8em; margin-top: 0.5em; }
+    .grid-3 .card { background: #fff; border: 2px solid #1a1a1a; padding: 0.8em; }
+    /* Card label reads as a heading: larger than the card body, on its own line */
+    .grid-3 .tag, .grid-4 .tag { font-weight: 700; letter-spacing: 0.08em; display: block; margin-bottom: 0.3em; }
+    .grid-3 .tag { font-size: 1.15em; }
+    .grid-4 .tag { font-size: 1.15em; letter-spacing: 0.03em; white-space: nowrap; }
+    .grid-3 .w-tag, .grid-4 .w-tag { color: #b85c1f; }
+    .grid-3 .s-tag, .grid-4 .s-tag { color: #c89020; }
+    .grid-3 .c-tag, .grid-4 .c-tag { color: #4d8a3a; }
+    .grid-3 .i-tag, .grid-4 .i-tag { color: #4078a8; }
+
+    /* DIAGRAM-only slide centering */
+    .diagram-slide { text-align: center; padding-top: 0.8em; }
+    .diagram-slide img { max-width: 90%; max-height: 78vh; }
+
+    /* Numbered list / takeaways */
+    .takeaways ol { list-style: none; padding-left: 0; margin-top: 0.5em; }
+    .takeaways li { display: flex; align-items: flex-start; margin-bottom: 0.7em; }
+    .takeaways li .num {
+      display: inline-block; width: 1.7em; height: 1.7em; line-height: 1.7em;
+      background: #1a1a1a; color: #f5f0e6; text-align: center;
+      font-weight: 700; margin-right: 0.8em; flex-shrink: 0;
+    }
+    .takeaways li .body strong { display: block; font-size: 1em; }
+    .takeaways li .body span { color: #555; font-size: 0.8em; display: block; margin-top: 0.1em; }
+
+    /* Small attribution line for hero-stat slides only.
+       remark renders .class[...] as an inline span, so this must be display:block
+       or text-align is inert and the line sits flush left under a centred stat. */
+    .stat-attrib {
+      display: block;
+      text-align: center; color: #777; font-size: 0.65em;
+      margin-top: 2em; font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <textarea id="source">
+
+class: title
+
+.session-label[LIVE INTRO · 10 SLIDES]
+
+# Context Engineering: The Basics
+
+## Everything the model sees is a design decision.
+
+.footer[Hands-On Context Engineering<span>O'Reilly Live Training · Lucas Soares</span>]
+
+???
+10 slides, ~15 minutes. One mental model (context = RAM), one anatomy (what's actually in the messages array), one toolkit (Write / Select / Compress / Isolate). Each slide with a `demo:` note maps to a script in `../code/`.
+
+---
+
+# How do you get good outputs from LLMs?
+
+**`f(a, b, c, …) = good output`**
+
+*What are the variables?*
+
+--
+
+- The model
+- The instructions
+- The data you put in front of it
+- The tools it can call
+- Everything said so far
+
+**All of that, except the model, is *context*.**
+
+???
+Hook. Let the audience name variables for 30 seconds. Then reveal: it's all context. demo: `01_what_the_model_sees.py`
+
+---
+
+.eyebrow-label[DEFINITION]
+
+# Prompt engineering vs. context engineering
+
+.two-col[
+<div>
+<div class="col-head">PROMPT ENGINEERING</div>
+Writing and organizing <strong>instructions</strong>. A discrete task: you write it once.
+<span class="example"><em>"Find the right words for the system prompt."</em></span>
+</div>
+<div>
+<div class="col-head blue">CONTEXT ENGINEERING</div>
+Curating the <strong>optimal set of tokens</strong> at inference: instructions, tools, history, retrieved data, memory. Iterative: curation happens on every call.
+<span class="example"><em>"What configuration of context is most likely to produce the behavior we want?"</em></span>
+</div>
+]
+
+???
+Anthropic's framing: context engineering is "the natural progression of prompt engineering." Prompting was the whole job when most tasks were one-shot. Agents run in a loop and generate data every turn, so the curation phase repeats each time you decide what to pass to the model. Source: assets/anthropic-effective-context-engineering.md
+
+---
+
+.eyebrow-label[ANATOMY]
+
+# What the model actually sees
+
+| Slot | Example | Who controls it |
+|---|---|---|
+| System prompt | role, rules, format | you, static |
+| Tool definitions | `search_docs(query)` | you, static |
+| Conversation history | prior turns | grows per turn |
+| Retrieved / injected data | file contents, DB rows | your retrieval code |
+| Tool results | JSON blobs, logs | the tools |
+| User message | the question | the user |
+
+**One flat list of tokens. Goal: the smallest set of high-signal tokens that gets the outcome you want.**
+
+???
+Print the real `messages` array in the demo. Students are usually surprised how much of it is not the "prompt". Anthropic's per-slot guidance: system prompt at the "right altitude" (not brittle if-else logic, not vague hand-waving), sectioned with headers or XML tags; a minimal tool set with no overlap (if an engineer can't say which tool applies, the model can't either); a few diverse canonical examples instead of a laundry list of edge cases. demo: `01_what_the_model_sees.py`
+
+---
+
+class: center, middle
+
+.eyebrow-label[MENTAL MODEL]
+
+# Context is an attention budget
+
+**Every token attends to every other token: n² relationships. Every token you add spends some of the budget.**
+
+*A finite resource with diminishing marginal returns. 200k is a budget, not "unlimited".*
+
+???
+Anthropic's term: "attention budget." Transformers create n² pairwise relationships; as n grows, that attention gets stretched thin. Models also trained mostly on shorter sequences, so they have less practice with context-wide dependencies. RAM analogy still works: model = CPU, window = RAM, files/DB = disk. demo: `02_context_budget.py`
+
+---
+
+class: stat
+
+.eyebrow-label[CONTEXT ROT]
+
+.hero[more ≠ better]
+
+.caption[As tokens in the window increase, recall of what's in it decreases.<br>A **performance gradient**, not a cliff. Every model shows it; some degrade more gently.]
+
+.stat-attrib[Reproduce it live: needle-in-a-haystack, 0 → 40k filler words · Chroma "Context Rot" study in assets/]
+
+???
+Run the haystack demo. Same needle, same question, growing filler. Watch latency, cost, and (with enough noise + a subtle needle) correctness. Anthropic: "models remain highly capable at longer contexts but may show reduced precision for information retrieval and long-range reasoning." Waiting for bigger windows won't fix it: pollution and relevance problems apply at every size. demo: `02_context_budget.py`
+
+---
+
+.eyebrow-label[THE TOOLKIT]
+
+# Four moves
+
+.grid-4[
+.card[.tag.w-tag[WRITE] Structured note-taking: a NOTES.md or memory tool the agent reads back after a reset.]
+.card[.tag.s-tag[SELECT] Just-in-time retrieval: keep file paths and links, load the data only when needed.]
+.card[.tag.c-tag[COMPRESS] Compaction: summarize the history, clear old tool results, restart the window.]
+.card[.tag.i-tag[ISOLATE] Sub-agents: explore with 50k tokens, return a 1-2k summary to the lead.]
+]
+
+**Pick by task: compaction for back-and-forth, notes for milestones, sub-agents for parallel research.**
+
+???
+Anthropic's three long-horizon techniques (compaction, structured note-taking, sub-agent architectures) plus just-in-time retrieval map cleanly onto the four moves. Examples from the post: Claude Code compacts history and keeps the 5 most recent files; Claude playing Pokémon keeps tallies across thousands of steps in notes; research sub-agents burn tens of thousands of tokens each but return 1-2k. Cheapest compaction: tool result clearing. demo: `03_four_moves.py`
+
+---
+
+.eyebrow-label[WHERE IT BITES]
+
+# Agent loops grow context every turn
+
+```text
+turn 1:  system + tools + user                      ~1.2k tokens
+turn 2:  + tool call + 8k tool result               ~9.5k
+turn 3:  + tool call + 12k tool result              ~22k
+turn 8:  ...                                        ~140k  ← slow, expensive, distracted
+```
+
+**An agent is an LLM using tools in a loop. Nobody designed turn 8's context. It accumulated.**
+
+*Fix at the source: tools return identifiers and slices, not whole objects. `head`, `tail`, a stored query, a file path.*
+
+???
+Anthropic's definition of an agent: "LLMs autonomously using tools in a loop." The failure is emergent. Tool results are the biggest offender. The just-in-time pattern: Claude Code runs targeted queries and uses head/tail over large data without ever loading the full object. Hybrid is fine: CLAUDE.md dropped in up front, glob/grep for the rest. Show the growth curve, then apply compress (truncate results) and write (offload to file). demo: `04_agent_loop_growth.py`
+
+---
+
+.eyebrow-label[PLAYBOOK]
+
+# Treat context like a budget
+
+.takeaways[
+<ol>
+<li><span class="num">1</span><div class="body"><strong>Start minimal, with the best model.</strong><span>Add instructions and examples only for failure modes you actually observe.</span></div></li>
+<li><span class="num">2</span><div class="body"><strong>Measure it.</strong><span><code>count_tokens</code> on every call. You cannot manage what you don't see.</span></div></li>
+<li><span class="num">3</span><div class="body"><strong>Trim at the source.</strong><span>Token-efficient tools. Clear old tool results. Return the 20 lines that matter, not 500.</span></div></li>
+<li><span class="num">4</span><div class="body"><strong>Offload, don't accumulate.</strong><span>Notes and files outside the window; the window gets a pointer.</span></div></li>
+</ol>
+]
+
+???
+Anthropic's process: test a minimal prompt with the best model available, then add clear instructions and examples based on failure modes found in testing. "Minimal does not mean short." For compaction prompts: maximize recall first, then tune precision. Their closing advice: "do the simplest thing that works." Everything in later sessions is a refinement of these four lines.
+
+---
+
+class: title
+
+.session-label[RECAP]
+
+# Context is a finite resource
+
+## Find the smallest set of high-signal tokens that maximizes the likelihood of the outcome you want.
+
+.footer[Demos: `code/01` what the model sees · `02` budget & rot · `03` four moves · `04` loop growth<span>uv run &lt;script&gt;.py · needs ANTHROPIC_API_KEY</span>]
+
+???
+Close on Anthropic's one-line guiding principle. Smarter models need less prescriptive engineering, but context stays finite. Point at the four scripts. Every one is a single `uv run`. Sources: assets/anthropic-effective-context-engineering.md, assets/chroma-context-rot.md
+
+  </textarea>
+  <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+  <script>
+    var slideshow = remark.create({
+      ratio: '16:9',
+      countIncrementalSlides: false,
+      navigation: { scroll: false }
+    });
+  </script>
+</body>
+</html>
