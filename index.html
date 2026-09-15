@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Context Engineering Hands-On</title>
+<meta name="description" content="O'Reilly live training: design, manage, and optimize the context that flows into LLMs and agentic systems. 5 sessions, 4 runnable demos, 1 notebook.">
+<style>
+  :root{--ink:#1a1a1a;--paper:#f5f0e6;--gold:#e7c548;--rust:#b85c1f;--amber:#c89020;--green:#4d8a3a;--blue:#4078a8;--coral:#e26b5a;--muted:#5e5a52;--card:#fffdf8}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.55;padding-inline:20px}
+  code,pre{font-family:'JetBrains Mono',ui-monospace,Menlo,monospace}
+  main{max-width:960px;margin:0 auto}
+  header{padding-block:72px 40px}
+  .eyebrow{font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;color:var(--rust);font-weight:700}
+  h1{font-size:clamp(2.2rem,6vw,3.6rem);line-height:1.05;margin:.3em 0 .4em;letter-spacing:-.02em}
+  h1 em{font-style:normal;background:linear-gradient(transparent 60%,var(--gold) 60%)}
+  .lede{font-size:1.2rem;max-width:640px;color:var(--muted)}
+  .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+  .btn{display:inline-block;padding:12px 20px;border-radius:8px;font-weight:600;text-decoration:none;border:2px solid var(--ink)}
+  .btn.primary{background:var(--ink);color:var(--paper)}
+  .btn.ghost{color:var(--ink)}
+  .stats{display:flex;gap:28px;flex-wrap:wrap;margin-top:36px}
+  .stat b{display:block;font-size:2rem;line-height:1}
+  .stat span{font-size:.85rem;color:var(--muted)}
+  section{padding-block:40px;border-top:1px solid #d9d2c3}
+  h2{font-size:1.6rem;margin:0 0 20px;letter-spacing:-.01em}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+  .card{background:var(--card);border:1px solid #e3dccb;border-radius:12px;padding:20px;border-top:4px solid var(--c,var(--gold))}
+  .card .n{font-size:.75rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--c,var(--rust))}
+  .card h3{margin:6px 0 8px;font-size:1.1rem}
+  .card p{margin:0;color:var(--muted);font-size:.95rem}
+  .card code{font-size:.8rem;background:var(--paper);padding:2px 6px;border-radius:4px}
+  ul.plain{padding-left:1.2em;margin:0}
+  ul.plain li{margin-bottom:6px}
+  pre{background:var(--ink);color:var(--paper);padding:18px;border-radius:10px;overflow-x:auto;font-size:.9rem;margin:0}
+  pre .c{color:#a8a294}
+  footer{padding-block:40px;color:var(--muted);font-size:.9rem;border-top:1px solid #d9d2c3}
+  footer a{color:var(--rust)}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <div class="eyebrow">O'Reilly Live Training</div>
+  <h1>Context Engineering <em>Hands-On</em></h1>
+  <p class="lede">Learn how to design, manage, and optimize the context that flows into LLMs and agentic systems. Slides, live demos, and code you can run in minutes with <code>uv</code> and an Anthropic API key.</p>
+  <div class="cta">
+    <a class="btn primary" href="https://github.com/EnkrateiaLucca/context-engineering-hands-on">View the repo</a>
+    <a class="btn ghost" href="presentation-slides/context-engineering-hands-on.html">Open the slides</a>
+  </div>
+  <div class="stats">
+    <div class="stat"><b>5</b><span>sessions, ~4.5 hours</span></div>
+    <div class="stat"><b>4</b><span>runnable demos</span></div>
+    <div class="stat"><b>1</b><span>failure-modes notebook</span></div>
+  </div>
+</header>
+
+<section>
+  <h2>What you'll learn</h2>
+  <div class="grid">
+    <div class="card" style="--c:var(--gold)"><div class="n">Foundations</div><h3>Context is the product</h3><p>What lives in the context window before you type, why long context rots, and the four levers: Write, Select, Compress, Isolate.</p></div>
+    <div class="card" style="--c:var(--blue)"><div class="n">Agents</div><h3>Engineer the loop</h3><p>Scratchpads, memories, agentic retrieval vs. RAG, sub-agents, and static context files that keep multi-turn agents coherent.</p></div>
+    <div class="card" style="--c:var(--coral)"><div class="n">Debugging</div><h3>Diagnose failures</h3><p>Poisoning, Distraction, Confusion, and Clash. Reproduce each one, apply the fix, and compare token costs side by side.</p></div>
+    <div class="card" style="--c:var(--green)"><div class="n">Production</div><h3>Patterns that ship</h3><p>Structured outputs, dynamic context injection, tool design, and scheduled headless agents that run unattended.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>The five sessions</h2>
+  <div class="grid">
+    <div class="card" style="--c:var(--gold)"><div class="n">Session 1</div><h3>Introduction to Context Engineering</h3><p>Live Claude Code demos: context rot, lost in the middle, grounding vs. memory, and the 7-rule playbook.</p><p style="margin-top:10px"><code>demos/ctx-engineering-principles-claude-code/</code></p></div>
+    <div class="card" style="--c:var(--blue)"><div class="n">Session 2</div><h3>Engineering Context in Agentic Systems</h3><p>A hand-rolled agent loop with TF-IDF retrieval. Every context decision is visible. Inspect the raw messages with <code>/context</code> and <code>/stats</code>.</p><p style="margin-top:10px"><code>demos/agentic-retrieval/</code></p></div>
+    <div class="card" style="--c:var(--coral)"><div class="n">Session 3</div><h3>Diagnosing and Fixing Context Failures</h3><p>Jupyter notebook. Four failure modes, each run broken then fixed, with a token-cost dashboard at the end.</p><p style="margin-top:10px"><code>demos/context-failures/</code></p></div>
+    <div class="card" style="--c:var(--amber)"><div class="n">Session 4</div><h3>Context Engineering Patterns in Modern AI Apps</h3><p>FastAPI chat app with a 3-layer system prompt, a single <code>create_artifact</code> tool, and an artifact registry that grows back into context.</p><p style="margin-top:10px"><code>demos/chat-with-artifacts/</code></p></div>
+    <div class="card" style="--c:var(--green)"><div class="n">Session 5</div><h3>Tools and Techniques for Modern Development</h3><p>Put Claude Code on a cron schedule: daily digests, standup prep, dependency audits, nightly health checks.</p><p style="margin-top:10px"><code>demos/ctx-engineering-tools-claude-code/</code></p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Run a demo in 30 seconds</h2>
+  <pre><span class="c"># prerequisites: Python 3.12+, uv, an Anthropic API key</span>
+curl -LsSf https://astral.sh/uv/install.sh | sh
+export ANTHROPIC_API_KEY=sk-ant-...
+
+git clone https://github.com/EnkrateiaLucca/context-engineering-hands-on.git
+cd context-engineering-hands-on/demos/agentic-retrieval
+uv run app.py</pre>
+  <p style="color:var(--muted);margin-top:14px">No global installs, no virtualenvs. Each demo declares its own dependencies inline.</p>
+</section>
+
+<section>
+  <h2>What's in the repo</h2>
+  <ul class="plain">
+    <li><code>presentation-slides/</code> remark.js deck, handout, and PDF</li>
+    <li><code>assets/</code> the attention paper and the context engineering tools cheatsheet</li>
+    <li><code>demos/</code> one directory per session, all runnable with <code>uv run</code></li>
+  </ul>
+</section>
+
+<footer>
+  Taught by <a href="https://github.com/EnkrateiaLucca">Lucas Soares</a> · Automata Learning Lab · Built for O'Reilly Live Training
+</footer>
+</main>
+</body>
+</html>

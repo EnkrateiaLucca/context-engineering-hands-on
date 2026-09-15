@@ -17,7 +17,7 @@ Five sessions across ~4.5 hours: slides, live demos, and hands-on code — all r
 | 2 | Engineering Context in Agentic Systems | Hand-rolled agent loop with TF-IDF retrieval |
 | 2 / 4 | Context Engineering in Modern AI Apps | FastAPI chat app with structured artifact output |
 | 3 | Diagnosing and Fixing Context Failures | Taught live — no committed demo |
-| 5 | Tools and Techniques for Modern Development | Taught live in Claude Code — no committed demo directory |
+| 5 | Tools and Techniques for Modern Development | Scheduled agents — cron jobs for Claude Code |
 | Bonus | Agentic RAG via the Agent SDK | `full_agent_app.py` — custom MCP tools over the knowledge base |
 | Bonus | Context Engineering Chat Agent Overview | From-scratch tool-use agent loop, quiz app, structured-output primer |
 
@@ -176,9 +176,11 @@ uv run demos/live-demo-chat-agent-ctx-eng-overview/structured_output_example.py
 
 ---
 
-### Session 5 — Tools and Techniques
+### Session 5 — Tools and Techniques: Scheduled Agents
 
-Taught live in Claude Code during the session — no committed demo directory. Covers advanced context engineering tools and patterns for production systems using Claude Code itself as the demo environment.
+**Directory:** `demos/ctx-engineering-tools-claude-code/`
+
+Putting an agent on a **cron schedule** so it does useful work unattended — a headless `claude -p` run that posts its output to Discord, a file, or your vault. See `README.md` in that directory for the full set of example use-cases (daily AI digest, standup prep, dependency audit, nightly health check, Apple Notes → Obsidian, and more) and why context engineering is what makes unattended runs reliable.
 
 ---
 
