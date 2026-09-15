@@ -1,0 +1,49 @@
+quarter,region,product,revenue_usd,new_customers,churn_pct
+Q1,North America,Starter,125746,18,4.8
+Q1,North America,Pro,300383,32,4.8
+Q1,North America,Enterprise,675418,129,4.0
+Q1,Europe,Starter,124572,19,1.6
+Q1,Europe,Pro,298756,79,4.2
+Q1,Europe,Enterprise,660639,106,4.4
+Q1,APAC,Starter,123479,43,3.5
+Q1,APAC,Pro,302448,126,1.5
+Q1,APAC,Enterprise,691945,104,3.4
+Q1,LATAM,Starter,117069,42,5.8
+Q1,LATAM,Pro,306069,26,3.2
+Q1,LATAM,Enterprise,634749,59,4.2
+Q2,North America,Starter,136971,108,3.6
+Q2,North America,Pro,311539,133,3.2
+Q2,North America,Enterprise,697861,121,4.3
+Q2,Europe,Starter,138851,61,4.1
+Q2,Europe,Pro,347483,20,4.5
+Q2,Europe,Enterprise,726153,25,5.3
+Q2,APAC,Starter,138396,63,2.8
+Q2,APAC,Pro,343212,61,2.2
+Q2,APAC,Enterprise,672675,100,2.7
+Q2,LATAM,Starter,140080,97,1.8
+Q2,LATAM,Pro,343169,83,4.8
+Q2,LATAM,Enterprise,648116,63,2.7
+Q3,North America,Starter,147009,103,4.0
+Q3,North America,Pro,364846,122,5.0
+Q3,North America,Enterprise,672760,120,1.6
+Q3,Europe,Starter,132371,49,1.8
+Q3,Europe,Pro,379014,87,5.4
+Q3,Europe,Enterprise,705879,98,3.7
+Q3,APAC,Starter,146032,97,3.6
+Q3,APAC,Pro,338823,46,4.9
+Q3,APAC,Enterprise,734589,110,4.1
+Q3,LATAM,Starter,146348,66,3.1
+Q3,LATAM,Pro,384234,32,3.8
+Q3,LATAM,Enterprise,677236,21,5.4
+Q4,North America,Starter,135668,35,5.1
+Q4,North America,Pro,367174,23,3.2
+Q4,North America,Enterprise,780274,74,3.9
+Q4,Europe,Starter,155306,125,5.7
+Q4,Europe,Pro,383178,29,4.6
+Q4,Europe,Enterprise,772732,49,5.0
+Q4,APAC,Starter,140164,52,3.5
+Q4,APAC,Pro,369131,137,4.7
+Q4,APAC,Enterprise,796119,139,3.8
+Q4,LATAM,Starter,136288,131,2.0
+Q4,LATAM,Pro,379769,122,4.4
+Q4,LATAM,Enterprise,781948,34,3.2
