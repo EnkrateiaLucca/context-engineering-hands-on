@@ -34,8 +34,7 @@ def read_memory() -> str:
 
 # --- SELECT -----------------------------------------------------------------
 def select(question: str, kb: str = KB, k: int = 2) -> str:
-    """Return the k KB sections sharing the most words with the question.
-    ponytail: bag-of-words overlap; swap for embeddings when this misses."""
+    """Return the k KB sections sharing the most words with the question."""
     sections = re.split(r"\n(?=## )", kb)
     q = set(re.findall(r"\w+", question.lower()))
     scored = sorted(sections, key=lambda s: -len(q & set(re.findall(r"\w+", s.lower()))))

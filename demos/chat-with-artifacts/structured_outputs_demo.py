@@ -28,7 +28,7 @@ load_dotenv()
 
 import anthropic
 
-MODEL = "claude-sonnet-5"
+MODEL = "claude-sonnet-5-5"
 
 # ─── TEACHING MOMENT ──────────────────────────────────────────────
 # One prompt. Three schemas. Three completely different outputs.

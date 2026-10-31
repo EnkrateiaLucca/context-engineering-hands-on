@@ -24,7 +24,7 @@ for building personal automations.
 """
 
 response = client.messages.parse(
-    model="claude-sonnet-5",
+    model="claude-sonnet-5-5",
     max_tokens=1024,
     messages=[
         {

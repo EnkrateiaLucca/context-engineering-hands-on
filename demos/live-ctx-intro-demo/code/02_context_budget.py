@@ -26,7 +26,6 @@ def filler(n_words: int) -> str:
 
 
 def haystack(n_words: int) -> str:
-    # ponytail: needle buried at 40% depth; try 0%/100% too, position matters
     before, after = filler(int(n_words * 0.4)), filler(int(n_words * 0.6))
     return f"{before}\n{NEEDLE}\n{after}"
 

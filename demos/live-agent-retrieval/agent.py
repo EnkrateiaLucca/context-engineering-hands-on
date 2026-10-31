@@ -2,6 +2,7 @@
 # requires-python = ">=3.11"
 # dependencies = [
 #     "anthropic>=1.6.0",
+#     "python-dotenv",
 # ]
 # ///
 """
@@ -14,6 +15,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 import anthropic
+from dotenv import load_dotenv
 
 from tools import get_tool_definitions, execute_tool
 
@@ -22,7 +24,9 @@ You are an agent that uses tools to solve tasks and answer questions
 for the user.
 """
 
-MODEL = "claude-sonnet-5"
+load_dotenv()
+
+MODEL = "claude-sonnet-5-5"
 MAX_TOOL_ROUNDS = 10
 
 
@@ -107,21 +111,3 @@ class Agent:
 
 agent = Agent()
 print(agent.run_turn("summarize the python files in this folder in 3 bullets"))
-                
-                    
-                    
-                    
-                
-                
-            
-            
-        
-        
-        
-        
-        
-    
-    
-
-
-

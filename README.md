@@ -145,7 +145,7 @@ uv run demos/full_agent_app.py path/to/folder
 - Three custom MCP tools (`list_docs`, `read_doc`, `search_docs`) registered via `create_sdk_mcp_server` and exposed to Claude through `ClaudeAgentOptions`
 - Claude decides when to search vs. read a full file, guided by a "search first, then read the top 1-2 files" instruction in the system prompt
 - Framework vs. manual tradeoff — contrast the ~185 lines here with `agentic-retrieval/agent.py`
-- Uses `claude-sonnet-5`
+- Uses `claude-sonnet-5-5`
 
 ---
 
@@ -172,7 +172,7 @@ uv run demos/live-demo-chat-agent-ctx-eng-overview/structured_output_example.py
 - A tool-use cycle built from scratch: `create_file` / `read_file` / `search_files` + built-in web search
 - Grounding vs. memory — reading the fixture `.txt` files beats parametric recall
 - Structured output via `messages.parse`, from a minimal primer to a full quiz app with a browser UI
-- Uses `claude-sonnet-5`
+- Uses `claude-sonnet-5-5`
 
 ---
 

@@ -1,16 +1,17 @@
 # /// script
 # dependencies = [
 #   "anthropic",
+#   "python-dotenv",
 # ]
 # ///
-# Can you read this?
 
-import os
-import sys
 import json
 from anthropic import Anthropic
+from dotenv import load_dotenv
+
+load_dotenv()
  
-MODEL = "claude-sonnet-5"
+MODEL = "claude-sonnet-5-5"
 
 TOOLS = [
     {

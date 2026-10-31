@@ -4,7 +4,7 @@ import anthropic
 from dotenv import load_dotenv
 
 load_dotenv()
-MODEL = "claude-sonnet-5"
+MODEL = "claude-sonnet-5-5"
 client = anthropic.Anthropic()
 ASSETS = os.path.join(os.path.dirname(__file__), "..", "assets")
 
