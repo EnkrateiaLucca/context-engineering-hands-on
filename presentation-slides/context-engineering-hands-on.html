@@ -32,6 +32,20 @@
       border-radius: 3px;
       font-size: 0.9em;
     }
+    /* Fenced code blocks: one solid box. Without this the inline-code rule above
+       paints a padded strip per line instead of a full background. */
+    .remark-slide-content pre {
+      background: #ebe4d4;
+      border-radius: 3px;
+      padding: 0.6em 0.9em;
+      margin: 0.6em 0;
+    }
+    .remark-slide-content pre code {
+      display: block;
+      background: none;
+      padding: 0;
+      font-size: 0.75em;
+    }
     .remark-slide-content blockquote {
       border-left: 4px solid #d9a441;
       padding: 0.4em 1em;
@@ -815,7 +829,7 @@ Map back to the W/S/C/I framework explicitly. This is the pedagogical payoff for
 
 Llama 3.1 405B hit its distraction ceiling at ~32K tokens.
 
-**2026 — the ceiling moved, but it did not disappear.** MRCR v2 (8-needle) at **1M tokens**: Claude Opus 4.6 **76%**, GPT-5.4 **36.6%**, Gemini 3 Pro **24.5%**. Same nominal window, very different *usable* window.
+**2026 — the ceiling moved, but didn't disappear.** MRCR v2 (8-needle) at **1M tokens**: Claude Opus 4.6 **76%**, GPT-5.4 **36.6%**, Gemini 3 Pro **24.5%**. Nominal ≠ *usable* window.
 
 ???
 The 100K number is empirically observed, not theoretical. The lesson: published context window ≠ usable context window.
@@ -1241,7 +1255,7 @@ The reframe. Most students walk in with bloated CLAUDE.md files. Give them permi
 A custom slash command is a **reusable prompt** authored once, invoked from any project.
 
 **Patterns that work:**
-- `/audit-context` — run a context-engineering agent on the current repo
+- `/standup` — draft standup notes (yesterday / today / blockers) from the git log
 - `/ci_commit` — structured commit with conventional-commit prefix
 - `/review` — diff-aware code review
 

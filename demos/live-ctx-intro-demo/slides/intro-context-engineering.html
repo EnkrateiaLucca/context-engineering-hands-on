@@ -261,7 +261,7 @@ Anthropic's framing: context engineering is "the natural progression of prompt e
 | Tool results | JSON blobs, logs | the tools |
 | User message | the question | the user |
 
-**One flat list of tokens. Goal: the smallest set of high-signal tokens that gets the outcome you want.**
+**One flat list of tokens. Goal: the smallest high-signal set that gets the outcome.**
 
 ???
 Print the real `messages` array in the demo. Students are usually surprised how much of it is not the "prompt". Anthropic's per-slot guidance: system prompt at the "right altitude" (not brittle if-else logic, not vague hand-waving), sectioned with headers or XML tags; a minimal tool set with no overlap (if an engineer can't say which tool applies, the model can't either); a few diverse canonical examples instead of a laundry list of edge cases. demo: `01_what_the_model_sees.py`
@@ -303,10 +303,22 @@ Run the haystack demo. Same needle, same question, growing filler. Watch latency
 # Four moves
 
 .grid-4[
-.card[.tag.w-tag[WRITE] Structured note-taking: a NOTES.md or memory tool the agent reads back after a reset.]
-.card[.tag.s-tag[SELECT] Just-in-time retrieval: keep file paths and links, load the data only when needed.]
-.card[.tag.c-tag[COMPRESS] Compaction: summarize the history, clear old tool results, restart the window.]
-.card[.tag.i-tag[ISOLATE] Sub-agents: explore with 50k tokens, return a 1-2k summary to the lead.]
+.card[
+.tag.w-tag[WRITE]
+Structured note-taking: a NOTES.md or memory tool the agent reads back after a reset.
+]
+.card[
+.tag.s-tag[SELECT]
+Just-in-time retrieval: keep file paths and links, load the data only when needed.
+]
+.card[
+.tag.c-tag[COMPRESS]
+Compaction: summarize the history, clear old tool results, restart the window.
+]
+.card[
+.tag.i-tag[ISOLATE]
+Sub-agents: explore with 50k tokens, return a 1-2k summary to the lead.
+]
 ]
 
 **Pick by task: compaction for back-and-forth, notes for milestones, sub-agents for parallel research.**
