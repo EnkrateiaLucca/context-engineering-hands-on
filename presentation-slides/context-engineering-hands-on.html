@@ -1196,7 +1196,7 @@ class: title
 
 # Tools and Techniques for Modern Development
 
-## Hooks, sub-agents, MCP, and the Claude Code primitives that make context engineering tractable.
+## Hooks, sub-agents, MCP, scheduled agents, and the Claude Code primitives that make context engineering tractable.
 
 .footer[Hands-On Context Engineering<span>O'Reilly Live Training · Lucas Soares</span>]
 
@@ -1294,6 +1294,55 @@ Model Context Protocol = a standard way to expose tools, resources, and prompts 
 
 ???
 Quick MCP intro — students may or may not have used it. Demo connecting one MCP server (filesystem or a custom one) to Claude Code live.
+
+---
+
+# Scheduled agents: Claude Code on a cron
+
+A cron entry runs a **headless** Claude Code agent. It does the work, then posts the result where you'll see it.
+
+```
+# Weekly dependency audit — every Sunday, 9am
+0 9 * * 0  claude -p "Audit this repo's dependencies, flag anything outdated"
+```
+
+**cron** → **`claude -p "<prompt>"`** → Discord · file · vault · PR
+
+???
+`claude -p` is print (headless) mode: one prompt in, one result out, no interactive session. The cron entry is the whole scheduler — nothing else to install. Add `--allowedTools` to scope what the job may touch (next-but-one slide).
+
+---
+
+# What a scheduled agent can do
+
+| Use-case | What it does |
+|---|---|
+| **Daily AI digest** | Top stories summarized to Discord |
+| **Standup prep** | Reviews git log, drafts yesterday / today / blockers |
+| **Weekly dependency audit** | Flags outdated packages every Sunday |
+| **Nightly health check** | Pings API, memory, model availability |
+| **Apple Notes → Obsidian** | Summarizes notes, compiles into vault |
+
+*Each row is one cron-driven Claude Code run.*
+
+???
+More examples in the demo README: Friday wind-down (todos, issues, messages before the weekend) and nightly project backup. Ask the room which of their recurring chores fits this shape.
+
+---
+
+# Why context engineering makes unattended runs reliable
+
+No human is there to fix a bloated or poisoned context mid-run.
+
+- **Tool loadout** — only the tools the job needs (`--allowedTools`)
+- **Fresh context per run** — every invocation starts clean
+- **Grounding over memory** — `Read` the git log, package file, notes
+- **Structured hand-off** — end with a well-formed post, not a transcript
+
+*Use-cases and cron entries: `demos/ctx-engineering-tools-claude-code/`*
+
+???
+Map back to the levers: tool loadout is Select (the Vercel 80% → 100% lesson), fresh context per run is Isolate, grounding is Select at run time, and the structured hand-off is Write. Example: `claude -p "Summarize today's top AI stories and post to Discord" --allowedTools "WebSearch,Bash"`.
 
 ---
 
