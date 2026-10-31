@@ -13,7 +13,7 @@ The context window is the fixed-size buffer of tokens that a language model can 
 Modern LLMs process text as sequences of tokens (roughly ¾ of a word each). The context window defines the maximum number of tokens the model can read and generate in one pass. Once tokens exceed the window, earlier tokens are either truncated or the request fails entirely.
 
 Key specifications as of 2025:
-- **Claude 3.5 Sonnet / Claude 4**: 200K tokens (~150K words)
+- **Claude Fable 5.1 / Opus 5.5 / Sonnet 5.5 / Haiku 5.5**: 1M tokens
 - **GPT-4o**: 128K tokens
 - **Gemini 1.5 Pro**: 1M–2M tokens
 

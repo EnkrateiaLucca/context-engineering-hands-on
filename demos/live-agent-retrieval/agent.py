@@ -36,7 +36,6 @@ class Agent:
     """
     def __init__(self):
         # you must have your anthropic api key as an env variable
-        # if you don't! run: load_env from dot_env library
         self.client = anthropic.Anthropic()
         # messages exchanged, tools used, tool results
         self.messages: list[dict] = []
