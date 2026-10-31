@@ -12,6 +12,7 @@ venv/
 # Environments
 .env
 .env.*
+!.env.example
 
 # Jupyter
 .ipynb_checkpoints/

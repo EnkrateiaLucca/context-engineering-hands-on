@@ -1,5 +1,5 @@
-> **TL;DR** — 5 sessions, 4 runnable demos.
-> `export ANTHROPIC_API_KEY=… && cd demos/<name> && uv run app.py`
+> **TL;DR** — 5 sessions, 10 runnable demos.
+> `cp .env.example .env` (add your key), then run each demo with the **Run:** command in its section below.
 
 # Context Engineering Hands-On
 
@@ -13,11 +13,12 @@ Five sessions across ~4.5 hours: slides, live demos, and hands-on code — all r
 
 | Session | Topic | Demo |
 |---------|-------|------|
-| 1 | Introduction to Context Engineering | Taught live — no committed demo |
-| 2 | Engineering Context in Agentic Systems | Hand-rolled agent loop with TF-IDF retrieval |
+| 1 | Introduction to Context Engineering | `demos/live-ctx-intro-demo/` — what the model sees, context budget, the four moves, agent-loop growth |
+| 2 | Engineering Context in Agentic Systems | Hand-rolled agent loop with TF-IDF retrieval; live-coded agent loops (`live_simple_agent.py`, shell-tool retrieval agents) |
 | 2 / 4 | Context Engineering in Modern AI Apps | FastAPI chat app with structured artifact output |
 | 3 | Diagnosing and Fixing Context Failures | Taught live — no committed demo |
-| 5 | Tools and Techniques for Modern Development | Scheduled agents — cron jobs for Claude Code |
+| 4 | Context Engineering Patterns in Modern AI Apps | Agent Skills — a `.pptx` deck built from data (prepared + live-coded) |
+| 5 | Tools and Techniques for Modern Development | Claude Code primitives (CLAUDE.md, slash commands, hooks, sub-agents, MCP) + scheduled agents on cron |
 | Bonus | Agentic RAG via the Agent SDK | `full_agent_app.py` — custom MCP tools over the knowledge base |
 | Bonus | Context Engineering Chat Agent Overview | From-scratch tool-use agent loop, quiz app, structured-output primer |
 
@@ -41,10 +42,10 @@ curl -LsSf https://astral.sh/uv/install.sh | sh
 export ANTHROPIC_API_KEY=sk-ant-...
 ```
 
-Add it to your shell profile (`~/.zshrc` or `~/.bashrc`) to persist it across sessions. Alternatively, create a `.env` file in any demo directory:
+Add it to your shell profile (`~/.zshrc` or `~/.bashrc`) to persist it across sessions. Alternatively, copy the template to a `.env` file at the repo root and put your key in it — every demo loads it with `python-dotenv`:
 
 ```bash
-echo "ANTHROPIC_API_KEY=sk-ant-..." > demos/<demo-name>/.env
+cp .env.example .env   # then edit ANTHROPIC_API_KEY in .env
 ```
 
 ### Clone the repo
@@ -59,6 +60,50 @@ No global `pip install` or virtual environment needed — every demo uses `uv ru
 ---
 
 ## Demos
+
+### Session 1 — Context Engineering Basics
+
+**Directory:** `demos/live-ctx-intro-demo/`
+
+A ten-slide primer (`slides/intro-context-engineering.html`) plus four short scripts, one per idea. The scripts open `../assets/` relative to `code/`, so run them from there.
+
+**Run:**
+
+```bash
+cd demos/live-ctx-intro-demo/code
+uv run 01_what_the_model_sees.py   # the "prompt" is one flat token list built from slots
+uv run 02_context_budget.py        # needle-in-a-haystack: tokens, latency, accuracy vs. filler
+uv run 03_four_moves.py            # Write / Select / Compress / Isolate, minimal versions
+uv run 04_agent_loop_growth.py     # per-turn token growth in a tool loop, raw vs. trimmed
+```
+
+**What's demonstrated:**
+- Same question, different context, different answer — the model only sees what you assemble
+- The context window as a budget: filler costs tokens and latency, and can cost accuracy
+- The four moves in their smallest honest form
+- Context that accumulates turn by turn in an agent loop, and what trimming tool results saves
+
+---
+
+### Session 2 — Simplest Agent Loop (live-coded)
+
+**Directory:** `demos/live_simple_agent.py` (single script)
+
+The smallest possible agent: one `calculator` tool and a loop that keeps calling the model until it stops asking for tools. Every request and tool result is appended to `messages` — the context the model sees next turn.
+
+**Run:**
+
+```bash
+uv run demos/live_simple_agent.py
+```
+
+**What's demonstrated:**
+- Agent = LLM + tools in a loop, in under 90 lines
+- `stop_reason == "tool_use"` as the loop condition
+- Tool results flowing back into context as `tool_result` blocks
+- Uses `claude-sonnet-5-5`
+
+---
 
 ### Session 2 — Agentic Document Retrieval
 
@@ -97,6 +142,37 @@ uv run app.py
 
 ---
 
+### Session 2 — Shell-Tool Retrieval Agents (live-coded)
+
+**Directories:** `demos/live-agent-retrieval/` and `demos/live-agent-retrieval-plus-write-select-compress-isolate/`
+
+An `Agent` class that answers questions about files using three shell-backed tools — `find_files` (`find`), `read_file` (`sed -n`) and `grep_files` (`grep -rn`) — sandboxed to one working directory. The second folder is the same agent plus a `write_file` tool, so it can save its answers to disk, and a small terminal chat around it. Despite the folder name, only the *write* move is implemented; select, compress and isolate are not in the code.
+
+**Run:**
+
+```bash
+# bare retrieval agent — one scripted turn: summarize the Python files in this folder
+cd demos/live-agent-retrieval
+uv run agent.py
+
+# with write_file — scripted two turns: summarize, then write the summary to a markdown file
+cd ../live-agent-retrieval-plus-write-select-compress-isolate
+uv run agent.py
+# or chat with it (/help, /files, /clear, /history, /quit; @path inlines a file)
+uv run app.py
+```
+
+Files the agent writes land in that folder; delete them after the demo.
+
+**What's demonstrated:**
+- Retrieval as tool use — the agent discovers, greps and reads files on demand instead of being handed them
+- Tool descriptions shaping agent behaviour (custom schemas instead of the built-in bash tool)
+- Path sandboxing: model-supplied paths are untrusted and resolved against a fixed root
+- *Write* — persisting output outside the context window
+- Uses `claude-sonnet-5-5`
+
+---
+
 ### Session 2 / 4 — Chat with Artifacts
 
 **Directory:** `demos/chat-with-artifacts/`
@@ -124,6 +200,28 @@ Then open **http://127.0.0.1:8000** in your browser.
 - Conversation history as accumulating context
 
 **Bonus — minimal structured-outputs primer:** `structured_outputs_demo.py` in the same directory is a standalone ~30-second read showing the same prompt forced through 3 different tool schemas (no FastAPI scaffolding). Run with `uv run structured_outputs_demo.py`.
+
+---
+
+### Session 4 — Agent Skills: a Deck from Data
+
+**Directories:** `demos/agents-with-skills/` (prepared) and `demos/live-agents-with-skills/` (live-coded)
+
+Claude turns a sales CSV and a `notes.md` of presenter instructions into a `.pptx` deck. Instead of stuffing python-pptx instructions into the prompt, the script attaches Anthropic's managed `pptx` skill to the code-execution container: Claude loads the skill's instructions only when it needs them, builds the deck in the sandbox, and the script downloads the file into `output/`.
+
+**Run:**
+
+```bash
+uv run demos/agents-with-skills/pptx_from_data_agent.py            # generates synthetic data, builds the deck
+uv run demos/agents-with-skills/pptx_from_data_agent.py --no-gen   # reuse the existing data/ folder
+uv run demos/live-agents-with-skills/ppt_agent.py                  # live-coded version, uses its data/ folder
+```
+
+**What's demonstrated:**
+- Skills as context loaded on demand rather than up front
+- Files API uploads (`container_upload`) + the `code_execution` tool
+- Downloading generated files by `file_id`
+- Uses `claude-opus-5-5`
 
 ---
 
@@ -176,11 +274,11 @@ uv run demos/live-demo-chat-agent-ctx-eng-overview/structured_output_example.py
 
 ---
 
-### Session 5 — Tools and Techniques: Scheduled Agents
+### Session 5 — Tools and Techniques: Claude Code Primitives + Scheduled Agents
 
-**Directory:** `demos/ctx-engineering-tools-claude-code/`
+**Directory:** `demos/ctx-engineering-tools-claude-code/` (scheduled-agents material)
 
-Putting an agent on a **cron schedule** so it does useful work unattended — a headless `claude -p` run that posts its output to Discord, a file, or your vault. See `README.md` in that directory for the full set of example use-cases (daily AI digest, standup prep, dependency audit, nightly health check, Apple Notes → Obsidian, and more) and why context engineering is what makes unattended runs reliable.
+The session covers the Claude Code primitives that make context engineering tractable — CLAUDE.md, custom slash commands, hooks, sub-agents and MCP — taught live from the slides, then closes on scheduled agents: putting an agent on a **cron schedule** so it does useful work unattended — a headless `claude -p` run that posts its output to Discord, a file, or your vault. See `README.md` in that directory for the full set of example use-cases (daily AI digest, standup prep, dependency audit, nightly health check, Apple Notes → Obsidian, and more) and why context engineering is what makes unattended runs reliable.
 
 ---
 
@@ -188,9 +286,17 @@ Putting an agent on a **cron schedule** so it does useful work unattended — a 
 
 ```
 context-engineering-hands-on/
+├── index.html                             # Course landing page
+├── .env.example                           # Copy to .env and add ANTHROPIC_API_KEY
+├── requirements/                          # requirements.in + compiled requirements.txt (optional shared venv)
 ├── presentation-slides/                   # Slide decks (.html — remark.js live + handout)
 ├── assets/                                # Reference PDFs (attention paper, cheatsheets)
 └── demos/
+    ├── live-ctx-intro-demo/                     # Session 1 — context engineering basics
+    │   ├── slides/intro-context-engineering.html # Ten-slide primer (remark.js)
+    │   ├── code/                                # 01–04 demo scripts + _common.py (run from here)
+    │   └── assets/                              # Knowledge base + reading notes used by the scripts
+    ├── live_simple_agent.py                     # Session 2 — simplest agent loop (calculator tool)
     ├── agentic-retrieval/                       # Session 2 — hand-rolled agent loop
     │   ├── app.py                               # Entry point (TUI + slash commands)
     │   ├── agent.py                             # Agent loop — THE core teaching file
@@ -198,11 +304,27 @@ context-engineering-hands-on/
     │   ├── tools.py                             # Tool schemas + dispatch
     │   ├── display.py                           # ANSI terminal output
     │   └── knowledge_base/                      # 6 markdown docs on course topics
+    ├── live-agent-retrieval/                    # Session 2 — shell-tool retrieval agent (live-coded)
+    │   ├── agent.py                             # Agent loop; runs one scripted turn
+    │   └── tools.py                             # find_files / read_file / grep_files
+    ├── live-agent-retrieval-plus-write-select-compress-isolate/  # Same agent + write_file (write only)
+    │   ├── agent.py                             # Agent loop; runs two scripted turns
+    │   ├── app.py                               # Terminal chat around Agent
+    │   └── tools.py                             # Shell tools + write_file
     ├── chat-with-artifacts/                     # Session 2/4 — FastAPI app
     │   ├── app.py                               # FastAPI backend
     │   ├── schemas.py                           # Artifact type schemas
     │   ├── structured_outputs_demo.py           # Bonus: minimal structured-outputs primer
     │   └── static/index.html                    # Single-file frontend
+    ├── agents-with-skills/                      # Session 4 — pptx from data via Agent Skills (prepared)
+    │   ├── pptx_from_data_agent.py              # Generates data, builds the deck
+    │   └── data/                                # sales_2025.csv + notes.md
+    ├── live-agents-with-skills/                 # Session 4 — same idea, live-coded
+    │   ├── ppt_agent.py                         # Builds the deck from data/
+    │   ├── data/                                # sales_2025.csv + notes.md
+    │   └── output/                              # Deck produced on teaching day
+    ├── ctx-engineering-tools-claude-code/       # Session 5 — scheduled agents (Claude Code on cron)
+    │   └── README.md                            # Use-cases, cron entries, why context engineering matters
     ├── full_agent_app.py                        # Agentic RAG via claude-agent-sdk MCP tools
     └── live-demo-chat-agent-ctx-eng-overview/    # From-scratch chat agent + quiz app + structured-output primer
         ├── chat.py                               # From-scratch tool-use agent loop

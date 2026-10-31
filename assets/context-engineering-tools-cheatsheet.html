@@ -293,17 +293,22 @@
 
 <h2>Course Demos Quick Reference</h2>
 <p class="lede">Every demo runs with <code>uv run</code> — no global install or virtualenv needed. Set
-<code>ANTHROPIC_API_KEY</code> in your environment, or drop a <code>.env</code> in the demo directory.</p>
+<code>ANTHROPIC_API_KEY</code> in your environment, or <code>cp .env.example .env</code> at the repo root and add your key.</p>
 
-<h3>Session 1 — Introduction to Context Engineering <span style="color:#6b655c;font-weight:normal">(taught live, no committed demo)</span></h3>
+<h3>Session 1 — Introduction to Context Engineering</h3>
+<p class="lede">Run from <code>demos/live-ctx-intro-demo/code/</code>: <code>uv run 01_what_the_model_sees.py</code> … <code>04_agent_loop_growth.py</code></p>
 <ul>
-  <li><code>/context</code> — Make the context window visible (see what the model sees).</li>
-  <li><code>/cost</code> — Track token consumption per session. <code>/clear</code> — Reset to demonstrate context-rot
-      recovery.</li>
-  <li><strong>Read tool</strong> — Ground the model in documents; beats parametric memory.
-      <strong>CLAUDE.md</strong> — Static context file as persistent instructions.</li>
-  <li><strong>Lost in the middle</strong> — Same question, same document: answer quality depends on <em>where</em> the
-      fact sits.</li>
+  <li><strong>01</strong> what the model sees (one flat token list) · <strong>02</strong> context budget
+      (needle-in-a-haystack) · <strong>03</strong> the four moves, minimal · <strong>04</strong> token growth in an
+      agent loop, raw vs. trimmed.</li>
+</ul>
+
+<h3>Session 2 — Live-coded agent loops</h3>
+<ul>
+  <li><code>uv run demos/live_simple_agent.py</code> — simplest agent: one calculator tool in a loop.</li>
+  <li><code>uv run agent.py</code> in <code>demos/live-agent-retrieval/</code> — sandboxed
+      <code>find</code>/<code>sed</code>/<code>grep</code> tools; <code>…-plus-write-select-compress-isolate/</code> adds
+      <code>write_file</code> (write only) + a chat, <code>uv run app.py</code>.</li>
 </ul>
 
 <h3>Session 2 — Agentic Document Retrieval (interactive TUI)</h3>
@@ -335,16 +340,14 @@
 </ul>
 
 <h3>Session 3 — Diagnosing &amp; Fixing Context Failures <span style="color:#6b655c;font-weight:normal">(taught live, no committed demo)</span></h3>
+<p class="lede">Poisoning, Distraction, Confusion, Clash — each run broken vs. fixed; see <em>Failures to Fixes</em> above.</p>
+
+<h3>Session 4 — Agent Skills: a deck from data</h3>
+<p class="lede">Run: <code>uv run demos/agents-with-skills/pptx_from_data_agent.py</code> (live-coded:
+<code>demos/live-agents-with-skills/ppt_agent.py</code>)</p>
 <ul>
-  <li><strong>Poisoning</strong> — A hallucinated feature compounds across turns. <em>Fix:</em> prune + validation
-      instruction.</li>
-  <li><strong>Distraction</strong> — Verbose brute-force turns bias the model away from the optimal solution.
-      <em>Fix:</em> summarize to a one-liner.</li>
-  <li><strong>Confusion</strong> — A dozen irrelevant tool schemas (~2,400 tokens of overhead) for a simple factual
-      question. <em>Fix:</em> remove the tools.</li>
-  <li><strong>Clash</strong> — A budget trip plan contradicts later luxury requirements. <em>Fix:</em> prune the old
-      plan, add a CURRENT REQUIREMENTS override.</li>
-  <li>Work each scenario broken-vs-fixed, comparing real token cost against outcome quality.</li>
+  <li>Managed <code>pptx</code> skill + code execution: loaded only when needed; deck returned by
+      <code>file_id</code> (<code>claude-opus-5-5</code>).</li>
 </ul>
 
 <h3>Bonus — Agentic RAG via the Agent SDK</h3>
@@ -355,16 +358,15 @@
 </ul>
 
 <h3>Bonus — Context Engineering Chat Agent Overview</h3>
-<p class="lede">In <code>demos/live-demo-chat-agent-ctx-eng-overview/</code></p>
-<ul>
-  <li><code>uv run chat.py</code> — from-scratch tool-use agent loop.</li>
-  <li><code>uv run quiz_app.py</code> — quiz app, then open <code>http://127.0.0.1:8501</code>.</li>
-  <li><code>uv run structured_output_example.py</code> — minimal structured-output primer.</li>
-</ul>
+<p class="lede">In <code>demos/live-demo-chat-agent-ctx-eng-overview/</code>: <code>uv run chat.py</code> (from-scratch
+tool-use loop) · <code>uv run quiz_app.py</code> (open <code>http://127.0.0.1:8501</code>) · <code>uv run
+structured_output_example.py</code> (structured-output primer)</p>
 
-<h3>Session 5 — Tools &amp; Techniques <span style="color:#6b655c;font-weight:normal">(taught live in Claude Code, no committed demo)</span></h3>
+<h3>Session 5 — Tools &amp; Techniques</h3>
 <ul>
   <li>Claude Code primitives: <code>CLAUDE.md</code> as a routing table, custom slash commands, hooks, sub-agents, MCP.</li>
+  <li><strong>Scheduled agents</strong> — cron runs headless <code>claude -p</code>; see
+      <code>demos/ctx-engineering-tools-claude-code/</code>.</li>
 </ul>
 
 <h2>Key Numbers to Remember</h2>

@@ -4,7 +4,7 @@ annotated-doc==0.0.5
     # via fastapi
 annotated-types==0.8.0
     # via pydantic
-anthropic==1.3.0
+anthropic==2.3.0
     # via -r ./requirements/requirements.in
 anyio==4.15.0
     # via
@@ -71,6 +71,8 @@ numpy==2.5.2
     # via
     #   scikit-learn
     #   scipy
+opentelemetry-api==1.45.2
+    # via anthropic
 packaging==26.3
     # via ipykernel
 parso==0.8.7
@@ -147,6 +149,7 @@ typing-extensions==4.16.0
     #   fastapi
     #   httpx2
     #   jupyter-client
+    #   opentelemetry-api
     #   pydantic
     #   pydantic-core
     #   starlette
