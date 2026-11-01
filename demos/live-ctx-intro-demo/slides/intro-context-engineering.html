@@ -290,7 +290,7 @@ class: center, middle
 
 **Every token attends to every other token: n² relationships. Every token you add spends some of the budget.**
 
-*A finite resource with diminishing marginal returns. 200k is a budget, not "unlimited".*
+*A finite resource with diminishing marginal returns. 1M is a budget, not "unlimited".*
 
 ???
 Anthropic's term: "attention budget." Transformers create n² pairwise relationships; as n grows, that attention gets stretched thin. Models also trained mostly on shorter sequences, so they have less practice with context-wide dependencies. RAM analogy still works: model = CPU, window = RAM, files/DB = disk. demo: `02_context_budget.py`
