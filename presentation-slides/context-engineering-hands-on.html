@@ -1144,6 +1144,40 @@ The token-multiplier table is one of the best slides in the original deck. Kept 
 
 ---
 
+# Agent Skills: context loaded on demand
+
+A skill is a folder: a `SKILL.md` with instructions, plus optional scripts and reference files.
+
+| Stage | What enters the context |
+|---|---|
+| **Always** | Each skill's name + one-line description |
+| **When a task matches** | The full `SKILL.md` body |
+| **Only if needed** | Bundled scripts and reference files |
+
+**Dozens of skills installed, almost none of them paying rent in the window.**
+
+*Progressive disclosure — the Select lever, packaged.*
+
+???
+Tie it back: this is the same move as Session 2's grep-over-RAG. The agent sees a cheap index, then pulls the detail when the task calls for it.
+Contrast with tools: a tool definition sits in context every turn whether it's used or not (last slide's 83.9%). A skill costs one line until it's needed.
+Open standard since Dec 2025 (SKILL.md) — the same folder works in Claude Code, the API and other agents. Anthropic's post: "Equipping Agents for the Real World with Agent Skills" (Oct 2025).
+
+---
+
+# Demo: a deck from data with the `pptx` skill
+
+- **Input** — a sales CSV + a notes file, uploaded to the sandbox
+- **No python-pptx instructions in the prompt** — just `skills: [pptx]` on the container
+- **Claude reads `SKILL.md` on demand**, writes the deck, hands back a file
+
+*`demos/agents-with-skills/` · live-coded: `demos/live-agents-with-skills/`*
+
+???
+Run `uv run pptx_from_data_agent.py`. While it runs, point out what's NOT in the prompt: no library docs, no layout rules. That knowledge lives in the skill and only loads once Claude decides it needs it.
+
+---
+
 # Where agent performance actually lives
 
 - **Token usage (context engineering)** — ~80% of performance variance
