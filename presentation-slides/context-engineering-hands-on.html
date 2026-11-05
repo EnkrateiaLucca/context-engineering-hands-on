@@ -909,14 +909,16 @@ Two big numbers (90.2% and the 39% from previous slide). Both real, both citable
 
 # Failures → fixes at a glance
 
-| Failure mode | Primary fix | Key signal |
-|---|---|---|
-| **Poisoning** | Isolate + Select | Bad fact propagates across steps |
-| **Distraction** | Compress + Select | Agent repeats past actions |
-| **Confusion** | Select + Isolate | Irrelevant tools/docs selected |
-| **Clash** | Isolate + Select | Flip-flopping between approaches |
+| Failure mode | Primary fix | Supporting fix | Key signal |
+|---|---|---|---|
+| **Poisoning** | Isolate + Select | Write (claims+sources) | Bad fact propagates across steps |
+| **Distraction** | Compress + Select | Write (persistent plan) | Agent repeats past actions |
+| **Confusion** | Select + Isolate | Tool Loadout | Irrelevant tools/docs selected |
+| **Clash** | Isolate + Select | Compress (resolved summary) | Flip-flopping between approaches |
 
 *Diagnose first. Then pick the lever. Don't blindly add compression to everything.*
+
+*Core principle: "Find the smallest set of high-signal tokens." — Anthropic*
 
 ???
 The student photograph slide. This table goes on a sticky note. Notice: Select shows up in every row — it's the most-used lever.
