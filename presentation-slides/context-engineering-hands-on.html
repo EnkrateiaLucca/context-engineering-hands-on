@@ -1197,14 +1197,14 @@ The bottom-line slide. If a student remembers only one stat from S4, this is it.
 
 # Pattern selection guide
 
-| Situation | Pattern |
-|---|---|
-| Stable project conventions | Minimal static file (CLAUDE.md) |
-| Topic-specific research | Context priming at session start |
-| Large codebases, many tools | Dynamic discovery + tool consolidation |
-| Long-running multi-step agents | Tiered architecture + filesystem context |
-| Multi-agent systems | Communication over shared context |
-| Repetitive learnable workflows | Self-improving contexts (ACE) |
+| Situation | Pattern | Why |
+|---|---|---|
+| Stable project conventions | Minimal static file (CLAUDE.md) | Rarely changes |
+| Topic-specific research | Context priming at session start | Fetches current docs |
+| Large codebases, many tools | Dynamic discovery + tool consolidation | Avoids confusion |
+| Long-running multi-step agents | Tiered architecture + filesystem context | Hot/cold separation |
+| Multi-agent systems | Communication over shared context | Manus pattern |
+| Repetitive learnable workflows | Self-improving contexts (ACE) | No manual maintenance |
 
 ???
 Decision table. This is the second-most-photographed slide in the deck. Keep terse.
