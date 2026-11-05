@@ -1039,6 +1039,36 @@ class: middle
 
 ---
 
+# Agent Skills: context loaded on demand
+
+A skill is a folder: a `SKILL.md` with instructions, plus optional scripts and reference files.
+
+| Stage | What enters the context |
+|---|---|
+| **Always** | Each skill's name + one-line description |
+| **When a task matches** | The full `SKILL.md` body |
+| **Only if needed** | Bundled scripts and reference files |
+
+**Progressive disclosure — the Select lever, packaged.** A tool definition sits in context every turn; a skill costs one line until the task calls for it. Open standard since Dec 2025, so the same folder works across skills-compatible agents.
+
+.cite[[1] Anthropic, "Equipping agents with Agent Skills" (Oct 2025) — [2] Agent Skills open standard — agentskills.io]
+
+---
+
+# Demo: a deck from data with the `pptx` skill
+
+- **Input** — a sales CSV + a notes file, uploaded to the sandbox
+- **No python-pptx instructions in the prompt** — just `skills: [pptx]` on the container
+- **Claude reads `SKILL.md` on demand**, writes the deck, hands back a file
+
+The library docs and layout rules live in the skill and load only once Claude decides it needs them.
+
+*`demos/agents-with-skills/` · live-coded: `demos/live-agents-with-skills/`*
+
+.cite[[1] Claude Platform Docs, "Agent Skills" — platform.claude.com/docs/en/build-with-claude/skills-guide]
+
+---
+
 # Agent Skills: loadable knowledge modules (handout-only detail)
 
 Skills stored as files with brief name/description exposed statically. When a task activates a skill, the agent loads the full content. **This IS context engineering: load what you need when you need it.**
@@ -1110,6 +1140,8 @@ Skills stored as files with brief name/description exposed statically. When a ta
 <li><span class="ref-num">8</span><strong>HumanLayer</strong> — "Writing a Good CLAUDE.md"</li>
 <li><span class="ref-num">9</span><strong>arXiv 2510.04618</strong> — "Agentic Context Engineering (ACE)"</li>
 <li><span class="ref-num">10</span><strong>arXiv 2602.20478</strong> — "Codified Context: Infrastructure for AI Agents"</li>
+<li><span class="ref-num">11</span><strong>Anthropic</strong> — "Equipping agents with Agent Skills" <em>anthropic.com/engineering/equipping-agents-for-the-real-world-with-agent-skills</em></li>
+<li><span class="ref-num">12</span><strong>Agent Skills</strong> — open standard for <code>SKILL.md</code> <em>agentskills.io</em></li>
 </ol>
 ]
 
