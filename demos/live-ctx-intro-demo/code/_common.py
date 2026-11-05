@@ -19,7 +19,7 @@ def count(messages, system=None, tools=None) -> int:
     return client.messages.count_tokens(**kw).input_tokens
 
 
-def ask(messages, system=None, tools=None, max_tokens=300):
+def ask(messages, system=None, tools=None, max_tokens=1024):
     kw = {"model": MODEL, "messages": messages, "max_tokens": max_tokens}
     if system:
         kw["system"] = system

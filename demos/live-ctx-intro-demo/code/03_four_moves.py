@@ -69,9 +69,20 @@ if __name__ == "__main__":
 
     history = [
         {"role": "user", "content": "I need to plan my trip to the Berlin office."},
-        {"role": "assistant", "content": "Sure. When are you going?"},
-        {"role": "user", "content": "Next Tuesday to Thursday, flying from Lisbon."},
-        {"role": "assistant", "content": "Got it, Lisbon to Berlin, Tue-Thu."},
+        {"role": "assistant", "content": "Happy to help with that. To get started I'll need a few details: "
+            "which dates you're planning to travel, where you'll be flying from, and whether you "
+            "already have a hotel in mind or want me to suggest options near the office."},
+        {"role": "user", "content": "Next Tuesday to Thursday, flying from Lisbon. No hotel yet, "
+            "something walkable to the office would be great."},
+        {"role": "assistant", "content": "Got it: Lisbon to Berlin, arriving Tuesday and leaving "
+            "Thursday, so two nights. There are direct morning flights from Lisbon that land before "
+            "noon, which gives you most of Tuesday at the office. For the hotel, the area around the "
+            "office has several mid-range options within a ten-minute walk."},
+        {"role": "user", "content": "Morning flight works. I'll book the hotel closest to the "
+            "office myself."},
+        {"role": "assistant", "content": "Sounds good: morning direct flight out on Tuesday, return "
+            "on Thursday, and you'll book the hotel nearest the office for Tuesday and Wednesday "
+            "night. I'll keep those details in mind for anything else you need for the trip."},
     ]
     compressed = compress(history)
     print("COMPRESS:", count(history), "->", count(compressed), "tokens")

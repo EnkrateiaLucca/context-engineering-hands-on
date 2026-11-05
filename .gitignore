@@ -25,6 +25,11 @@ venv/
 # Runtime state (prompt-toolkit history, etc.)
 .chat_history
 
+# Demo outputs written at runtime (the committed teaching-day deck stays tracked)
+demos/agents-with-skills/output/
+demos/live-agents-with-skills/output/*
+demos/live-agent-retrieval-plus-write-select-compress-isolate/summary.md
+
 # IDE
 .idea/
 .vscode/
