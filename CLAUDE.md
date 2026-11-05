@@ -5,7 +5,7 @@ O'Reilly live training course — **Context Engineering Hands-On** — teaching 
 ## Structure
 
 ```
-presentation-slides/   # Slide decks (.html — remark.js live + handout)
+presentation-slides/   # Slide deck (.html — remark.js) + PDF export
 assets/                # Reference PDFs
 demos/
   live-ctx-intro-demo/                     # Session 1 — intro primer slides + 4 scripts (run from code/)

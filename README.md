@@ -289,7 +289,7 @@ context-engineering-hands-on/
 ├── index.html                             # Course landing page
 ├── .env.example                           # Copy to .env and add ANTHROPIC_API_KEY
 ├── requirements/                          # requirements.in + compiled requirements.txt (optional shared venv)
-├── presentation-slides/                   # Slide decks (.html — remark.js live + handout)
+├── presentation-slides/                   # Slide deck (.html — remark.js) + PDF export
 ├── assets/                                # Reference PDFs (attention paper, cheatsheets)
 └── demos/
     ├── live-ctx-intro-demo/                     # Session 1 — context engineering basics
