@@ -2,6 +2,7 @@
 # requires-python = ">=3.11"
 # dependencies = [
 #     "anthropic>=1.6.0",
+#     "python-dotenv",
 # ]
 # ///
 """
@@ -14,6 +15,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 
 import anthropic
+from dotenv import load_dotenv
 
 from tools import get_tool_definitions, execute_tool
 
@@ -25,7 +27,9 @@ write a file without specifying content, write a short sensible draft.
 After using tools, reply with a brief summary of what you did.
 """
 
-MODEL = "claude-sonnet-5"
+load_dotenv()
+
+MODEL = "claude-sonnet-5-5"
 MAX_TOOL_ROUNDS = 10
 
 
@@ -35,7 +39,6 @@ class Agent:
     """
     def __init__(self):
         # you must have your anthropic api key as an env variable
-        # if you don't! run: load_env from dot_env library
         self.client = anthropic.Anthropic()
         # messages exchanged, tools used, tool results
         self.messages: list[dict] = []

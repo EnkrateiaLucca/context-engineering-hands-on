@@ -2,6 +2,7 @@
 # requires-python = ">=3.11"
 # dependencies = [
 #     "anthropic>=1.6.0",
+#     "python-dotenv",
 # ]
 # ///
 """

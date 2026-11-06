@@ -26,7 +26,6 @@ def filler(n_words: int) -> str:
 
 
 def haystack(n_words: int) -> str:
-    # ponytail: needle buried at 40% depth; try 0%/100% too, position matters
     before, after = filler(int(n_words * 0.4)), filler(int(n_words * 0.6))
     return f"{before}\n{NEEDLE}\n{after}"
 
@@ -42,4 +41,4 @@ if __name__ == "__main__":
         print(f"{n:>13,} {count(msgs):>8,} {dt:>8.1f}  {ok} {text(resp).strip()[:40]}")
 
     print("\nTakeaway: every token you load competes for attention and costs money and time.")
-    print("200k is a budget, not a feature.")
+    print("1M is a budget, not a feature.")

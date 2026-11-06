@@ -126,9 +126,11 @@ docs_server = create_sdk_mcp_server(
 )
 
 OPTIONS = ClaudeAgentOptions(
-    model="claude-sonnet-5",
+    model="claude-sonnet-5-5",
     system_prompt=SYSTEM_PROMPT,
     mcp_servers={"docs": docs_server},
+    tools=[],  # no built-in tools (Bash, Read, ...): only our MCP tools below
+    setting_sources=[],  # ignore ~/.claude and project settings: self-contained demo
     allowed_tools=[
         "mcp__docs__list_docs",
         "mcp__docs__read_doc",

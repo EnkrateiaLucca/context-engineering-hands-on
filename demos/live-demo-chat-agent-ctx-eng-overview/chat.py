@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 MAX_ROUNDS = 10
-MODEL_NAME = "claude-sonnet-5"
+MODEL_NAME = "claude-sonnet-5-5"
 SYSTEM_PROMPT = "You are a helpful assistant that can search the web, create and read files."
 
 

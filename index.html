@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Context Engineering Hands-On</title>
-<meta name="description" content="O'Reilly live training: design, manage, and optimize the context that flows into LLMs and agentic systems. 5 sessions, 4 runnable demos, 1 notebook.">
+<meta name="description" content="O'Reilly live training: design, manage, and optimize the context that flows into LLMs and agentic systems. 5 sessions, 10 runnable demos.">
 <style>
   :root{--ink:#1a1a1a;--paper:#f5f0e6;--gold:#e7c548;--rust:#b85c1f;--amber:#c89020;--green:#4d8a3a;--blue:#4078a8;--coral:#e26b5a;--muted:#5e5a52;--card:#fffdf8}
   *{box-sizing:border-box}
@@ -51,8 +51,7 @@
   </div>
   <div class="stats">
     <div class="stat"><b>5</b><span>sessions, ~4.5 hours</span></div>
-    <div class="stat"><b>4</b><span>runnable demos</span></div>
-    <div class="stat"><b>1</b><span>failure-modes notebook</span></div>
+    <div class="stat"><b>10</b><span>runnable demos</span></div>
   </div>
 </header>
 
@@ -61,7 +60,7 @@
   <div class="grid">
     <div class="card" style="--c:var(--gold)"><div class="n">Foundations</div><h3>Context is the product</h3><p>What lives in the context window before you type, why long context rots, and the four levers: Write, Select, Compress, Isolate.</p></div>
     <div class="card" style="--c:var(--blue)"><div class="n">Agents</div><h3>Engineer the loop</h3><p>Scratchpads, memories, agentic retrieval vs. RAG, sub-agents, and static context files that keep multi-turn agents coherent.</p></div>
-    <div class="card" style="--c:var(--coral)"><div class="n">Debugging</div><h3>Diagnose failures</h3><p>Poisoning, Distraction, Confusion, and Clash. Reproduce each one, apply the fix, and compare token costs side by side.</p></div>
+    <div class="card" style="--c:var(--coral)"><div class="n">Debugging</div><h3>Diagnose failures</h3><p>Poisoning, Distraction, Confusion, and Clash. Spot each one in real agent cases, match it to its lever, and verify the fix with evals.</p></div>
     <div class="card" style="--c:var(--green)"><div class="n">Production</div><h3>Patterns that ship</h3><p>Structured outputs, dynamic context injection, tool design, and scheduled headless agents that run unattended.</p></div>
   </div>
 </section>
@@ -69,11 +68,11 @@
 <section>
   <h2>The five sessions</h2>
   <div class="grid">
-    <div class="card" style="--c:var(--gold)"><div class="n">Session 1</div><h3>Introduction to Context Engineering</h3><p>Live Claude Code demos: context rot, lost in the middle, grounding vs. memory, and the 7-rule playbook.</p><p style="margin-top:10px"><code>demos/ctx-engineering-principles-claude-code/</code></p></div>
-    <div class="card" style="--c:var(--blue)"><div class="n">Session 2</div><h3>Engineering Context in Agentic Systems</h3><p>A hand-rolled agent loop with TF-IDF retrieval. Every context decision is visible. Inspect the raw messages with <code>/context</code> and <code>/stats</code>.</p><p style="margin-top:10px"><code>demos/agentic-retrieval/</code></p></div>
-    <div class="card" style="--c:var(--coral)"><div class="n">Session 3</div><h3>Diagnosing and Fixing Context Failures</h3><p>Jupyter notebook. Four failure modes, each run broken then fixed, with a token-cost dashboard at the end.</p><p style="margin-top:10px"><code>demos/context-failures/</code></p></div>
-    <div class="card" style="--c:var(--amber)"><div class="n">Session 4</div><h3>Context Engineering Patterns in Modern AI Apps</h3><p>FastAPI chat app with a 3-layer system prompt, a single <code>create_artifact</code> tool, and an artifact registry that grows back into context.</p><p style="margin-top:10px"><code>demos/chat-with-artifacts/</code></p></div>
-    <div class="card" style="--c:var(--green)"><div class="n">Session 5</div><h3>Tools and Techniques for Modern Development</h3><p>Put Claude Code on a cron schedule: daily digests, standup prep, dependency audits, nightly health checks.</p><p style="margin-top:10px"><code>demos/ctx-engineering-tools-claude-code/</code></p></div>
+    <div class="card" style="--c:var(--gold)"><div class="n">Session 1</div><h3>Introduction to Context Engineering</h3><p>Four short scripts: what the model actually sees, the context window as a budget, the four moves (Write, Select, Compress, Isolate), and token growth in an agent loop.</p><p style="margin-top:10px"><code>demos/live-ctx-intro-demo/</code></p></div>
+    <div class="card" style="--c:var(--blue)"><div class="n">Session 2</div><h3>Engineering Context in Agentic Systems</h3><p>A hand-rolled agent loop with TF-IDF retrieval. Every context decision is visible. Inspect the raw messages with <code>/context</code> and <code>/stats</code>. Plus live-coded agent loops: a one-tool calculator agent and a shell-tool file-retrieval agent.</p><p style="margin-top:10px"><code>demos/agentic-retrieval/</code></p></div>
+    <div class="card" style="--c:var(--coral)"><div class="n">Session 3</div><h3>Diagnosing and Fixing Context Failures</h3><p>Taught live from the slides: Poisoning, Distraction, Confusion, and Clash, how to spot each one, and the fix.</p></div>
+    <div class="card" style="--c:var(--amber)"><div class="n">Session 4</div><h3>Context Engineering Patterns in Modern AI Apps</h3><p>FastAPI chat app with a 3-layer system prompt, a single <code>create_artifact</code> tool, and an artifact registry that grows back into context. Plus Agent Skills: Claude builds a <code>.pptx</code> deck from a CSV and notes.</p><p style="margin-top:10px"><code>demos/chat-with-artifacts/</code> · <code>demos/agents-with-skills/</code></p></div>
+    <div class="card" style="--c:var(--green)"><div class="n">Session 5</div><h3>Tools and Techniques for Modern Development</h3><p>The Claude Code primitives: CLAUDE.md, slash commands, hooks, sub-agents, and MCP. Then put Claude Code on a cron schedule: daily digests, standup prep, dependency audits, nightly health checks.</p><p style="margin-top:10px"><code>demos/ctx-engineering-tools-claude-code/</code></p></div>
   </div>
 </section>
 
@@ -92,9 +91,9 @@ uv run app.py</pre>
 <section>
   <h2>What's in the repo</h2>
   <ul class="plain">
-    <li><code>presentation-slides/</code> remark.js deck, handout, and PDF</li>
+    <li><code>presentation-slides/</code> remark.js deck and PDF</li>
     <li><code>assets/</code> the attention paper and the context engineering tools cheatsheet</li>
-    <li><code>demos/</code> one directory per session, all runnable with <code>uv run</code></li>
+    <li><code>demos/</code> demos for Sessions 1, 2, 4 and 5; every script runs with <code>uv run</code></li>
   </ul>
 </section>
 

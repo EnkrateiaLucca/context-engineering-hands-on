@@ -5,9 +5,6 @@
   <title>Context Engineering Hands-On — Live Deck</title>
   <!--
     Live presenter deck. Sparse, citation-free, ~25-40 words per slide.
-    Handout variant (with footers + extra context) lives in:
-      context-engineering-hands-on-handout.html  (Option A — separate file)
-    Edit the live deck first; then mirror structural changes into the handout.
   -->
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
@@ -31,6 +28,20 @@
       padding: 0.05em 0.3em;
       border-radius: 3px;
       font-size: 0.9em;
+    }
+    /* Fenced code blocks: one solid box. Without this the inline-code rule above
+       paints a padded strip per line instead of a full background. */
+    .remark-slide-content pre {
+      background: #ebe4d4;
+      border-radius: 3px;
+      padding: 0.6em 0.9em;
+      margin: 0.6em 0;
+    }
+    .remark-slide-content pre code {
+      display: block;
+      background: none;
+      padding: 0;
+      font-size: 0.75em;
     }
     .remark-slide-content blockquote {
       border-left: 4px solid #d9a441;
@@ -815,7 +826,7 @@ Map back to the W/S/C/I framework explicitly. This is the pedagogical payoff for
 
 Llama 3.1 405B hit its distraction ceiling at ~32K tokens.
 
-**2026 — the ceiling moved, but it did not disappear.** MRCR v2 (8-needle) at **1M tokens**: Claude Opus 4.6 **76%**, GPT-5.4 **36.6%**, Gemini 3 Pro **24.5%**. Same nominal window, very different *usable* window.
+**2026 — the ceiling moved, but didn't disappear.** MRCR v2 (8-needle) at **1M tokens**: Claude Opus 4.6 **76%**, GPT-5.4 **36.6%**, Gemini 3 Pro **24.5%**. Nominal ≠ *usable* window.
 
 ???
 The 100K number is empirically observed, not theoretical. The lesson: published context window ≠ usable context window.
@@ -895,14 +906,16 @@ Two big numbers (90.2% and the 39% from previous slide). Both real, both citable
 
 # Failures → fixes at a glance
 
-| Failure mode | Primary fix | Key signal |
-|---|---|---|
-| **Poisoning** | Isolate + Select | Bad fact propagates across steps |
-| **Distraction** | Compress + Select | Agent repeats past actions |
-| **Confusion** | Select + Isolate | Irrelevant tools/docs selected |
-| **Clash** | Isolate + Select | Flip-flopping between approaches |
+| Failure mode | Primary fix | Supporting fix | Key signal |
+|---|---|---|---|
+| **Poisoning** | Isolate + Select | Write (claims+sources) | Bad fact propagates across steps |
+| **Distraction** | Compress + Select | Write (persistent plan) | Agent repeats past actions |
+| **Confusion** | Select + Isolate | Tool Loadout | Irrelevant tools/docs selected |
+| **Clash** | Isolate + Select | Compress (resolved summary) | Flip-flopping between approaches |
 
 *Diagnose first. Then pick the lever. Don't blindly add compression to everything.*
+
+*Core principle: "Find the smallest set of high-signal tokens." — Anthropic*
 
 ???
 The student photograph slide. This table goes on a sticky note. Notice: Select shows up in every row — it's the most-used lever.
@@ -1109,7 +1122,7 @@ Five strategies, one slide. The Go-concurrency-inspired quote at the bottom is t
 .stat-attrib[Vercel Engineering · "We removed 80% of our agent's tools" · Dec 2025]
 
 ???
-Use Vercel's own headline framing — 80% → 100%. NOT "17 tools → 2." The 15 → 1 detail goes in the handout. This belongs in the tool-design section, not "Agent Skills" — that was a different Vercel post.
+Use Vercel's own headline framing — 80% → 100%. NOT "17 tools → 2." The 15 → 1 detail is in the Vercel post. This belongs in the tool-design section, not "Agent Skills" — that was a different Vercel post.
 
 ---
 
@@ -1130,6 +1143,40 @@ The token-multiplier table is one of the best slides in the original deck. Kept 
 
 ---
 
+# Agent Skills: context loaded on demand
+
+A skill is a folder: a `SKILL.md` with instructions, plus optional scripts and reference files.
+
+| Stage | What enters the context |
+|---|---|
+| **Always** | Each skill's name + one-line description |
+| **When a task matches** | The full `SKILL.md` body |
+| **Only if needed** | Bundled scripts and reference files |
+
+**Dozens of skills installed, almost none of them paying rent in the window.**
+
+*Progressive disclosure — the Select lever, packaged.*
+
+???
+Tie it back: this is the same move as Session 2's grep-over-RAG. The agent sees a cheap index, then pulls the detail when the task calls for it.
+Contrast with tools: a tool definition sits in context every turn whether it's used or not (last slide's 83.9%). A skill costs one line until it's needed.
+Open standard since Dec 2025 (SKILL.md) — the same folder works in Claude Code, the API and other agents. Anthropic's post: "Equipping Agents for the Real World with Agent Skills" (Oct 2025).
+
+---
+
+# Demo: a deck from data with the `pptx` skill
+
+- **Input** — a sales CSV + a notes file, uploaded to the sandbox
+- **No python-pptx instructions in the prompt** — just `skills: [pptx]` on the container
+- **Claude reads `SKILL.md` on demand**, writes the deck, hands back a file
+
+*`demos/agents-with-skills/` · live-coded: `demos/live-agents-with-skills/`*
+
+???
+Run `uv run pptx_from_data_agent.py`. While it runs, point out what's NOT in the prompt: no library docs, no layout rules. That knowledge lives in the skill and only loads once Claude decides it needs it.
+
+---
+
 # Where agent performance actually lives
 
 - **Token usage (context engineering)** — ~80% of performance variance
@@ -1147,14 +1194,14 @@ The bottom-line slide. If a student remembers only one stat from S4, this is it.
 
 # Pattern selection guide
 
-| Situation | Pattern |
-|---|---|
-| Stable project conventions | Minimal static file (CLAUDE.md) |
-| Topic-specific research | Context priming at session start |
-| Large codebases, many tools | Dynamic discovery + tool consolidation |
-| Long-running multi-step agents | Tiered architecture + filesystem context |
-| Multi-agent systems | Communication over shared context |
-| Repetitive learnable workflows | Self-improving contexts (ACE) |
+| Situation | Pattern | Why |
+|---|---|---|
+| Stable project conventions | Minimal static file (CLAUDE.md) | Rarely changes |
+| Topic-specific research | Context priming at session start | Fetches current docs |
+| Large codebases, many tools | Dynamic discovery + tool consolidation | Avoids confusion |
+| Long-running multi-step agents | Tiered architecture + filesystem context | Hot/cold separation |
+| Multi-agent systems | Communication over shared context | Manus pattern |
+| Repetitive learnable workflows | Self-improving contexts (ACE) | No manual maintenance |
 
 ???
 Decision table. This is the second-most-photographed slide in the deck. Keep terse.
@@ -1196,7 +1243,7 @@ class: title
 
 # Tools and Techniques for Modern Development
 
-## Hooks, sub-agents, MCP, and the Claude Code primitives that make context engineering tractable.
+## Hooks, sub-agents, MCP, scheduled agents, and the Claude Code primitives that make context engineering tractable.
 
 .footer[Hands-On Context Engineering<span>O'Reilly Live Training · Lucas Soares</span>]
 
@@ -1241,7 +1288,7 @@ The reframe. Most students walk in with bloated CLAUDE.md files. Give them permi
 A custom slash command is a **reusable prompt** authored once, invoked from any project.
 
 **Patterns that work:**
-- `/audit-context` — run a context-engineering agent on the current repo
+- `/standup` — draft standup notes (yesterday / today / blockers) from the git log
 - `/ci_commit` — structured commit with conventional-commit prefix
 - `/review` — diff-aware code review
 
@@ -1294,6 +1341,55 @@ Model Context Protocol = a standard way to expose tools, resources, and prompts 
 
 ???
 Quick MCP intro — students may or may not have used it. Demo connecting one MCP server (filesystem or a custom one) to Claude Code live.
+
+---
+
+# Scheduled agents: Claude Code on a cron
+
+A cron entry runs a **headless** Claude Code agent. It does the work, then posts the result where you'll see it.
+
+```
+# Weekly dependency audit — every Sunday, 9am
+0 9 * * 0  claude -p "Audit this repo's dependencies, flag anything outdated"
+```
+
+**cron** → **`claude -p "<prompt>"`** → Discord · file · vault · PR
+
+???
+`claude -p` is print (headless) mode: one prompt in, one result out, no interactive session. The cron entry is the whole scheduler — nothing else to install. Add `--allowedTools` to scope what the job may touch (next-but-one slide).
+
+---
+
+# What a scheduled agent can do
+
+| Use-case | What it does |
+|---|---|
+| **Daily AI digest** | Top stories summarized to Discord |
+| **Standup prep** | Reviews git log, drafts yesterday / today / blockers |
+| **Weekly dependency audit** | Flags outdated packages every Sunday |
+| **Nightly health check** | Pings API, memory, model availability |
+| **Apple Notes → Obsidian** | Summarizes notes, compiles into vault |
+
+*Each row is one cron-driven Claude Code run.*
+
+???
+More examples in the demo README: Friday wind-down (todos, issues, messages before the weekend) and nightly project backup. Ask the room which of their recurring chores fits this shape.
+
+---
+
+# Why context engineering makes unattended runs reliable
+
+No human is there to fix a bloated or poisoned context mid-run.
+
+- **Tool loadout** — only the tools the job needs (`--allowedTools`)
+- **Fresh context per run** — every invocation starts clean
+- **Grounding over memory** — `Read` the git log, package file, notes
+- **Structured hand-off** — end with a well-formed post, not a transcript
+
+*Use-cases and cron entries: `demos/ctx-engineering-tools-claude-code/`*
+
+???
+Map back to the levers: tool loadout is Select (the Vercel 80% → 100% lesson), fresh context per run is Isolate, grounding is Select at run time, and the structured hand-off is Write. Example: `claude -p "Summarize today's top AI stories and post to Discord" --allowedTools "WebSearch,Bash"`.
 
 ---
 

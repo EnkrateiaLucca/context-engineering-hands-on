@@ -1,6 +1,6 @@
 # /// script
 # requires-python = ">=3.11"
-# dependencies = ["anthropic"]
+# dependencies = ["anthropic", "python-dotenv"]
 # ///
 """
 Agent + Skill demo: Claude turns a CSV and a notes file into a .pptx deck.
@@ -23,8 +23,11 @@ import sys
 from pathlib import Path
 
 import anthropic
+from dotenv import load_dotenv
 
-MODEL = "claude-opus-5"
+load_dotenv()
+
+MODEL = "claude-opus-5-5"
 DATA_DIR = Path(__file__).parent / "data"
 OUT_DIR = Path(__file__).parent / "output"
 SKILLS = [{"type": "anthropic", "skill_id": "pptx", "version": "latest"}]

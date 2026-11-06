@@ -4,9 +4,6 @@ from typing import Any
 
 WORKDIR = Path.cwd().resolve()
 
-print("workdir")
-print(WORKDIR)
-
 def get_tool_definitions() -> list[dict]:
     """
     Return tool schemas in Anthropic API format.

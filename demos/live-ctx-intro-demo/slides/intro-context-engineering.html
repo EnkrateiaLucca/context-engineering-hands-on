@@ -5,9 +5,6 @@
   <title>Context Engineering — The Basics</title>
   <!--
     Live presenter deck. Sparse, citation-free, ~25-40 words per slide.
-    Handout variant (with footers + extra context) lives in:
-      context-engineering-hands-on-handout.html  (Option A — separate file)
-    Edit the live deck first; then mirror structural changes into the handout.
   -->
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=JetBrains+Mono:wght@400;700&display=swap');
@@ -31,6 +28,20 @@
       padding: 0.05em 0.3em;
       border-radius: 3px;
       font-size: 0.9em;
+    }
+    /* Fenced code blocks: one solid box. Without this the inline-code rule above
+       paints a padded strip per line instead of a full background. */
+    .remark-slide-content pre {
+      background: #ebe4d4;
+      border-radius: 3px;
+      padding: 0.6em 0.9em;
+      margin: 0.6em 0;
+    }
+    .remark-slide-content pre code {
+      display: block;
+      background: none;
+      padding: 0;
+      font-size: 0.75em;
     }
     .remark-slide-content blockquote {
       border-left: 4px solid #d9a441;
@@ -192,7 +203,7 @@
 
 class: title
 
-.session-label[LIVE INTRO · 10 SLIDES]
+.session-label[SESSION 1 · INTRODUCTION]
 
 # Context Engineering: The Basics
 
@@ -261,7 +272,7 @@ Anthropic's framing: context engineering is "the natural progression of prompt e
 | Tool results | JSON blobs, logs | the tools |
 | User message | the question | the user |
 
-**One flat list of tokens. Goal: the smallest set of high-signal tokens that gets the outcome you want.**
+**One flat list of tokens. Goal: the smallest high-signal set that gets the outcome.**
 
 ???
 Print the real `messages` array in the demo. Students are usually surprised how much of it is not the "prompt". Anthropic's per-slot guidance: system prompt at the "right altitude" (not brittle if-else logic, not vague hand-waving), sectioned with headers or XML tags; a minimal tool set with no overlap (if an engineer can't say which tool applies, the model can't either); a few diverse canonical examples instead of a laundry list of edge cases. demo: `01_what_the_model_sees.py`
@@ -276,7 +287,7 @@ class: center, middle
 
 **Every token attends to every other token: n² relationships. Every token you add spends some of the budget.**
 
-*A finite resource with diminishing marginal returns. 200k is a budget, not "unlimited".*
+*A finite resource with diminishing marginal returns. 1M is a budget, not "unlimited".*
 
 ???
 Anthropic's term: "attention budget." Transformers create n² pairwise relationships; as n grows, that attention gets stretched thin. Models also trained mostly on shorter sequences, so they have less practice with context-wide dependencies. RAM analogy still works: model = CPU, window = RAM, files/DB = disk. demo: `02_context_budget.py`
@@ -303,10 +314,22 @@ Run the haystack demo. Same needle, same question, growing filler. Watch latency
 # Four moves
 
 .grid-4[
-.card[.tag.w-tag[WRITE] Structured note-taking: a NOTES.md or memory tool the agent reads back after a reset.]
-.card[.tag.s-tag[SELECT] Just-in-time retrieval: keep file paths and links, load the data only when needed.]
-.card[.tag.c-tag[COMPRESS] Compaction: summarize the history, clear old tool results, restart the window.]
-.card[.tag.i-tag[ISOLATE] Sub-agents: explore with 50k tokens, return a 1-2k summary to the lead.]
+.card[
+.tag.w-tag[WRITE]
+Structured note-taking: a NOTES.md or memory tool the agent reads back after a reset.
+]
+.card[
+.tag.s-tag[SELECT]
+Just-in-time retrieval: keep file paths and links, load the data only when needed.
+]
+.card[
+.tag.c-tag[COMPRESS]
+Compaction: summarize the history, clear old tool results, restart the window.
+]
+.card[
+.tag.i-tag[ISOLATE]
+Sub-agents: explore with 50k tokens, return a 1-2k summary to the lead.
+]
 ]
 
 **Pick by task: compaction for back-and-forth, notes for milestones, sub-agents for parallel research.**
